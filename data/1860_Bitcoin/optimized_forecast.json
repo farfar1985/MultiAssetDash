@@ -1,0 +1,16 @@
+{
+  "asset": "Bitcoin",
+  "current_price": 86581.031,
+  "avg_prediction": 86758.2764704872,
+  "pct_change": 0.2,
+  "signal": "NEUTRAL",
+  "confidence": 52.04716285357231,
+  "viable_horizons": [
+    1,
+    3,
+    8,
+    10
+  ],
+  "health_score": 90,
+  "timestamp": "2026-01-26T16:50:30.042116"
+}

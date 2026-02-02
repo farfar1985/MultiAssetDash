@@ -1,0 +1,16 @@
+{
+  "asset": "US_DOLLAR_Index",
+  "current_price": 97.404,
+  "avg_prediction": 97.37857799296849,
+  "pct_change": -0.03,
+  "signal": "NEUTRAL",
+  "confidence": 50.26099551385475,
+  "viable_horizons": [
+    1,
+    5,
+    13,
+    21
+  ],
+  "health_score": 90,
+  "timestamp": "2026-01-26T17:09:39.057597"
+}

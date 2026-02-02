@@ -1,0 +1,1466 @@
+[
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8,
+      10
+    ],
+    "n_horizons": 5,
+    "threshold": 0.1,
+    "train_n_trades": 15,
+    "train_return": 6.53811686586494,
+    "train_sharpe": 1.1299765831889363,
+    "train_max_dd": -9.565543164480053,
+    "train_win_rate": 46.666666666666664,
+    "train_composite": 0.2669339113512486,
+    "oos_n_trades": 10,
+    "oos_return": 12.178837412029853,
+    "oos_sharpe": 5.546888096648788,
+    "oos_max_dd": -2.8807277628032386,
+    "oos_win_rate": 80.0,
+    "oos_profit_factor": 5.077379752142523,
+    "oos_expectancy": 1.1745821051488743,
+    "oos_avg_da": 65.21739130434783,
+    "oos_composite_score": 0.7009783775007699,
+    "signal_dist": {
+      "BULLISH": 24,
+      "BEARISH": 57,
+      "NEUTRAL": 9
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8,
+      10
+    ],
+    "n_horizons": 5,
+    "threshold": 0.15,
+    "train_n_trades": 15,
+    "train_return": 6.53811686586494,
+    "train_sharpe": 1.1299765831889363,
+    "train_max_dd": -9.565543164480053,
+    "train_win_rate": 46.666666666666664,
+    "train_composite": 0.2669339113512486,
+    "oos_n_trades": 10,
+    "oos_return": 12.178837412029853,
+    "oos_sharpe": 5.546888096648788,
+    "oos_max_dd": -2.8807277628032386,
+    "oos_win_rate": 80.0,
+    "oos_profit_factor": 5.077379752142523,
+    "oos_expectancy": 1.1745821051488743,
+    "oos_avg_da": 65.21739130434783,
+    "oos_composite_score": 0.7009783775007699,
+    "signal_dist": {
+      "BULLISH": 24,
+      "BEARISH": 57,
+      "NEUTRAL": 9
+    }
+  },
+  {
+    "horizons": [
+      1,
+      2,
+      3
+    ],
+    "n_horizons": 3,
+    "threshold": 0.1,
+    "train_n_trades": 39,
+    "train_return": 3.053776372740624,
+    "train_sharpe": 0.48308585383710506,
+    "train_max_dd": -11.413276200644942,
+    "train_win_rate": 46.15384615384615,
+    "train_composite": 0.18643151999980423,
+    "oos_n_trades": 11,
+    "oos_return": 18.889268009064473,
+    "oos_sharpe": 9.330865413088087,
+    "oos_max_dd": -0.6427604871448017,
+    "oos_win_rate": 63.63636363636363,
+    "oos_profit_factor": 26.99594531855973,
+    "oos_expectancy": 1.598666895497855,
+    "oos_avg_da": 68.96551724137932,
+    "oos_composite_score": 0.6299190271762914,
+    "signal_dist": {
+      "BULLISH": 27,
+      "BEARISH": 63,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      1,
+      2,
+      3
+    ],
+    "n_horizons": 3,
+    "threshold": 0.15,
+    "train_n_trades": 39,
+    "train_return": 3.053776372740624,
+    "train_sharpe": 0.48308585383710506,
+    "train_max_dd": -11.413276200644942,
+    "train_win_rate": 46.15384615384615,
+    "train_composite": 0.18643151999980423,
+    "oos_n_trades": 11,
+    "oos_return": 18.889268009064473,
+    "oos_sharpe": 9.330865413088087,
+    "oos_max_dd": -0.6427604871448017,
+    "oos_win_rate": 63.63636363636363,
+    "oos_profit_factor": 26.99594531855973,
+    "oos_expectancy": 1.598666895497855,
+    "oos_avg_da": 68.96551724137932,
+    "oos_composite_score": 0.6299190271762914,
+    "signal_dist": {
+      "BULLISH": 27,
+      "BEARISH": 63,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      1,
+      2,
+      3
+    ],
+    "n_horizons": 3,
+    "threshold": 0.2,
+    "train_n_trades": 39,
+    "train_return": 3.053776372740624,
+    "train_sharpe": 0.48308585383710506,
+    "train_max_dd": -11.413276200644942,
+    "train_win_rate": 46.15384615384615,
+    "train_composite": 0.18643151999980423,
+    "oos_n_trades": 11,
+    "oos_return": 18.889268009064473,
+    "oos_sharpe": 9.330865413088087,
+    "oos_max_dd": -0.6427604871448017,
+    "oos_win_rate": 63.63636363636363,
+    "oos_profit_factor": 26.99594531855973,
+    "oos_expectancy": 1.598666895497855,
+    "oos_avg_da": 68.96551724137932,
+    "oos_composite_score": 0.6299190271762914,
+    "signal_dist": {
+      "BULLISH": 27,
+      "BEARISH": 63,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      1,
+      2,
+      3
+    ],
+    "n_horizons": 3,
+    "threshold": 0.25,
+    "train_n_trades": 39,
+    "train_return": 3.053776372740624,
+    "train_sharpe": 0.48308585383710506,
+    "train_max_dd": -11.413276200644942,
+    "train_win_rate": 46.15384615384615,
+    "train_composite": 0.18643151999980423,
+    "oos_n_trades": 11,
+    "oos_return": 18.889268009064473,
+    "oos_sharpe": 9.330865413088087,
+    "oos_max_dd": -0.6427604871448017,
+    "oos_win_rate": 63.63636363636363,
+    "oos_profit_factor": 26.99594531855973,
+    "oos_expectancy": 1.598666895497855,
+    "oos_avg_da": 68.96551724137932,
+    "oos_composite_score": 0.6299190271762914,
+    "signal_dist": {
+      "BULLISH": 27,
+      "BEARISH": 63,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      1,
+      2,
+      3
+    ],
+    "n_horizons": 3,
+    "threshold": 0.3,
+    "train_n_trades": 39,
+    "train_return": 3.053776372740624,
+    "train_sharpe": 0.48308585383710506,
+    "train_max_dd": -11.413276200644942,
+    "train_win_rate": 46.15384615384615,
+    "train_composite": 0.18643151999980423,
+    "oos_n_trades": 11,
+    "oos_return": 18.889268009064473,
+    "oos_sharpe": 9.330865413088087,
+    "oos_max_dd": -0.6427604871448017,
+    "oos_win_rate": 63.63636363636363,
+    "oos_profit_factor": 26.99594531855973,
+    "oos_expectancy": 1.598666895497855,
+    "oos_avg_da": 68.96551724137932,
+    "oos_composite_score": 0.6299190271762914,
+    "signal_dist": {
+      "BULLISH": 27,
+      "BEARISH": 63,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.1,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.15,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.2,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.25,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.3,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.1,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.15,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.2,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.25,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.3,
+    "train_n_trades": 19,
+    "train_return": -9.925074309288773,
+    "train_sharpe": -1.2541534728005235,
+    "train_max_dd": -15.793755899593204,
+    "train_win_rate": 36.84210526315789,
+    "train_composite": -0.09423449771411216,
+    "oos_n_trades": 11,
+    "oos_return": 8.229522659033695,
+    "oos_sharpe": 3.4600870056985165,
+    "oos_max_dd": -3.209521014424358,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 3.278512443339417,
+    "oos_expectancy": 0.7424480371801131,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.5138401825337099,
+    "signal_dist": {
+      "BULLISH": 35,
+      "BEARISH": 55,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.1,
+    "train_n_trades": 20,
+    "train_return": -23.338267726069105,
+    "train_sharpe": -3.592529341425268,
+    "train_max_dd": -24.801933790199957,
+    "train_win_rate": 25.0,
+    "train_composite": -0.4173627398552762,
+    "oos_n_trades": 12,
+    "oos_return": 13.401261543292353,
+    "oos_sharpe": 3.1926116876400084,
+    "oos_max_dd": -3.623589912624244,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.9885021083966095,
+    "oos_expectancy": 1.1119394684970716,
+    "oos_avg_da": 62.06896551724138,
+    "oos_composite_score": 0.5021537632767148,
+    "signal_dist": {
+      "BULLISH": 30,
+      "BEARISH": 60,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.15,
+    "train_n_trades": 20,
+    "train_return": -23.338267726069105,
+    "train_sharpe": -3.592529341425268,
+    "train_max_dd": -24.801933790199957,
+    "train_win_rate": 25.0,
+    "train_composite": -0.4173627398552762,
+    "oos_n_trades": 12,
+    "oos_return": 13.401261543292353,
+    "oos_sharpe": 3.1926116876400084,
+    "oos_max_dd": -3.623589912624244,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.9885021083966095,
+    "oos_expectancy": 1.1119394684970716,
+    "oos_avg_da": 62.06896551724138,
+    "oos_composite_score": 0.5021537632767148,
+    "signal_dist": {
+      "BULLISH": 30,
+      "BEARISH": 60,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.2,
+    "train_n_trades": 20,
+    "train_return": -23.338267726069105,
+    "train_sharpe": -3.592529341425268,
+    "train_max_dd": -24.801933790199957,
+    "train_win_rate": 25.0,
+    "train_composite": -0.4173627398552762,
+    "oos_n_trades": 12,
+    "oos_return": 13.401261543292353,
+    "oos_sharpe": 3.1926116876400084,
+    "oos_max_dd": -3.623589912624244,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.9885021083966095,
+    "oos_expectancy": 1.1119394684970716,
+    "oos_avg_da": 62.06896551724138,
+    "oos_composite_score": 0.5021537632767148,
+    "signal_dist": {
+      "BULLISH": 30,
+      "BEARISH": 60,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.25,
+    "train_n_trades": 20,
+    "train_return": -23.338267726069105,
+    "train_sharpe": -3.592529341425268,
+    "train_max_dd": -24.801933790199957,
+    "train_win_rate": 25.0,
+    "train_composite": -0.4173627398552762,
+    "oos_n_trades": 12,
+    "oos_return": 13.401261543292353,
+    "oos_sharpe": 3.1926116876400084,
+    "oos_max_dd": -3.623589912624244,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.9885021083966095,
+    "oos_expectancy": 1.1119394684970716,
+    "oos_avg_da": 62.06896551724138,
+    "oos_composite_score": 0.5021537632767148,
+    "signal_dist": {
+      "BULLISH": 30,
+      "BEARISH": 60,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.3,
+    "train_n_trades": 20,
+    "train_return": -23.338267726069105,
+    "train_sharpe": -3.592529341425268,
+    "train_max_dd": -24.801933790199957,
+    "train_win_rate": 25.0,
+    "train_composite": -0.4173627398552762,
+    "oos_n_trades": 12,
+    "oos_return": 13.401261543292353,
+    "oos_sharpe": 3.1926116876400084,
+    "oos_max_dd": -3.623589912624244,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.9885021083966095,
+    "oos_expectancy": 1.1119394684970716,
+    "oos_avg_da": 62.06896551724138,
+    "oos_composite_score": 0.5021537632767148,
+    "signal_dist": {
+      "BULLISH": 30,
+      "BEARISH": 60,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.1,
+    "train_n_trades": 22,
+    "train_return": -10.173488416825416,
+    "train_sharpe": -1.554000493536061,
+    "train_max_dd": -14.21918910347898,
+    "train_win_rate": 31.818181818181817,
+    "train_composite": -0.14583539485815622,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 55.00000000000001,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 19,
+      "BEARISH": 47,
+      "NEUTRAL": 24
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.15,
+    "train_n_trades": 22,
+    "train_return": -10.173488416825416,
+    "train_sharpe": -1.554000493536061,
+    "train_max_dd": -14.21918910347898,
+    "train_win_rate": 31.818181818181817,
+    "train_composite": -0.14583539485815622,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 55.00000000000001,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 19,
+      "BEARISH": 47,
+      "NEUTRAL": 24
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.2,
+    "train_n_trades": 22,
+    "train_return": -10.173488416825416,
+    "train_sharpe": -1.554000493536061,
+    "train_max_dd": -14.21918910347898,
+    "train_win_rate": 31.818181818181817,
+    "train_composite": -0.14583539485815622,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 55.00000000000001,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 19,
+      "BEARISH": 47,
+      "NEUTRAL": 24
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.25,
+    "train_n_trades": 22,
+    "train_return": -10.173488416825416,
+    "train_sharpe": -1.554000493536061,
+    "train_max_dd": -14.21918910347898,
+    "train_win_rate": 31.818181818181817,
+    "train_composite": -0.14583539485815622,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 55.00000000000001,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 19,
+      "BEARISH": 47,
+      "NEUTRAL": 24
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.3,
+    "train_n_trades": 22,
+    "train_return": -10.173488416825416,
+    "train_sharpe": -1.554000493536061,
+    "train_max_dd": -14.21918910347898,
+    "train_win_rate": 31.818181818181817,
+    "train_composite": -0.14583539485815622,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 55.00000000000001,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 19,
+      "BEARISH": 47,
+      "NEUTRAL": 24
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.35,
+    "train_n_trades": 14,
+    "train_return": -2.668336285011963,
+    "train_sharpe": -0.5448171022440628,
+    "train_max_dd": -4.7179665738161445,
+    "train_win_rate": 35.714285714285715,
+    "train_composite": 0.04176396823243761,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 61.53846153846154,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 7,
+      "BEARISH": 23,
+      "NEUTRAL": 60
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.4,
+    "train_n_trades": 14,
+    "train_return": -2.668336285011963,
+    "train_sharpe": -0.5448171022440628,
+    "train_max_dd": -4.7179665738161445,
+    "train_win_rate": 35.714285714285715,
+    "train_composite": 0.04176396823243761,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 61.53846153846154,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 7,
+      "BEARISH": 23,
+      "NEUTRAL": 60
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.45,
+    "train_n_trades": 14,
+    "train_return": -2.668336285011963,
+    "train_sharpe": -0.5448171022440628,
+    "train_max_dd": -4.7179665738161445,
+    "train_win_rate": 35.714285714285715,
+    "train_composite": 0.04176396823243761,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 61.53846153846154,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 7,
+      "BEARISH": 23,
+      "NEUTRAL": 60
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.5,
+    "train_n_trades": 14,
+    "train_return": -2.668336285011963,
+    "train_sharpe": -0.5448171022440628,
+    "train_max_dd": -4.7179665738161445,
+    "train_win_rate": 35.714285714285715,
+    "train_composite": 0.04176396823243761,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 61.53846153846154,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 7,
+      "BEARISH": 23,
+      "NEUTRAL": 60
+    }
+  },
+  {
+    "horizons": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "n_horizons": 4,
+    "threshold": 0.6,
+    "train_n_trades": 14,
+    "train_return": -2.668336285011963,
+    "train_sharpe": -0.5448171022440628,
+    "train_max_dd": -4.7179665738161445,
+    "train_win_rate": 35.714285714285715,
+    "train_composite": 0.04176396823243761,
+    "oos_n_trades": 10,
+    "oos_return": 6.050343927345958,
+    "oos_sharpe": 2.7191100922691978,
+    "oos_max_dd": -2.880727762803238,
+    "oos_win_rate": 50.0,
+    "oos_profit_factor": 2.4029856729112775,
+    "oos_expectancy": 0.610097275770773,
+    "oos_avg_da": 61.53846153846154,
+    "oos_composite_score": 0.4530569112511341,
+    "signal_dist": {
+      "BULLISH": 7,
+      "BEARISH": 23,
+      "NEUTRAL": 60
+    }
+  },
+  {
+    "horizons": [
+      3,
+      4,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.1,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      4,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.15,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      4,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.2,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      4,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.25,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      4,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.3,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      5,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.1,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      5,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.15,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      5,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.2,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      5,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.25,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      5,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.3,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.1,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.15,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.2,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.25,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      6,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.3,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.1,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.15,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  },
+  {
+    "horizons": [
+      3,
+      7,
+      8
+    ],
+    "n_horizons": 3,
+    "threshold": 0.2,
+    "train_n_trades": 19,
+    "train_return": 7.613551690408138,
+    "train_sharpe": 1.0552722464325588,
+    "train_max_dd": -9.62562352316964,
+    "train_win_rate": 42.10526315789473,
+    "train_composite": 0.23430053073446244,
+    "oos_n_trades": 11,
+    "oos_return": 7.543112887694425,
+    "oos_sharpe": 2.1439760671065877,
+    "oos_max_dd": -4.677495855461437,
+    "oos_win_rate": 54.54545454545454,
+    "oos_profit_factor": 1.9999759297206523,
+    "oos_expectancy": 0.7124214475806213,
+    "oos_avg_da": 51.724137931034484,
+    "oos_composite_score": 0.43241934150204975,
+    "signal_dist": {
+      "BULLISH": 28,
+      "BEARISH": 62,
+      "NEUTRAL": 0
+    }
+  }
+]

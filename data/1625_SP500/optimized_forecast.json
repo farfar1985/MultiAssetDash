@@ -1,0 +1,15 @@
+{
+  "asset": "SP500",
+  "current_price": 6945.75,
+  "avg_prediction": 6956.043591372672,
+  "pct_change": 0.15,
+  "signal": "NEUTRAL",
+  "confidence": 51.481998541938935,
+  "viable_horizons": [
+    1,
+    3,
+    5
+  ],
+  "health_score": 90,
+  "timestamp": "2026-01-26T16:54:01.102690"
+}

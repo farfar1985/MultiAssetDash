@@ -1,0 +1,285 @@
+{
+  "asset": "NASDAQ",
+  "generated_at": "2026-01-19T11:05:56.179865",
+  "stats_by_horizon": {
+    "1d": {
+      "total_signals": 319,
+      "analysis_period": "2025-03-02 to 2026-01-14",
+      "look_ahead_days": 1,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 40.3,
+          "correct": 126,
+          "total": 313,
+          "sample_size": 313
+        },
+        "NEUTRAL": {
+          "accuracy": 50.0,
+          "correct": 3,
+          "total": 6,
+          "sample_size": 6
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 40.7,
+          "correct": 112,
+          "total": 275
+        },
+        "medium": {
+          "accuracy": 36.7,
+          "correct": 11,
+          "total": 30
+        },
+        "weak": {
+          "accuracy": 42.9,
+          "correct": 6,
+          "total": 14
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 41.9,
+          "correct": 54,
+          "total": 129
+        },
+        "majority": {
+          "accuracy": 39.2,
+          "correct": 69,
+          "total": 176
+        },
+        "mixed": {
+          "accuracy": 37.5,
+          "correct": 3,
+          "total": 8
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 40.7,
+          "correct": 112,
+          "total": 275
+        },
+        "BULLISH_medium": {
+          "accuracy": 36.7,
+          "correct": 11,
+          "total": 30
+        },
+        "BULLISH_weak": {
+          "accuracy": 37.5,
+          "correct": 3,
+          "total": 8
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 40.7,
+          "sample_size": 275,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 36.7,
+          "sample_size": 30,
+          "emoji": "\ud83d\udfe1"
+        },
+        {
+          "tier": "Low Confidence",
+          "description": "Weak signal (mixed horizons, net_prob < 20%)",
+          "accuracy": 42.9,
+          "sample_size": 14,
+          "emoji": "\ud83d\udd34"
+        }
+      ]
+    },
+    "3d": {
+      "total_signals": 319,
+      "analysis_period": "2025-03-02 to 2026-01-14",
+      "look_ahead_days": 3,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 60.4,
+          "correct": 189,
+          "total": 313,
+          "sample_size": 313
+        },
+        "NEUTRAL": {
+          "accuracy": 33.3,
+          "correct": 2,
+          "total": 6,
+          "sample_size": 6
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 62.2,
+          "correct": 171,
+          "total": 275
+        },
+        "medium": {
+          "accuracy": 56.7,
+          "correct": 17,
+          "total": 30
+        },
+        "weak": {
+          "accuracy": 21.4,
+          "correct": 3,
+          "total": 14
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 64.3,
+          "correct": 83,
+          "total": 129
+        },
+        "majority": {
+          "accuracy": 59.7,
+          "correct": 105,
+          "total": 176
+        },
+        "mixed": {
+          "accuracy": 12.5,
+          "correct": 1,
+          "total": 8
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 62.2,
+          "correct": 171,
+          "total": 275
+        },
+        "BULLISH_medium": {
+          "accuracy": 56.7,
+          "correct": 17,
+          "total": 30
+        },
+        "BULLISH_weak": {
+          "accuracy": 12.5,
+          "correct": 1,
+          "total": 8
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 62.2,
+          "sample_size": 275,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 56.7,
+          "sample_size": 30,
+          "emoji": "\ud83d\udfe1"
+        },
+        {
+          "tier": "Low Confidence",
+          "description": "Weak signal (mixed horizons, net_prob < 20%)",
+          "accuracy": 21.4,
+          "sample_size": 14,
+          "emoji": "\ud83d\udd34"
+        }
+      ]
+    },
+    "5d": {
+      "total_signals": 319,
+      "analysis_period": "2025-03-02 to 2026-01-14",
+      "look_ahead_days": 5,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 64.5,
+          "correct": 202,
+          "total": 313,
+          "sample_size": 313
+        },
+        "NEUTRAL": {
+          "accuracy": 16.7,
+          "correct": 1,
+          "total": 6,
+          "sample_size": 6
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 66.2,
+          "correct": 182,
+          "total": 275
+        },
+        "medium": {
+          "accuracy": 60.0,
+          "correct": 18,
+          "total": 30
+        },
+        "weak": {
+          "accuracy": 21.4,
+          "correct": 3,
+          "total": 14
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 73.6,
+          "correct": 95,
+          "total": 129
+        },
+        "majority": {
+          "accuracy": 59.7,
+          "correct": 105,
+          "total": 176
+        },
+        "mixed": {
+          "accuracy": 25.0,
+          "correct": 2,
+          "total": 8
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 66.2,
+          "correct": 182,
+          "total": 275
+        },
+        "BULLISH_medium": {
+          "accuracy": 60.0,
+          "correct": 18,
+          "total": 30
+        },
+        "BULLISH_weak": {
+          "accuracy": 25.0,
+          "correct": 2,
+          "total": 8
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 66.2,
+          "sample_size": 275,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 60.0,
+          "sample_size": 30,
+          "emoji": "\ud83d\udfe1"
+        },
+        {
+          "tier": "Low Confidence",
+          "description": "Weak signal (mixed horizons, net_prob < 20%)",
+          "accuracy": 21.4,
+          "sample_size": 14,
+          "emoji": "\ud83d\udd34"
+        }
+      ]
+    }
+  }
+}

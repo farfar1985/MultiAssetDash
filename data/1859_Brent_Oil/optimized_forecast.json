@@ -1,0 +1,15 @@
+{
+  "asset": "Brent_Oil",
+  "current_price": 65.88,
+  "avg_prediction": 65.91755545032983,
+  "pct_change": 0.06,
+  "signal": "NEUTRAL",
+  "confidence": 50.570058444593705,
+  "viable_horizons": [
+    1,
+    3,
+    5
+  ],
+  "health_score": 80,
+  "timestamp": "2026-01-26T17:28:49.910362"
+}

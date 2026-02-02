@@ -1,0 +1,15 @@
+{
+  "asset": "MCX_Copper",
+  "current_price": 1316.5,
+  "avg_prediction": 1325.0293604367428,
+  "pct_change": 0.65,
+  "signal": "BULLISH",
+  "confidence": 56.478815371623824,
+  "viable_horizons": [
+    1,
+    3,
+    13
+  ],
+  "health_score": 85,
+  "timestamp": "2026-01-26T17:25:22.168694"
+}

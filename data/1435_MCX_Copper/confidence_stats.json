@@ -1,0 +1,333 @@
+{
+  "asset": "MCX_Copper",
+  "generated_at": "2026-01-19T11:05:57.176672",
+  "stats_by_horizon": {
+    "1d": {
+      "total_signals": 319,
+      "analysis_period": "2025-03-02 to 2026-01-14",
+      "look_ahead_days": 1,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 39.1,
+          "correct": 111,
+          "total": 284,
+          "sample_size": 284
+        },
+        "BEARISH": {
+          "accuracy": 38.1,
+          "correct": 8,
+          "total": 21,
+          "sample_size": 21
+        },
+        "NEUTRAL": {
+          "accuracy": 64.3,
+          "correct": 9,
+          "total": 14,
+          "sample_size": 14
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 39.0,
+          "correct": 90,
+          "total": 231
+        },
+        "medium": {
+          "accuracy": 43.9,
+          "correct": 25,
+          "total": 57
+        },
+        "weak": {
+          "accuracy": 41.9,
+          "correct": 13,
+          "total": 31
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 37.7,
+          "correct": 40,
+          "total": 106
+        },
+        "majority": {
+          "accuracy": 41.2,
+          "correct": 75,
+          "total": 182
+        },
+        "mixed": {
+          "accuracy": 23.5,
+          "correct": 4,
+          "total": 17
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 38.9,
+          "correct": 89,
+          "total": 229
+        },
+        "BULLISH_medium": {
+          "accuracy": 46.5,
+          "correct": 20,
+          "total": 43
+        },
+        "BULLISH_weak": {
+          "accuracy": 16.7,
+          "correct": 2,
+          "total": 12
+        },
+        "BEARISH_medium": {
+          "accuracy": 35.7,
+          "correct": 5,
+          "total": 14
+        },
+        "BEARISH_weak": {
+          "accuracy": 40.0,
+          "correct": 2,
+          "total": 5
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 39.0,
+          "sample_size": 231,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 43.9,
+          "sample_size": 57,
+          "emoji": "\ud83d\udfe1"
+        },
+        {
+          "tier": "Low Confidence",
+          "description": "Weak signal (mixed horizons, net_prob < 20%)",
+          "accuracy": 41.9,
+          "sample_size": 31,
+          "emoji": "\ud83d\udd34"
+        }
+      ]
+    },
+    "3d": {
+      "total_signals": 319,
+      "analysis_period": "2025-03-02 to 2026-01-14",
+      "look_ahead_days": 3,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 63.0,
+          "correct": 179,
+          "total": 284,
+          "sample_size": 284
+        },
+        "BEARISH": {
+          "accuracy": 61.9,
+          "correct": 13,
+          "total": 21,
+          "sample_size": 21
+        },
+        "NEUTRAL": {
+          "accuracy": 57.1,
+          "correct": 8,
+          "total": 14,
+          "sample_size": 14
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 64.1,
+          "correct": 148,
+          "total": 231
+        },
+        "medium": {
+          "accuracy": 57.9,
+          "correct": 33,
+          "total": 57
+        },
+        "weak": {
+          "accuracy": 61.3,
+          "correct": 19,
+          "total": 31
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 72.6,
+          "correct": 77,
+          "total": 106
+        },
+        "majority": {
+          "accuracy": 57.1,
+          "correct": 104,
+          "total": 182
+        },
+        "mixed": {
+          "accuracy": 64.7,
+          "correct": 11,
+          "total": 17
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 63.8,
+          "correct": 146,
+          "total": 229
+        },
+        "BULLISH_medium": {
+          "accuracy": 58.1,
+          "correct": 25,
+          "total": 43
+        },
+        "BULLISH_weak": {
+          "accuracy": 66.7,
+          "correct": 8,
+          "total": 12
+        },
+        "BEARISH_medium": {
+          "accuracy": 57.1,
+          "correct": 8,
+          "total": 14
+        },
+        "BEARISH_weak": {
+          "accuracy": 60.0,
+          "correct": 3,
+          "total": 5
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 64.1,
+          "sample_size": 231,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 57.9,
+          "sample_size": 57,
+          "emoji": "\ud83d\udfe1"
+        },
+        {
+          "tier": "Low Confidence",
+          "description": "Weak signal (mixed horizons, net_prob < 20%)",
+          "accuracy": 61.3,
+          "sample_size": 31,
+          "emoji": "\ud83d\udd34"
+        }
+      ]
+    },
+    "5d": {
+      "total_signals": 319,
+      "analysis_period": "2025-03-02 to 2026-01-14",
+      "look_ahead_days": 5,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 68.7,
+          "correct": 195,
+          "total": 284,
+          "sample_size": 284
+        },
+        "BEARISH": {
+          "accuracy": 71.4,
+          "correct": 15,
+          "total": 21,
+          "sample_size": 21
+        },
+        "NEUTRAL": {
+          "accuracy": 42.9,
+          "correct": 6,
+          "total": 14,
+          "sample_size": 14
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 71.9,
+          "correct": 166,
+          "total": 231
+        },
+        "medium": {
+          "accuracy": 57.9,
+          "correct": 33,
+          "total": 57
+        },
+        "weak": {
+          "accuracy": 54.8,
+          "correct": 17,
+          "total": 31
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 82.1,
+          "correct": 87,
+          "total": 106
+        },
+        "majority": {
+          "accuracy": 61.5,
+          "correct": 112,
+          "total": 182
+        },
+        "mixed": {
+          "accuracy": 64.7,
+          "correct": 11,
+          "total": 17
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 71.6,
+          "correct": 164,
+          "total": 229
+        },
+        "BULLISH_medium": {
+          "accuracy": 51.2,
+          "correct": 22,
+          "total": 43
+        },
+        "BULLISH_weak": {
+          "accuracy": 75.0,
+          "correct": 9,
+          "total": 12
+        },
+        "BEARISH_medium": {
+          "accuracy": 78.6,
+          "correct": 11,
+          "total": 14
+        },
+        "BEARISH_weak": {
+          "accuracy": 40.0,
+          "correct": 2,
+          "total": 5
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 71.9,
+          "sample_size": 231,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 57.9,
+          "sample_size": 57,
+          "emoji": "\ud83d\udfe1"
+        },
+        {
+          "tier": "Low Confidence",
+          "description": "Weak signal (mixed horizons, net_prob < 20%)",
+          "accuracy": 54.8,
+          "sample_size": 31,
+          "emoji": "\ud83d\udd34"
+        }
+      ]
+    }
+  }
+}

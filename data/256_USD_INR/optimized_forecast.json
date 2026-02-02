@@ -1,0 +1,15 @@
+{
+  "asset": "USD_INR",
+  "current_price": 91.955,
+  "avg_prediction": 92.44416274129507,
+  "pct_change": 0.53,
+  "signal": "BULLISH",
+  "confidence": 55.31958829095835,
+  "viable_horizons": [
+    1,
+    3,
+    180
+  ],
+  "health_score": 60,
+  "timestamp": "2026-01-26T17:28:06.194275"
+}

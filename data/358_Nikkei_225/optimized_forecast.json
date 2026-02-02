@@ -1,0 +1,17 @@
+{
+  "asset": "Nikkei_225",
+  "current_price": 52985.0,
+  "avg_prediction": 54476.43695825934,
+  "pct_change": 2.81,
+  "signal": "BULLISH",
+  "confidence": 78.14828646332627,
+  "viable_horizons": [
+    1,
+    8,
+    34,
+    55,
+    89
+  ],
+  "health_score": 90,
+  "timestamp": "2026-01-26T17:13:38.255003"
+}

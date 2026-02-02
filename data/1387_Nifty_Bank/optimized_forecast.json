@@ -1,0 +1,15 @@
+{
+  "asset": "Nifty_Bank",
+  "current_price": 58473.102,
+  "avg_prediction": 58423.13924595562,
+  "pct_change": -0.09,
+  "signal": "NEUTRAL",
+  "confidence": 50.854457046666965,
+  "viable_horizons": [
+    1,
+    3,
+    5
+  ],
+  "health_score": 90,
+  "timestamp": "2026-01-26T17:22:43.940539"
+}

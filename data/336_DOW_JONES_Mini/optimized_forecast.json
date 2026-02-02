@@ -1,0 +1,15 @@
+{
+  "asset": "DOW_JONES_Mini",
+  "current_price": 49263.0,
+  "avg_prediction": 49344.00652481864,
+  "pct_change": 0.16,
+  "signal": "NEUTRAL",
+  "confidence": 51.644368487884144,
+  "viable_horizons": [
+    1,
+    3,
+    5
+  ],
+  "health_score": 85,
+  "timestamp": "2026-01-26T17:04:30.471292"
+}

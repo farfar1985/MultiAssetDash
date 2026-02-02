@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+*.txt
+!requirements.txt
+!README.md
+!API_README.md
+!CLEANUP_ANALYSIS.md
+
+# Data files (keep structure, ignore large files)
+data/*/horizons_wide/
+data/*/training_data.parquet
+data/raw_children_*/
+data/sandbox_*
+
+# Output files (generated)
+QDT_Ensemble_Dashboard.html
+QDT_*.html
+optimal_*.html
+
+# API keys and secrets
+api_keys.json
+root@*
+*.pem
+*.key
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+
+# Test files
+test_*.py
+*_test.py

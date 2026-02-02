@@ -1,0 +1,24 @@
+{
+  "predictions": [
+    {
+      "horizon_days": 1,
+      "predicted_price": 69.30449999999999,
+      "target_date": "2026-02-01"
+    },
+    {
+      "horizon_days": 3,
+      "predicted_price": 69.0805,
+      "target_date": "2026-02-01"
+    },
+    {
+      "horizon_days": 5,
+      "predicted_price": 68.9165,
+      "target_date": "2026-02-01"
+    },
+    {
+      "horizon_days": 8,
+      "predicted_price": 69.8215,
+      "target_date": "2026-02-01"
+    }
+  ]
+}

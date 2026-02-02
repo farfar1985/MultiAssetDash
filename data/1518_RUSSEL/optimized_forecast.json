@@ -1,0 +1,16 @@
+{
+  "asset": "RUSSEL",
+  "current_price": 2679.6,
+  "avg_prediction": 2692.9316079155547,
+  "pct_change": 0.5,
+  "signal": "BULLISH",
+  "confidence": 54.975223136122835,
+  "viable_horizons": [
+    1,
+    3,
+    8,
+    13
+  ],
+  "health_score": 95,
+  "timestamp": "2026-01-26T17:00:47.692197"
+}

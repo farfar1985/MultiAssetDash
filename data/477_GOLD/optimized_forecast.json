@@ -1,0 +1,16 @@
+{
+  "asset": "GOLD",
+  "current_price": 4979.7,
+  "avg_prediction": 5140.887229464292,
+  "pct_change": 3.24,
+  "signal": "BULLISH",
+  "confidence": 82.36886347858157,
+  "viable_horizons": [
+    8,
+    21,
+    34,
+    55
+  ],
+  "health_score": 95,
+  "timestamp": "2026-01-26T17:07:22.202498"
+}

@@ -1,0 +1,44 @@
+{
+  "predictions": [
+    {
+      "horizon_days": 1,
+      "predicted_price": 58692.40899999999,
+      "target_date": "2026-02-02"
+    },
+    {
+      "horizon_days": 3,
+      "predicted_price": 58680.6935,
+      "target_date": "2026-02-02"
+    },
+    {
+      "horizon_days": 5,
+      "predicted_price": 58523.541666666664,
+      "target_date": "2026-02-02"
+    },
+    {
+      "horizon_days": 8,
+      "predicted_price": 58838.48428571428,
+      "target_date": "2026-02-02"
+    },
+    {
+      "horizon_days": 13,
+      "predicted_price": 58679.656142857144,
+      "target_date": "2026-02-02"
+    },
+    {
+      "horizon_days": 21,
+      "predicted_price": 59538.352,
+      "target_date": "2026-02-02"
+    },
+    {
+      "horizon_days": 34,
+      "predicted_price": 59272.7315,
+      "target_date": "2026-02-02"
+    },
+    {
+      "horizon_days": 55,
+      "predicted_price": 59149.496,
+      "target_date": "2026-02-02"
+    }
+  ]
+}

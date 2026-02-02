@@ -1,0 +1,688 @@
+{
+    "asset": "US_DOLLAR_Index",
+    "project_id": "655",
+    "horizons": {
+        "1": {
+            "in_optimal": true
+        },
+        "2": {
+            "in_optimal": false
+        },
+        "3": {
+            "in_optimal": false
+        },
+        "4": {
+            "in_optimal": false
+        },
+        "5": {
+            "in_optimal": true
+        },
+        "6": {
+            "in_optimal": false
+        },
+        "7": {
+            "in_optimal": false
+        },
+        "8": {
+            "in_optimal": true
+        },
+        "9": {
+            "in_optimal": false
+        },
+        "10": {
+            "in_optimal": false
+        }
+    },
+    "viable_horizons": [
+        1,
+        5,
+        21,
+        34,
+        55
+    ],
+    "baseline_outperformance": 27.5,
+    "optimized_outperformance": 35.6,
+    "baseline_equity": 16.97,
+    "optimized_equity": 20.14,
+    "buy_hold_return": -9.4,
+    "beats_baseline": true,
+    "timestamp": "2026-01-26T17:09:39.044499",
+    "avg_accuracy": 60.8,
+    "avg_equity_return": 26.1,
+    "health_score": 90,
+    "avg_da_raw": 61.4,
+    "avg_da_optimized": 61.1,
+    "sharpe_optimized": 2.83,
+    "max_drawdown_optimized": -1.32,
+    "optimization_timestamp": "2026-01-28T12:47:03.067190",
+    "optimization_method": "combo_search",
+    "combos_tested": 1,
+    "threshold": 0.1,
+    "diversity_breakdown": {
+        "short": [
+            1
+        ],
+        "medium": [
+            5
+        ],
+        "long": [
+            21,
+            34,
+            55
+        ]
+    },
+    "last_updated": "2026-02-02T09:26:21.169171",
+    "baseline_sharpe": 2.38,
+    "baseline_win_rate": 47.6,
+    "baseline_total_trades": 63,
+    "baseline_profit_factor": 3.08,
+    "baseline_max_drawdown": -1.29,
+    "win_rate": 45.2,
+    "total_trades": 62,
+    "profit_factor": 4.3,
+    "metrics_calculated_at": "2026-02-02T09:26:21.755009",
+    "last_30_trades_raw": [
+        {
+            "entry_date": "2025-08-18",
+            "exit_date": "2025-08-19",
+            "signal": "BULLISH",
+            "entry_price": 98.12,
+            "exit_price": 98.08,
+            "pnl": -0.04,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-08-19",
+            "exit_date": "2025-08-21",
+            "signal": "BEARISH",
+            "entry_price": 98.08,
+            "exit_price": 97.6,
+            "pnl": 0.49,
+            "holding_days": 2,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-08-22",
+            "exit_date": "2025-08-23",
+            "signal": "BEARISH",
+            "entry_price": 97.6,
+            "exit_price": 97.6,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-08-25",
+            "exit_date": "2025-08-30",
+            "signal": "BEARISH",
+            "entry_price": 98.12,
+            "exit_price": 97.69,
+            "pnl": 0.44,
+            "holding_days": 5,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-08-31",
+            "exit_date": "2025-09-01",
+            "signal": "BEARISH",
+            "entry_price": 97.69,
+            "exit_price": 98.35,
+            "pnl": -0.67,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-02",
+            "exit_date": "2025-09-03",
+            "signal": "BULLISH",
+            "entry_price": 98.08,
+            "exit_price": 98.3,
+            "pnl": 0.23,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-06",
+            "exit_date": "2025-09-08",
+            "signal": "BULLISH",
+            "entry_price": 97.73,
+            "exit_price": 97.75,
+            "pnl": 0.02,
+            "holding_days": 2,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-09-08",
+            "exit_date": "2025-09-09",
+            "signal": "BEARISH",
+            "entry_price": 97.75,
+            "exit_price": 97.36,
+            "pnl": 0.4,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-11",
+            "exit_date": "2025-09-12",
+            "signal": "BULLISH",
+            "entry_price": 97.15,
+            "exit_price": 97.15,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-09-12",
+            "exit_date": "2025-09-13",
+            "signal": "BEARISH",
+            "entry_price": 97.15,
+            "exit_price": 97.15,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-09-13",
+            "exit_date": "2025-09-14",
+            "signal": "BULLISH",
+            "entry_price": 97.15,
+            "exit_price": 96.9,
+            "pnl": -0.25,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-15",
+            "exit_date": "2025-09-17",
+            "signal": "BEARISH",
+            "entry_price": 96.25,
+            "exit_price": 96.97,
+            "pnl": -0.75,
+            "holding_days": 2,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-18",
+            "exit_date": "2025-09-19",
+            "signal": "BULLISH",
+            "entry_price": 97.27,
+            "exit_price": 97.27,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-20",
+            "exit_date": "2025-09-26",
+            "signal": "BULLISH",
+            "entry_price": 97.27,
+            "exit_price": 97.82,
+            "pnl": 0.57,
+            "holding_days": 6,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-29",
+            "exit_date": "2025-10-29",
+            "signal": "BULLISH",
+            "entry_price": 97.45,
+            "exit_price": 99.35,
+            "pnl": 1.95,
+            "holding_days": 30,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-10-31",
+            "exit_date": "2025-11-01",
+            "signal": "BULLISH",
+            "entry_price": 99.63,
+            "exit_price": 99.63,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-11-02",
+            "exit_date": "2025-11-06",
+            "signal": "BEARISH",
+            "entry_price": 99.71,
+            "exit_price": 99.47,
+            "pnl": 0.24,
+            "holding_days": 4,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-11-08",
+            "exit_date": "2025-11-10",
+            "signal": "BEARISH",
+            "entry_price": 99.47,
+            "exit_price": 99.32,
+            "pnl": 0.16,
+            "holding_days": 2,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-11-11",
+            "exit_date": "2025-11-17",
+            "signal": "BEARISH",
+            "entry_price": 99.37,
+            "exit_price": 99.45,
+            "pnl": -0.08,
+            "holding_days": 6,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-11-18",
+            "exit_date": "2025-12-04",
+            "signal": "BEARISH",
+            "entry_price": 100.15,
+            "exit_price": 98.97,
+            "pnl": 1.18,
+            "holding_days": 16,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-12-04",
+            "exit_date": "2025-12-05",
+            "signal": "BULLISH",
+            "entry_price": 98.97,
+            "exit_price": 98.97,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-12-05",
+            "exit_date": "2025-12-14",
+            "signal": "BEARISH",
+            "entry_price": 98.97,
+            "exit_price": 97.96,
+            "pnl": 1.02,
+            "holding_days": 9,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-12-15",
+            "exit_date": "2025-12-17",
+            "signal": "BEARISH",
+            "entry_price": 97.79,
+            "exit_price": 98.09,
+            "pnl": -0.3,
+            "holding_days": 2,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-12-17",
+            "exit_date": "2025-12-18",
+            "signal": "BULLISH",
+            "entry_price": 98.09,
+            "exit_price": 98.25,
+            "pnl": 0.17,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-12-20",
+            "exit_date": "2025-12-21",
+            "signal": "BULLISH",
+            "entry_price": 98.25,
+            "exit_price": 97.95,
+            "pnl": -0.3,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-12-21",
+            "exit_date": "2025-12-29",
+            "signal": "BEARISH",
+            "entry_price": 97.95,
+            "exit_price": 97.96,
+            "pnl": -0.0,
+            "holding_days": 8,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-12-30",
+            "exit_date": "2025-12-31",
+            "signal": "BULLISH",
+            "entry_price": 98.05,
+            "exit_price": 98.05,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-12-31",
+            "exit_date": "2026-01-10",
+            "signal": "BEARISH",
+            "entry_price": 98.05,
+            "exit_price": 98.89,
+            "pnl": -0.86,
+            "holding_days": 10,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2026-01-11",
+            "exit_date": "2026-01-24",
+            "signal": "BEARISH",
+            "entry_price": 98.63,
+            "exit_price": 97.4,
+            "pnl": 1.24,
+            "holding_days": 13,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2026-01-26",
+            "exit_date": "2026-01-30",
+            "signal": "BEARISH",
+            "entry_price": 96.05,
+            "exit_price": 96.86,
+            "pnl": -0.84,
+            "holding_days": 4,
+            "exit_reason": "Signal \u2192 Neutral"
+        }
+    ],
+    "last_30_trades_optimized": [
+        {
+            "entry_date": "2025-08-04",
+            "exit_date": "2025-08-07",
+            "signal": "BEARISH",
+            "entry_price": 98.58,
+            "exit_price": 98.01,
+            "pnl": 0.58,
+            "holding_days": 3,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-08-08",
+            "exit_date": "2025-08-15",
+            "signal": "BEARISH",
+            "entry_price": 98.01,
+            "exit_price": 97.71,
+            "pnl": 0.3,
+            "holding_days": 7,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-08-16",
+            "exit_date": "2025-08-17",
+            "signal": "BULLISH",
+            "entry_price": 97.71,
+            "exit_price": 98.02,
+            "pnl": 0.31,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-08-17",
+            "exit_date": "2025-08-18",
+            "signal": "BEARISH",
+            "entry_price": 98.02,
+            "exit_price": 98.12,
+            "pnl": -0.1,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-08-18",
+            "exit_date": "2025-08-19",
+            "signal": "BULLISH",
+            "entry_price": 98.12,
+            "exit_price": 98.08,
+            "pnl": -0.04,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-08-19",
+            "exit_date": "2025-08-22",
+            "signal": "BEARISH",
+            "entry_price": 98.08,
+            "exit_price": 97.6,
+            "pnl": 0.49,
+            "holding_days": 3,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-08-27",
+            "exit_date": "2025-08-28",
+            "signal": "BEARISH",
+            "entry_price": 97.74,
+            "exit_price": 97.69,
+            "pnl": 0.05,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-08-30",
+            "exit_date": "2025-08-31",
+            "signal": "BULLISH",
+            "entry_price": 97.69,
+            "exit_price": 97.69,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-02",
+            "exit_date": "2025-09-08",
+            "signal": "BULLISH",
+            "entry_price": 98.08,
+            "exit_price": 97.75,
+            "pnl": -0.34,
+            "holding_days": 6,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-09-08",
+            "exit_date": "2025-09-09",
+            "signal": "BEARISH",
+            "entry_price": 97.75,
+            "exit_price": 97.36,
+            "pnl": 0.4,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-09-09",
+            "exit_date": "2025-09-12",
+            "signal": "BULLISH",
+            "entry_price": 97.36,
+            "exit_price": 97.15,
+            "pnl": -0.22,
+            "holding_days": 3,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-09-12",
+            "exit_date": "2025-09-13",
+            "signal": "BEARISH",
+            "entry_price": 97.15,
+            "exit_price": 97.15,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-14",
+            "exit_date": "2025-09-18",
+            "signal": "BEARISH",
+            "entry_price": 96.9,
+            "exit_price": 97.27,
+            "pnl": -0.38,
+            "holding_days": 4,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-19",
+            "exit_date": "2025-09-20",
+            "signal": "BEARISH",
+            "entry_price": 97.27,
+            "exit_price": 97.27,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-09-20",
+            "exit_date": "2025-09-26",
+            "signal": "BULLISH",
+            "entry_price": 97.27,
+            "exit_price": 97.82,
+            "pnl": 0.57,
+            "holding_days": 6,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-09-29",
+            "exit_date": "2025-10-29",
+            "signal": "BULLISH",
+            "entry_price": 97.45,
+            "exit_price": 99.35,
+            "pnl": 1.95,
+            "holding_days": 30,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-10-30",
+            "exit_date": "2025-10-31",
+            "signal": "BEARISH",
+            "entry_price": 99.63,
+            "exit_price": 99.63,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-10-31",
+            "exit_date": "2025-11-01",
+            "signal": "BULLISH",
+            "entry_price": 99.63,
+            "exit_price": 99.63,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-11-01",
+            "exit_date": "2025-11-07",
+            "signal": "BEARISH",
+            "entry_price": 99.63,
+            "exit_price": 99.47,
+            "pnl": 0.16,
+            "holding_days": 6,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-11-08",
+            "exit_date": "2025-11-17",
+            "signal": "BEARISH",
+            "entry_price": 99.47,
+            "exit_price": 99.45,
+            "pnl": 0.02,
+            "holding_days": 9,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-11-18",
+            "exit_date": "2025-12-04",
+            "signal": "BEARISH",
+            "entry_price": 100.15,
+            "exit_price": 98.97,
+            "pnl": 1.18,
+            "holding_days": 16,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-12-04",
+            "exit_date": "2025-12-05",
+            "signal": "BULLISH",
+            "entry_price": 98.97,
+            "exit_price": 98.97,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-12-05",
+            "exit_date": "2025-12-17",
+            "signal": "BEARISH",
+            "entry_price": 98.97,
+            "exit_price": 98.09,
+            "pnl": 0.89,
+            "holding_days": 12,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-12-18",
+            "exit_date": "2025-12-19",
+            "signal": "BEARISH",
+            "entry_price": 98.25,
+            "exit_price": 98.25,
+            "pnl": 0.0,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-12-20",
+            "exit_date": "2025-12-21",
+            "signal": "BULLISH",
+            "entry_price": 98.25,
+            "exit_price": 97.95,
+            "pnl": -0.3,
+            "holding_days": 1,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-12-22",
+            "exit_date": "2025-12-27",
+            "signal": "BEARISH",
+            "entry_price": 97.61,
+            "exit_price": 97.7,
+            "pnl": -0.09,
+            "holding_days": 5,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2025-12-28",
+            "exit_date": "2025-12-29",
+            "signal": "BEARISH",
+            "entry_price": 97.73,
+            "exit_price": 97.96,
+            "pnl": -0.23,
+            "holding_days": 1,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2025-12-29",
+            "exit_date": "2025-12-31",
+            "signal": "BULLISH",
+            "entry_price": 97.96,
+            "exit_price": 98.05,
+            "pnl": 0.09,
+            "holding_days": 2,
+            "exit_reason": "Signal \u2192 Neutral"
+        },
+        {
+            "entry_date": "2026-01-01",
+            "exit_date": "2026-01-28",
+            "signal": "BEARISH",
+            "entry_price": 98.05,
+            "exit_price": 96.14,
+            "pnl": 1.95,
+            "holding_days": 27,
+            "exit_reason": "Signal Flip"
+        },
+        {
+            "entry_date": "2026-01-28",
+            "exit_date": "2026-01-31",
+            "signal": "BULLISH",
+            "entry_price": 96.14,
+            "exit_price": 96.86,
+            "pnl": 0.75,
+            "holding_days": 3,
+            "exit_reason": "Signal Flip"
+        }
+    ]
+}

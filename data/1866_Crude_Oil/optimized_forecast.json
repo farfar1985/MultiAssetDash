@@ -1,0 +1,17 @@
+{
+  "asset": "Crude_Oil",
+  "current_price": 61.07,
+  "avg_prediction": 60.7968357985518,
+  "pct_change": -0.45,
+  "signal": "BEARISH",
+  "confidence": 54.47296874812843,
+  "viable_horizons": [
+    1,
+    4,
+    5,
+    8,
+    10
+  ],
+  "health_score": 80,
+  "timestamp": "2026-01-26T16:48:42.602353"
+}

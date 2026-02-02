@@ -1,0 +1,234 @@
+{
+  "asset": "USD_INR",
+  "generated_at": "2026-01-19T11:05:57.403845",
+  "stats_by_horizon": {
+    "1d": {
+      "total_signals": 320,
+      "analysis_period": "2025-03-02 to 2026-01-15",
+      "look_ahead_days": 1,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 35.1,
+          "correct": 111,
+          "total": 316,
+          "sample_size": 316
+        },
+        "NEUTRAL": {
+          "accuracy": 100.0,
+          "correct": 4,
+          "total": 4,
+          "sample_size": 4
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 33.8,
+          "correct": 93,
+          "total": 275
+        },
+        "medium": {
+          "accuracy": 43.9,
+          "correct": 18,
+          "total": 41
+        },
+        "weak": {
+          "accuracy": 100.0,
+          "correct": 4,
+          "total": 4
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 38.2,
+          "correct": 65,
+          "total": 170
+        },
+        "majority": {
+          "accuracy": 31.5,
+          "correct": 46,
+          "total": 146
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 33.8,
+          "correct": 93,
+          "total": 275
+        },
+        "BULLISH_medium": {
+          "accuracy": 43.9,
+          "correct": 18,
+          "total": 41
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 33.8,
+          "sample_size": 275,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 43.9,
+          "sample_size": 41,
+          "emoji": "\ud83d\udfe1"
+        }
+      ]
+    },
+    "3d": {
+      "total_signals": 320,
+      "analysis_period": "2025-03-02 to 2026-01-15",
+      "look_ahead_days": 3,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 53.5,
+          "correct": 169,
+          "total": 316,
+          "sample_size": 316
+        },
+        "NEUTRAL": {
+          "accuracy": 100.0,
+          "correct": 4,
+          "total": 4,
+          "sample_size": 4
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 52.7,
+          "correct": 145,
+          "total": 275
+        },
+        "medium": {
+          "accuracy": 58.5,
+          "correct": 24,
+          "total": 41
+        },
+        "weak": {
+          "accuracy": 100.0,
+          "correct": 4,
+          "total": 4
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 61.2,
+          "correct": 104,
+          "total": 170
+        },
+        "majority": {
+          "accuracy": 44.5,
+          "correct": 65,
+          "total": 146
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 52.7,
+          "correct": 145,
+          "total": 275
+        },
+        "BULLISH_medium": {
+          "accuracy": 58.5,
+          "correct": 24,
+          "total": 41
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 52.7,
+          "sample_size": 275,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 58.5,
+          "sample_size": 41,
+          "emoji": "\ud83d\udfe1"
+        }
+      ]
+    },
+    "5d": {
+      "total_signals": 320,
+      "analysis_period": "2025-03-02 to 2026-01-15",
+      "look_ahead_days": 5,
+      "by_signal": {
+        "BULLISH": {
+          "accuracy": 57.3,
+          "correct": 181,
+          "total": 316,
+          "sample_size": 316
+        },
+        "NEUTRAL": {
+          "accuracy": 100.0,
+          "correct": 4,
+          "total": 4,
+          "sample_size": 4
+        }
+      },
+      "by_strength": {
+        "strong": {
+          "accuracy": 56.7,
+          "correct": 156,
+          "total": 275
+        },
+        "medium": {
+          "accuracy": 61.0,
+          "correct": 25,
+          "total": 41
+        },
+        "weak": {
+          "accuracy": 100.0,
+          "correct": 4,
+          "total": 4
+        }
+      },
+      "by_agreement": {
+        "unanimous": {
+          "accuracy": 65.3,
+          "correct": 111,
+          "total": 170
+        },
+        "majority": {
+          "accuracy": 47.9,
+          "correct": 70,
+          "total": 146
+        }
+      },
+      "by_signal_strength": {
+        "BULLISH_strong": {
+          "accuracy": 56.7,
+          "correct": 156,
+          "total": 275
+        },
+        "BULLISH_medium": {
+          "accuracy": 61.0,
+          "correct": 25,
+          "total": 41
+        }
+      },
+      "confidence_tiers": [
+        {
+          "tier": "High Confidence",
+          "description": "Strong signal (all horizons agree, net_prob > 50%)",
+          "accuracy": 56.7,
+          "sample_size": 275,
+          "emoji": "\ud83d\udfe2"
+        },
+        {
+          "tier": "Medium Confidence",
+          "description": "Moderate signal (majority agree, net_prob 20-50%)",
+          "accuracy": 61.0,
+          "sample_size": 41,
+          "emoji": "\ud83d\udfe1"
+        }
+      ]
+    }
+  }
+}

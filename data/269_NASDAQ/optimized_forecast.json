@@ -1,0 +1,17 @@
+{
+  "asset": "NASDAQ",
+  "current_price": 25738.25,
+  "avg_prediction": 25936.9296150788,
+  "pct_change": 0.77,
+  "signal": "BULLISH",
+  "confidence": 57.7192355765757,
+  "viable_horizons": [
+    1,
+    3,
+    8,
+    13,
+    21
+  ],
+  "health_score": 95,
+  "timestamp": "2026-01-26T16:57:30.307395"
+}
