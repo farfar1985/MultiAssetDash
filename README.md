@@ -28,6 +28,92 @@ QDT.Ensemble is a **professional-grade trading intelligence platform** that comb
 
 ---
 
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.8 or higher
+- Git (to clone the repository)
+
+### Installation
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/farfar1985/MultiAssetDash.git
+cd MultiAssetDash
+```
+
+2. **Create a virtual environment (recommended):**
+```bash
+python -m venv venv
+
+# On Windows:
+venv\Scripts\activate
+
+# On Linux/Mac:
+source venv/bin/activate
+```
+
+3. **Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+### Running the Dashboard
+
+**Option 1: Use the Pre-built Dashboard (Quick Start) - NO SETUP NEEDED!**
+```bash
+# Simply open the HTML file in your browser
+# The dashboard file is: QDT_Ensemble_Dashboard.html
+```
+Open `QDT_Ensemble_Dashboard.html` in any modern web browser. **All data is embedded in the file**, so no server or API is needed. This works immediately after cloning the repo!
+
+**Option 2: Rebuild the Dashboard (After Data Updates)**
+```bash
+# First, set up API credentials (if you have access):
+# Create a .env file in the parent directory with:
+# QML_API_KEY=your_api_key_here
+
+# Then update forecasts for all assets and rebuild dashboard:
+python run_complete_pipeline.py
+
+# Or update a specific asset:
+python run_complete_pipeline.py --asset Crude_Oil
+```
+
+**Note:** To rebuild the dashboard, you need:
+- API access (QML_API_KEY in `.env` file in parent directory)
+- Or use the pre-built `QDT_Ensemble_Dashboard.html` which already contains all current data
+
+The pipeline will:
+1. Fetch latest forecast data from the API
+2. Calculate signals and metrics
+3. Generate `QDT_Ensemble_Dashboard.html`
+
+### Running the API Server
+
+```bash
+# Start the API server
+python api_server.py
+
+# Server runs on http://localhost:5000 by default
+# See API_README.md for full API documentation
+```
+
+### Managing API Keys
+
+```bash
+# Add a new API key
+python manage_api_keys.py --add --user-id "user123" --assets Crude_Oil Bitcoin
+
+# List all API keys
+python manage_api_keys.py --list
+
+# Remove an API key
+python manage_api_keys.py --remove <api_key>
+```
+
+---
+
 ## 📊 Dashboard Overview
 
 The dashboard consists of **two main tabs**:
