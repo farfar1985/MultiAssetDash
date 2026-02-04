@@ -1,0 +1,74 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+.mypy_cache/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Node.js
+node_modules/
+frontend/node_modules/
+.npm
+npm-debug.log*
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+frontend/coverage/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+*.md
+docs/
+
+# Environment files
+.env
+.env.*
+*.local
+
+# Test files
+tests/
+frontend/__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+jest.config.js
+jest.setup.js
+
+# CI/CD
+.github/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log

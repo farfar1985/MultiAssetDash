@@ -1,30 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { useBackendSignal, useBackendMetrics, useBackendForecast } from "@/hooks/useApi";
-import type { SignalDirection } from "@/types";
+import { useAsset, useSignal } from "@/hooks/useApi";
+import type { Horizon } from "@/lib/api-client";
+import type { AssetId, SignalDirection } from "@/types";
 
-interface LiveSignalCardProps {
-  asset: string;
-  displayName?: string;
+interface SignalCardProps {
+  assetId: AssetId;
+  defaultHorizon?: Horizon;
   onClick?: () => void;
-}
-
-type BackendSignalType = "LONG" | "SHORT" | "NEUTRAL";
-
-function mapSignalDirection(signal: BackendSignalType): SignalDirection {
-  switch (signal) {
-    case "LONG":
-      return "bullish";
-    case "SHORT":
-      return "bearish";
-    case "NEUTRAL":
-    default:
-      return "neutral";
-  }
 }
 
 function getDirectionColor(direction: SignalDirection): string {
@@ -52,11 +47,11 @@ function getDirectionBgColor(direction: SignalDirection): string {
 function getDirectionIcon(direction: SignalDirection): string {
   switch (direction) {
     case "bullish":
-      return "^";
+      return "↑";
     case "bearish":
-      return "v";
+      return "↓";
     case "neutral":
-      return "-";
+      return "→";
   }
 }
 
@@ -67,23 +62,44 @@ function getConfidenceBarColor(confidence: number): string {
   return "bg-red-500";
 }
 
-function LiveSignalCardSkeleton() {
+function formatPrice(price: number, symbol: string): string {
+  if (symbol === "BTC") {
+    return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  if (price >= 100) {
+    return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  return `$${price.toFixed(2)}`;
+}
+
+function formatModelAgreement(agreeing: number, total: number): string {
+  return `${agreeing.toLocaleString()} / ${total.toLocaleString()} models agree`;
+}
+
+function SignalCardSkeleton() {
   return (
     <Card className="bg-neutral-900/50 border-neutral-800">
       <CardHeader className="p-4 pb-3">
         <div className="flex items-center justify-between">
-          <Skeleton className="h-5 w-32 bg-neutral-800" />
-          <Skeleton className="h-4 w-16 bg-neutral-800" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-5 w-10 bg-neutral-800" />
+            <Skeleton className="h-4 w-24 bg-neutral-800" />
+          </div>
+          <div className="text-right">
+            <Skeleton className="h-4 w-20 bg-neutral-800 mb-1" />
+            <Skeleton className="h-3 w-12 bg-neutral-800" />
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-0 space-y-4">
         <div className="flex items-center justify-between">
           <Skeleton className="h-7 w-24 bg-neutral-800" />
-          <Skeleton className="h-4 w-20 bg-neutral-800" />
+          <Skeleton className="h-7 w-20 bg-neutral-800" />
         </div>
         <div>
           <Skeleton className="h-2 w-full bg-neutral-800 rounded-full" />
         </div>
+        <Skeleton className="h-4 w-40 bg-neutral-800" />
         <div className="grid grid-cols-3 gap-3 pt-2 border-t border-neutral-800">
           <Skeleton className="h-10 bg-neutral-800" />
           <Skeleton className="h-10 bg-neutral-800" />
@@ -94,7 +110,7 @@ function LiveSignalCardSkeleton() {
   );
 }
 
-function LiveSignalCardError({ message }: { message: string }) {
+function SignalCardError({ message }: { message: string }) {
   return (
     <Card className="bg-neutral-900/50 border-red-900/50">
       <CardContent className="p-4">
@@ -107,59 +123,41 @@ function LiveSignalCardError({ message }: { message: string }) {
   );
 }
 
-export function LiveSignalCard({
-  asset,
-  displayName,
+export function SignalCard({
+  assetId,
+  defaultHorizon = "D+1",
   onClick,
-}: LiveSignalCardProps) {
+}: SignalCardProps) {
+  const [horizon, setHorizon] = useState<Horizon>(defaultHorizon);
+
   const {
-    data: signalData,
+    data: asset,
+    isLoading: isAssetLoading,
+    error: assetError,
+  } = useAsset(assetId);
+
+  const {
+    data: signal,
     isLoading: isSignalLoading,
     error: signalError,
-  } = useBackendSignal(asset);
+  } = useSignal(assetId, horizon);
 
-  const {
-    data: metricsData,
-    isLoading: isMetricsLoading,
-    error: metricsError,
-  } = useBackendMetrics(asset);
-
-  const {
-    data: forecastData,
-    isLoading: isForecastLoading,
-  } = useBackendForecast(asset);
-
-  const isLoading = isSignalLoading || isMetricsLoading || isForecastLoading;
-  const error = signalError || metricsError;
+  const isLoading = isAssetLoading || isSignalLoading;
+  const error = assetError || signalError;
 
   if (isLoading) {
-    return <LiveSignalCardSkeleton />;
+    return <SignalCardSkeleton />;
   }
 
   if (error) {
-    return <LiveSignalCardError message={error.message} />;
+    return <SignalCardError message={error.message} />;
   }
 
-  // Get the latest signal from the signal data
-  const latestSignal = signalData?.data?.[signalData.data.length - 1];
-  const direction = latestSignal ? mapSignalDirection(latestSignal.signal as BackendSignalType) : "neutral";
-  const confidence = latestSignal ? Math.abs(latestSignal.net_prob * 100) : 0;
-  const strength = latestSignal ? latestSignal.strength * 100 : 0;
+  if (!asset || !signal) {
+    return null;
+  }
 
-  // Get metrics
-  const optimizedMetrics = (metricsData?.optimized_metrics || {}) as {
-    sharpe_ratio?: number;
-    win_rate?: number;
-    profit_factor?: number;
-    total_return?: number;
-  };
-  const config = (metricsData?.configuration || {}) as { viable_horizons?: string[] };
-
-  // Get forecast signal (live)
-  const liveSignal = forecastData?.signal || "N/A";
-  const viableHorizons = forecastData?.viable_horizons || config.viable_horizons || [];
-
-  const assetName = displayName || asset.replace(/_/g, " ");
+  const priceChangeColor = asset.changePercent24h >= 0 ? "text-green-500" : "text-red-500";
 
   return (
     <Card
@@ -170,16 +168,24 @@ export function LiveSignalCard({
       onClick={onClick}
     >
       <CardHeader className="p-4 pb-3">
+        {/* Asset Name + Price Row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
+            <span className="font-mono text-xs text-neutral-500 bg-neutral-800 px-1.5 py-0.5 rounded">
+              {asset.symbol}
+            </span>
             <span className="text-sm font-semibold text-neutral-100">
-              {assetName}
+              {asset.name}
             </span>
           </div>
           <div className="text-right">
-            <span className="font-mono text-xs text-neutral-500">
-              {viableHorizons.length > 0 && `D+${viableHorizons.join(",")}`}
-            </span>
+            <div className="font-mono text-sm font-medium text-neutral-100">
+              {formatPrice(asset.currentPrice, asset.symbol)}
+            </div>
+            <div className={cn("font-mono text-xs", priceChangeColor)}>
+              {asset.changePercent24h >= 0 ? "+" : ""}
+              {asset.changePercent24h.toFixed(2)}%
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -190,62 +196,66 @@ export function LiveSignalCard({
           <Badge
             className={cn(
               "text-sm font-semibold px-3 py-1 capitalize",
-              getDirectionBgColor(direction)
+              getDirectionBgColor(signal.direction)
             )}
           >
-            <span className="mr-1">{getDirectionIcon(direction)}</span>
-            {direction}
+            <span className="mr-1">{getDirectionIcon(signal.direction)}</span>
+            {signal.direction}
           </Badge>
 
-          {/* Live Signal Indicator */}
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs text-neutral-500">
-              {liveSignal}
-            </span>
-          </div>
+          {/* Horizon Selector */}
+          <Select value={horizon} onValueChange={(v) => setHorizon(v as Horizon)}>
+            <SelectTrigger className="w-20 h-7 text-xs bg-neutral-800 border-neutral-700">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-neutral-900 border-neutral-700">
+              <SelectItem value="D+1" className="text-xs">D+1</SelectItem>
+              <SelectItem value="D+5" className="text-xs">D+5</SelectItem>
+              <SelectItem value="D+10" className="text-xs">D+10</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Confidence/Strength Bar */}
+        {/* Confidence Bar */}
         <div>
           <div className="flex items-center justify-between text-xs mb-1.5">
             <span className="text-neutral-500">Confidence</span>
-            <span className={cn("font-mono font-medium", getDirectionColor(direction))}>
-              {confidence.toFixed(1)}%
+            <span className={cn("font-mono font-medium", getDirectionColor(signal.direction))}>
+              {signal.confidence}%
             </span>
           </div>
           <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
             <div
               className={cn(
                 "h-full rounded-full transition-all duration-300",
-                getConfidenceBarColor(confidence)
+                getConfidenceBarColor(signal.confidence)
               )}
-              style={{ width: `${Math.min(confidence, 100)}%` }}
+              style={{ width: `${signal.confidence}%` }}
             />
           </div>
         </div>
 
-        {/* Signal Strength */}
+        {/* Model Agreement */}
         <div className="text-xs text-neutral-400 font-mono">
-          Signal strength: {strength.toFixed(1)}%
+          {formatModelAgreement(signal.modelsAgreeing, signal.modelsTotal)}
         </div>
 
-        {/* Key Metrics from Backend */}
+        {/* Key Metrics */}
         <div className="grid grid-cols-3 gap-3 pt-2 border-t border-neutral-800">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-neutral-500 mb-0.5">
               Sharpe
             </div>
             <div className="font-mono text-sm font-medium text-blue-400">
-              {(optimizedMetrics.sharpe_ratio || 0).toFixed(2)}
+              {signal.sharpeRatio.toFixed(2)}
             </div>
           </div>
           <div>
             <div className="text-[10px] uppercase tracking-wider text-neutral-500 mb-0.5">
-              Win%
+              DA%
             </div>
             <div className="font-mono text-sm font-medium text-neutral-100">
-              {(optimizedMetrics.win_rate || 0).toFixed(1)}%
+              {signal.directionalAccuracy.toFixed(1)}%
             </div>
           </div>
           <div>
@@ -254,9 +264,9 @@ export function LiveSignalCard({
             </div>
             <div className={cn(
               "font-mono text-sm font-medium",
-              (optimizedMetrics.total_return || 0) >= 0 ? "text-green-500" : "text-red-500"
+              signal.totalReturn >= 0 ? "text-green-500" : "text-red-500"
             )}>
-              {(optimizedMetrics.total_return || 0) >= 0 ? "+" : ""}{(optimizedMetrics.total_return || 0).toFixed(1)}%
+              {signal.totalReturn >= 0 ? "+" : ""}{signal.totalReturn.toFixed(1)}%
             </div>
           </div>
         </div>

@@ -1,0 +1,82 @@
+# QDT Nexus - Docker Compose for Local Development
+# Usage: docker-compose up
+
+version: "3.8"
+
+services:
+  # Flask API Server
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - HOST=0.0.0.0
+      - FLASK_ENV=development
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+    volumes:
+      # Mount for development hot-reload
+      - ./api_server.py:/app/api_server.py:ro
+      - ./utils:/app/utils:ro
+      - ./configs:/app/configs:ro
+      - ./data:/app/data:ro
+      - ./api_keys.json:/app/api_keys.json
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - qdt-network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # Next.js Frontend Dev Server
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: sh -c "npm install && npm run dev"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - qdt-network
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - qdt-network
+
+networks:
+  qdt-network:
+    driver: bridge
+
+volumes:
+  redis-data:
