@@ -1,0 +1,57 @@
+{
+  "timestamp": "2026-02-04T17:55:42.521007",
+  "asset": "Crude_Oil",
+  "data_days": 369,
+  "models": 10179,
+  "strategies": {
+    "vol70_consec3_diverse": {
+      "total_trades": 17,
+      "wins": 14,
+      "losses": 3,
+      "win_rate": 82.4,
+      "total_return": 48.91,
+      "avg_return_pct": 2.877,
+      "sharpe": 7.899,
+      "max_drawdown": -1.32,
+      "profit_factor": 21.96,
+      "avg_hold_days": 3.4,
+      "avg_profit_dollars": 1.81,
+      "avg_win_pct": 3.66,
+      "avg_loss_pct": 0.78
+    },
+    "triple_v70c2p0.3_mixed": {
+      "total_trades": 26,
+      "wins": 20,
+      "losses": 6,
+      "win_rate": 76.9,
+      "total_return": 44.04,
+      "avg_return_pct": 1.694,
+      "sharpe": 11.959,
+      "max_drawdown": -0.69,
+      "profit_factor": 65.1,
+      "avg_hold_days": 2.0,
+      "avg_profit_dollars": 1.08,
+      "avg_win_pct": 2.24,
+      "avg_loss_pct": 0.11
+    },
+    "baseline": {
+      "total_trades": 72,
+      "wins": 38,
+      "losses": 34,
+      "win_rate": 52.8,
+      "total_return": 67.9,
+      "avg_return_pct": 0.943,
+      "sharpe": 2.589,
+      "max_drawdown": -7.96,
+      "profit_factor": 2.57,
+      "avg_hold_days": 3.3,
+      "avg_profit_dollars": 0.59,
+      "avg_win_pct": 2.93,
+      "avg_loss_pct": 1.28
+    }
+  },
+  "recommendation": {
+    "hedging": "vol70_consec3_diverse",
+    "alpha_gen": "triple_v70c2p0.3_mixed"
+  }
+}

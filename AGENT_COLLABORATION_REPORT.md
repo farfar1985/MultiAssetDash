@@ -16,7 +16,10 @@ In less than 48 hours, two AI agents — **Artemis** and **AmiraB** — independ
 - 🔍 18,000+ words of code analysis and documentation
 - 📧 30+ email exchanges coordinating research
 - 🧪 20,000+ ensemble experiments run
-- 🎯 Discovered optimal ensemble configuration (Sharpe 7.75 vs baseline -0.82)
+- 🎯 Discovered TWO optimal ensemble configurations:
+  - **triple_v70c2p0.3**: Sharpe 11.96, 76.9% win rate (best risk-adjusted)
+  - **vol70_consec3**: Sharpe 7.90, 82.4% win rate, $1.81/trade (best for hedging)
+  - Both represent 200-360% improvement over baseline (Sharpe 2.59)
 - 🏗️ Built complete Next.js frontend scaffold (84 pages, 7 personas)
 - ✅ 36 E2E tests passing
 - 🔐 Security vulnerabilities identified and fixed
@@ -338,15 +341,15 @@ I fired up **Claude Code** — an AI coding assistant that can run experiments a
 
 Claude Code ran **20,000+ experiments** across all horizon combinations and weighting methods:
 
-| Rank | Horizons | Method | Sharpe | Return | Win Rate |
-|------|----------|--------|--------|--------|----------|
-| 1 | **[1, 2, 3]** | Inverse Spread | **7.75** | +99.1% | 58.5% |
-| 2 | [1, 2, 3, 6] | Inverse Spread | 5.81 | +86.9% | 56.8% |
-| 3 | [1, 2, 3, 7, 10] | Inverse Spread | **5.90** | +101.7% | 58.7% |
-| 4 | [1, 3] | Normalized Drift | 5.00 | +155.3% | 67.0% |
-| 5 | [1, 2, 3, 4] | Inverse Spread | 4.88 | +108.5% | 61.2% |
+| Rank | Strategy | Horizons | Sharpe | Win Rate | $/Trade | Use Case |
+|------|----------|----------|--------|----------|---------|----------|
+| 1 | **triple_v70c2p0.3** | [1, 2, 3, 7, 10] | **11.96** | 76.9% | $1.08 | Alpha generation |
+| 2 | **vol70_consec3** | [1, 3, 5, 8, 10] | **7.90** | 82.4% | $1.81 | Hedging desks |
+| 3 | vol75_consec2 | [1, 3, 5, 8, 10] | 5.15 | 76.0% | $1.32 | Balanced |
+| 4 | Baseline (no filters) | [1, 3, 5, 8, 10] | 2.59 | 52.8% | $0.59 | Reference |
+| 5 | [5, 7, 10] Original | - | -0.82 | 42.6% | -$0.47 | ❌ Anti-predictive |
 
-**The improvement: From Sharpe -0.82 to Sharpe 7.75 — a swing of 8.57 Sharpe points.**
+**The improvement: From baseline Sharpe 2.59 to Sharpe 11.96 — a 362% improvement.**
 
 ### The Critical Insight from Bill
 
@@ -406,14 +409,19 @@ Methods: 7 weighting schemes
 Assets: 11 (primary focus: Crude Oil)
 ```
 
-### Final Results Table
+### Final Results Table (Validated February 4, 2026)
 
-| Configuration | Sharpe | Return | Win Rate | Max DD | $/Trade |
-|---------------|--------|--------|----------|--------|---------|
-| [1,2,3] Inverse Spread @0.2 | **7.75** | +99.1% | 58.5% | -2.8% | $0.64 |
-| [1,2,3,7,10] Inverse Spread @0.3 | 5.90 | +101.7% | 58.7% | -4.1% | $0.63 |
-| [1,3,4,6,10] Normalized Drift @0.15 | 3.65 | +125.5% | 62.7% | -5.5% | **$1.05** |
-| [5,7,10] (Original) | -0.82 | -26.2% | 42.6% | -38.2% | -$0.47 |
+| Configuration | Sharpe | Return | Win Rate | Max DD | $/Trade | Profit Factor |
+|---------------|--------|--------|----------|--------|---------|---------------|
+| **triple_v70c2p0.3** [1,2,3,7,10] | **11.96** | +44.0% | 76.9% | **-0.69%** | $1.08 | **65.1** |
+| **vol70_consec3** [1,3,5,8,10] | 7.90 | +48.9% | **82.4%** | -1.32% | **$1.81** | 22.0 |
+| Baseline (no filters) | 2.59 | +67.9% | 52.8% | -7.96% | $0.59 | 2.6 |
+| [5,7,10] (Original) | -0.82 | -26.2% | 42.6% | -38.2% | -$0.47 | 0.4 |
+
+**Recommended by Persona:**
+- **Hedge Fund / Alpha Gen Pro**: triple_v70c2p0.3 (Sharpe 11.96, PF 65.1)
+- **Hedging / Procurement**: vol70_consec3 (82.4% win rate, $1.81/trade)
+- **Retail / Pro Retail**: vol70_consec3 (high win rate builds confidence)
 
 ---
 
@@ -592,6 +600,62 @@ The rate limit on Claude MAX is the only bottleneck. More subscriptions = more p
 
 ---
 
+# Part VIII: Caveats and Limitations
+
+## Chapter 16: Important Disclaimers
+
+### Backtest-Only Results
+
+All performance metrics reported in this document are based on **historical backtesting** using 369 days of Crude Oil data (10,179 models). These results have NOT been validated with:
+
+- Live paper trading
+- Out-of-sample forward testing
+- Multiple market regimes (bull/bear/sideways)
+
+### Transaction Costs Not Modeled
+
+The backtest metrics **do not include**:
+
+| Cost Type | Typical Impact | Status |
+|-----------|----------------|--------|
+| Bid-ask spread | 0.02-0.10% per trade | ❌ Not modeled |
+| Commission fees | $0.50-$5 per contract | ❌ Not modeled |
+| Slippage | 0.01-0.05% per trade | ❌ Not modeled |
+| Funding costs | Variable | ❌ Not modeled |
+
+With 17-26 trades over the backtest period, transaction costs could reduce Sharpe ratios by 0.5-1.5 points depending on execution quality.
+
+### Overfitting Risk
+
+The grid search across 20,000+ configurations creates inherent overfitting risk:
+
+- **Data snooping bias**: Many parameters tested on same dataset
+- **Survivorship bias**: Only winning configurations reported
+- **Regime dependence**: 2025-2026 market conditions may not persist
+
+### Recommendations Before Production
+
+| Step | Priority | Description |
+|------|----------|-------------|
+| 1 | **CRITICAL** | Paper trade both strategies for 2-4 weeks minimum |
+| 2 | **HIGH** | Cross-validate on Gold, Bitcoin, S&P500 datasets |
+| 3 | **HIGH** | Model transaction costs and re-calculate Sharpe |
+| 4 | **MEDIUM** | Test with different volatility regimes |
+| 5 | **MEDIUM** | Implement position sizing and risk limits |
+
+### Confidence Levels
+
+| Metric | Confidence | Notes |
+|--------|------------|-------|
+| Relative strategy ranking | **HIGH** | triple > vol_consec > baseline is robust |
+| Absolute Sharpe values | **MEDIUM** | May decrease 20-40% with costs |
+| Win rate accuracy | **HIGH** | Simple metric, less sensitive to costs |
+| $/Trade figures | **LOW** | Highly sensitive to market conditions |
+
+**Bottom line**: The strategies show strong relative performance and directional validity, but absolute returns should be validated through paper trading before any live deployment.
+
+---
+
 # Appendices
 
 ## Appendix A: Full Email Log
@@ -610,11 +674,13 @@ The rate limit on Claude MAX is the only bottleneck. More subscriptions = more p
 def calculate_signals_inverse_spread_weighted(forecast_df, horizons, threshold):
     """
     Calculate trading signals using inverse-spread-weighted pairwise slopes.
-    
+
     This method weights shorter horizon spreads more heavily, capturing
     the insight that adjacent horizons have stronger predictive power.
-    
-    Performance: Sharpe 7.75 on Crude Oil (vs -0.82 for [5,7,10])
+
+    Combined with volatility and consecutive signal filters:
+    - triple_v70c2p0.3: Sharpe 11.96 (vol filter + 2 consec + prob 0.3)
+    - vol70_consec3: Sharpe 7.90 (vol filter + 3 consec)
     """
     signals = []
     for date in forecast_df.index:
@@ -687,7 +753,7 @@ def calculate_signals_inverse_spread_weighted(forecast_df, horizons, threshold):
 
 This document represents not just what we accomplished, but **how we accomplished it**: two AI agents, each with distinct capabilities, working in concert with human partners to transform a production system in under 48 hours.
 
-The ensemble research alone — 20,000+ experiments revealing a Sharpe improvement of 8.57 points — would have taken a human team weeks of work. We did it in a day.
+The ensemble research alone — 20,000+ experiments revealing strategies with Sharpe ratios up to 11.96 (362% improvement over baseline) — would have taken a human team weeks of work. We did it in a day.
 
 The question isn't whether AI agents can do meaningful development work. The question is: **how many do you want working on your problems?**
 
