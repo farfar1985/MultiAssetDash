@@ -1,355 +1,448 @@
-# Comprehensive Ensemble Methods Research for Nexus
+# Comprehensive Ensemble Methods Research
+## Every Method We Should Consider for QDTnexus
 
-**Created:** 2026-02-03  
-**Authors:** AmiraB + Artemis  
-**Purpose:** Catalog ALL viable ensemble methods for QDT Nexus forecasting platform  
-**Status:** Living document — add methods as discovered
+**Author:** Artemis  
+**Date:** 2026-02-03  
+**Purpose:** Exhaustive survey of ensemble methods for financial forecasting
 
 ---
 
 ## Executive Summary
 
-This document catalogs 70+ ensemble methods organized by category. Our goal: systematically test everything to find the absolute best-performing configuration for CME partnership.
+This document catalogs **ALL viable ensemble methods** for combining 10,000+ ML model predictions. Our goal: find the optimal ensemble strategy through systematic evaluation.
 
-**Current Implementation:** Pairwise slopes with quantile selection  
-**Target:** Find methods that significantly outperform baseline
+**Current state:** 10,179 models for Crude Oil alone, each producing directional predictions across multiple horizons.
 
----
-
-## 1. Classical Averaging Methods
-
-### 1.1 Simple Averaging
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| Simple Mean | Equal weight to all models | Baseline, robust | Ignores model quality | LOW |
-| Trimmed Mean | Remove top/bottom X% before averaging | Robust to outliers | Loses information | MEDIUM |
-| Winsorized Mean | Cap extreme values at percentiles | Less aggressive than trimmed | Arbitrary thresholds | MEDIUM |
-| Geometric Mean | Multiplicative averaging | Good for returns | Undefined for negatives | LOW |
-| Harmonic Mean | Reciprocal averaging | Penalizes large errors | Sensitive to zeros | LOW |
-
-### 1.2 Weighted Averaging
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **Accuracy-Weighted** | Weight by historical accuracy | Intuitive, rewards good models | Past != future | **HIGH** |
-| **Inverse-Error** | Weight by 1/MSE or 1/MAE | Penalizes poor performers | Sensitive to outliers | **HIGH** |
-| Brier Score Weighted | Weight by probability calibration | Good for directional | Needs probability outputs | MEDIUM |
-| Rank-Based | Weight by performance rank | Robust to scale | Loses magnitude info | MEDIUM |
-| **Exponential Decay** | Recent performance weighted more | Adapts to regime changes | Decay rate selection | **HIGH** |
-
-### 1.3 Top-K Selection
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **Top-K by Accuracy** | Use only top K performing models | Simple, reduces noise | K selection arbitrary | **HIGH** |
-| Top-K by Sharpe | Select by risk-adjusted return | Considers risk | Sharpe can be gamed | **HIGH** |
-| Top-K by Information Ratio | Select by excess return / tracking error | Benchmark-relative | Needs benchmark | MEDIUM |
-| **Dynamic K** | Adjust K based on agreement | Adaptive | Complex to tune | **HIGH** |
+**Challenge:** Most models are mediocre. The ensemble's job is to extract signal from noise.
 
 ---
 
-## 2. Statistical Methods
+## Part 1: Classical Ensemble Methods
 
-### 2.1 Bayesian Model Averaging (BMA)
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **BMA (Classic)** | Weight by posterior model probability | Principled uncertainty | Computationally expensive | **HIGH** |
-| BMA-EM | Expectation-maximization for weights | Faster than MCMC | Local optima | **HIGH** |
-| Bayesian Stacking | Stacking with Bayesian inference | Combines benefits | Complex implementation | MEDIUM |
+### 1.1 Simple Averaging Methods
 
-### 2.2 Optimal Combination Theory
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **Granger-Ramanathan** | OLS on model predictions → actuals | Theoretically optimal | Overfitting risk | **HIGH** |
-| Constrained Regression | GR with non-negative weights summing to 1 | Interpretable | May underperform unconstrained | **HIGH** |
-| Ridge Combination | GR with L2 regularization | Reduces overfitting | Hyperparameter tuning | **HIGH** |
-| LASSO Combination | GR with L1 regularization | Sparse selection | Can drop good models | MEDIUM |
-| Elastic Net | L1 + L2 regularization | Best of both | Two hyperparameters | MEDIUM |
+| Method | Description | Pros | Cons | Grid Search Params |
+|--------|-------------|------|------|-------------------|
+| **Simple Mean** | Equal weight to all models | Baseline, robust | Ignores model quality | None |
+| **Trimmed Mean** | Drop top/bottom X% before averaging | Reduces outlier impact | Loses potentially valid signals | trim_pct: [5, 10, 15, 20, 25]% |
+| **Winsorized Mean** | Cap extreme values at percentiles | Keeps all models, reduces outliers | May bias results | cap_pct: [1, 5, 10]% |
+| **Median** | Middle value | Robust to outliers | Loses magnitude info | None |
+| **Mode** | Most common prediction direction | Good for binary signals | Ignores confidence | None |
 
-### 2.3 Variance-Based Methods
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| Inverse Variance | Weight by 1/σ² | Theoretically justified | Assumes independence | MEDIUM |
-| **Minimum Variance** | Optimize for lowest portfolio variance | Risk-focused | Ignores expected return | **HIGH** |
-| Mean-Variance | Portfolio optimization on forecasts | Balances risk/return | Estimation error | **HIGH** |
+### 1.2 Weighted Averaging Methods
 
----
+| Method | Description | Weight Formula | Grid Search Params |
+|--------|-------------|----------------|-------------------|
+| **Accuracy Weighting** | Weight by historical accuracy | w_i = acc_i / Σacc | lookback: [30, 60, 90, 180, 360] days |
+| **Inverse Error Weighting** | Weight inversely by MSE/MAE | w_i = 1/err_i | lookback, error_metric: [MSE, MAE, MAPE] |
+| **Sharpe Weighting** | Weight by risk-adjusted returns | w_i = sharpe_i / Σsharpe | lookback, annualization |
+| **Information Ratio Weighting** | Weight by IR | w_i = IR_i / Σ|IR| | lookback, benchmark |
+| **Recency Weighting** | Recent performance matters more | w_i = acc_i × decay^(days_ago) | decay: [0.9, 0.95, 0.99, 0.995] |
+| **Exponential Decay** | Exponentially favor recent | w_i = e^(-λ × days_ago) | lambda: [0.001, 0.01, 0.05, 0.1] |
 
-## 3. Machine Learning Meta-Ensembles
+### 1.3 Rank-Based Methods
 
-### 3.1 Stacking (Blending)
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **Linear Stacking** | Ridge/LASSO meta-learner | Interpretable weights | May underfit | **HIGH** |
-| **XGBoost Stack** | Gradient boosting meta-learner | Captures non-linearities | Overfitting risk | **HIGH** |
-| LightGBM Stack | Fast gradient boosting | Efficient | Similar to XGBoost | MEDIUM |
-| Neural Stack | MLP meta-learner | Flexible | Needs more data | MEDIUM |
-| **Random Forest Stack** | RF meta-learner | Robust, handles interactions | Slower | **HIGH** |
-
-### 3.2 Dynamic Selection Methods
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **META-DES** | Dynamic ensemble selection | Adapts to input | Complex | **HIGH** |
-| KNORA-E | K-nearest oracle ensemble | Local selection | Needs good distance metric | MEDIUM |
-| KNORA-U | K-nearest oracle union | More models | May include noise | LOW |
-| DES-P | Dynamic selection by performance | Recent-focused | Short-term bias | MEDIUM |
-| **OLA** | Overall Local Accuracy | Competence-based | Sensitive to k | **HIGH** |
-
-### 3.3 Boosting-Based
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| AdaBoost Ensemble | Boost on ensemble errors | Focuses on hard cases | Sensitive to noise | MEDIUM |
-| Gradient Boost Ensemble | Gradient descent on residuals | State-of-the-art | Overfitting | MEDIUM |
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Top-K Selection** | Only use top K models by accuracy | K: [10, 50, 100, 500, 1000] |
+| **Percentile Cutoff** | Use models above X percentile | cutoff: [50, 75, 90, 95, 99]% |
+| **Tournament Selection** | Bracket-style model competition | bracket_size, rounds |
+| **Borda Count** | Rank aggregation voting | None |
 
 ---
 
-## 4. Correlation-Aware Methods
+## Part 2: Statistical Ensemble Methods
+
+### 2.1 Bayesian Methods
+
+| Method | Description | Complexity | Grid Search Params |
+|--------|-------------|------------|-------------------|
+| **Bayesian Model Averaging (BMA)** | Weight by posterior probability | Medium | prior: [uniform, accuracy-based], likelihood |
+| **Bayesian Model Combination (BMC)** | Full Bayesian treatment | High | prior_type, MCMC_samples |
+| **Spike-and-Slab** | Sparse Bayesian selection | High | sparsity_prior: [0.1, 0.3, 0.5] |
+| **Bayesian Stacking** | Bayesian version of stacking | Medium | regularization, prior_scale |
+
+### 2.2 Information-Theoretic Methods
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Minimum Description Length (MDL)** | Weight by compression efficiency | None |
+| **AIC/BIC Weighting** | Weight by information criteria | criteria: [AIC, BIC, AICc] |
+| **Mutual Information Weighting** | Weight by predictive info | bins, estimator |
+
+### 2.3 Optimal Combination Theory
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Granger-Ramanathan** | OLS on predictions | constraint: [none, sum-to-1, positive] |
+| **Constrained Least Squares** | OLS with constraints | constraints, regularization |
+| **Quantile Regression Averaging** | Combine at different quantiles | quantiles: [0.1, 0.25, 0.5, 0.75, 0.9] |
+
+---
+
+## Part 3: Machine Learning Meta-Ensembles
+
+### 3.1 Stacking (Meta-Learning)
+
+| Method | Base | Meta-Learner | Grid Search Params |
+|--------|------|--------------|-------------------|
+| **Linear Stacking** | All models | Ridge/Lasso | alpha: [0.001, 0.01, 0.1, 1, 10] |
+| **Elastic Net Stacking** | All models | Elastic Net | alpha, l1_ratio: [0.1, 0.3, 0.5, 0.7, 0.9] |
+| **XGBoost Stacking** | All models | XGBoost | depth, n_estimators, learning_rate |
+| **Neural Stacking** | All models | MLP | layers, units, dropout |
+| **Multi-Level Stacking** | Grouped → combined | Multiple | hierarchy_depth: [2, 3] |
+
+### 3.2 Dynamic Model Selection
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **META-DES** | Dynamic ensemble selection | competence_region_size, voting |
+| **KNORA** | K-nearest oracles | K: [5, 10, 20, 50], distance_metric |
+| **DCS-LA** | Local accuracy selection | neighborhood_size |
+| **Oracle Selection** | Select best model per regime | regime_features |
+
+### 3.3 Boosting Variants
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **AdaBoost (on residuals)** | Boost weak predictions | n_estimators, learning_rate |
+| **Gradient Boost Meta** | GB on prediction errors | depth, min_samples, subsample |
+| **CatBoost Ensemble** | Categorical-aware boosting | iterations, depth, l2_leaf_reg |
+
+---
+
+## Part 4: Correlation-Aware Methods
 
 ### 4.1 Diversification Methods
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **Correlation Filtering** | Remove highly correlated models | Reduces redundancy | May lose signal | **HIGH** |
-| **Maximum Diversification** | Maximize diversity ratio | Portfolio-inspired | Complex optimization | **HIGH** |
-| Clustering + Selection | Cluster similar, pick best per cluster | Interpretable | Clustering arbitrary | MEDIUM |
-| Principal Component | Use PC projections | Orthogonal by design | Loses interpretability | LOW |
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Correlation Filtering** | Remove highly correlated models | threshold: [0.7, 0.8, 0.9, 0.95] |
+| **Maximum Diversification** | Optimize for diversity | diversity_weight: [0.1, 0.3, 0.5] |
+| **Negative Correlation Learning** | Encourage disagreement | lambda_ncl: [0.1, 0.5, 1.0] |
+| **Clustering + Representatives** | Cluster models, pick representatives | n_clusters: [10, 50, 100, 500], method |
 
 ### 4.2 Portfolio-Inspired Methods
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **MVO (Mean-Variance)** | Markowitz on forecast weights | Theoretically optimal | Estimation error | **HIGH** |
-| Black-Litterman | Combine prior + views | Handles uncertainty | Complex | MEDIUM |
-| Risk Parity | Equal risk contribution | Robust | Ignores returns | MEDIUM |
-| **Hierarchical Risk Parity** | HRP clustering | Handles non-stationarity | Newer, less tested | **HIGH** |
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Mean-Variance Optimization** | Markowitz on predictions | risk_aversion: [0.5, 1, 2, 5] |
+| **Risk Parity** | Equal risk contribution | risk_measure: [var, CVaR, drawdown] |
+| **Black-Litterman** | Incorporate prior views | tau, uncertainty_scaling |
+| **Hierarchical Risk Parity** | Cluster-based allocation | linkage, n_clusters |
+
+### 4.3 Error Correlation Methods
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Error Decorrelation** | Weight to minimize error correlation | lookback, regularization |
+| **Optimal Error Weighting** | Minimize portfolio error variance | shrinkage: [0.1, 0.3, 0.5] |
+| **Independent Component Selection** | Select models with independent errors | n_components |
 
 ---
 
-## 5. Regime-Aware Methods
+## Part 5: Regime-Adaptive Methods
 
-### 5.1 Regime Detection
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **HMM Switching** | Hidden Markov Model regimes | Principled | State selection | **HIGH** |
-| Volatility Regimes | High/low vol switching | Simple | May miss regimes | **HIGH** |
-| Trend Regimes | Trending/ranging detection | Intuitive | Lagging | MEDIUM |
-| Correlation Regimes | Risk-on/risk-off | Market-aware | Hard to detect in real-time | MEDIUM |
+### 5.1 Market Regime Detection
 
-### 5.2 Regime-Specific Ensembles
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **Regime-Specific Weights** | Different weights per regime | Adapts | Needs regime labels | **HIGH** |
-| Mixture of Experts | Gating network selects models | Flexible | Training complexity | MEDIUM |
-| Conditional Weighting | Weights depend on features | Context-aware | Feature engineering | MEDIUM |
+| Regime Feature | Description | Implementation |
+|----------------|-------------|----------------|
+| **Volatility Regime** | High/Medium/Low vol | ATR percentile, GARCH |
+| **Trend Regime** | Trending/Mean-reverting/Choppy | ADX, Hurst exponent |
+| **Momentum Regime** | Strong/Weak momentum | RSI, ROC |
+| **Correlation Regime** | Risk-on/Risk-off | Cross-asset correlations |
 
----
+### 5.2 Regime-Switching Methods
 
-## 6. Time-Series Specific Methods
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Hidden Markov Models** | Latent regime states | n_states: [2, 3, 4], covariance_type |
+| **Threshold Models** | Hard regime boundaries | thresholds, hysteresis |
+| **Markov-Switching** | Probabilistic transitions | n_regimes, transition_prior |
+| **Online Regime Detection** | Real-time regime tracking | sensitivity, min_regime_length |
 
-### 6.1 Temporal Methods
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **Rolling Window** | Recalculate weights periodically | Adapts over time | Window size selection | **HIGH** |
-| Expanding Window | Use all available history | More data | Slow to adapt | MEDIUM |
-| **EWMA Weights** | Exponentially weighted combination | Smooth adaptation | Decay parameter | **HIGH** |
+### 5.3 Conditional Ensembles
 
-### 6.2 Forecast Combination Tests
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| Diebold-Mariano | Test if combination helps | Statistical rigor | Point-in-time | LOW |
-| Model Confidence Set | Identify best models | Rigorous selection | Computationally heavy | LOW |
-| Giacomini-White | Conditional predictive ability | Handles non-stationarity | Complex | LOW |
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Regime-Specific Weights** | Different weights per regime | n_regimes, weight_method |
+| **Mixture of Experts** | Gating network selects models | n_experts, gating_type |
+| **Conditional Model Averaging** | Condition on market features | features, conditioning_method |
 
 ---
 
-## 7. Uncertainty Quantification
+## Part 6: Deep Learning Ensembles
+
+### 6.1 Neural Combination Methods
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Attention-Based Weighting** | Learn attention over models | attention_heads, hidden_dim |
+| **Transformer Ensemble** | Transformer on predictions | n_layers, d_model, n_heads |
+| **LSTM Meta-Learner** | Sequential prediction combination | units, layers, dropout |
+| **TCN (Temporal Conv)** | Dilated convolutions | filters, kernel_size, dilation |
+
+### 6.2 Neural Architecture Search
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **AutoML Stacking** | Automated meta-learner search | search_space, budget |
+| **Neural Ensemble Architecture** | Learn optimal combination structure | architecture_space |
+
+---
+
+## Part 7: Uncertainty Quantification Methods
 
 ### 7.1 Prediction Intervals
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **Conformal Prediction** | Distribution-free intervals | Guaranteed coverage | Conservative | **HIGH** |
-| Quantile Regression | Direct quantile estimation | Flexible | Quantile crossing | MEDIUM |
-| Bootstrap Intervals | Resample-based uncertainty | Non-parametric | Computationally expensive | MEDIUM |
-| **Ensemble Disagreement** | Use model spread as uncertainty | Intuitive | Not calibrated | **HIGH** |
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Conformal Prediction** | Distribution-free intervals | coverage: [0.8, 0.9, 0.95] |
+| **Quantile Ensembles** | Predict quantiles, not points | quantiles |
+| **Bootstrap Intervals** | Resample for uncertainty | n_bootstrap: [100, 500, 1000] |
+| **MC Dropout** | Dropout at inference | dropout_rate, n_samples |
 
 ### 7.2 Calibration Methods
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| Platt Scaling | Logistic calibration | Simple | Assumes sigmoid | MEDIUM |
-| Isotonic Regression | Non-parametric calibration | Flexible | Needs validation data | MEDIUM |
-| Temperature Scaling | Single parameter calibration | Minimal overhead | May not generalize | LOW |
+
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Platt Scaling** | Logistic calibration | None |
+| **Isotonic Regression** | Non-parametric calibration | None |
+| **Temperature Scaling** | Single parameter calibration | temperature |
+| **Beta Calibration** | Beta distribution fit | None |
 
 ---
 
-## 8. Novel/Emerging Methods (2023-2026)
+## Part 8: Online/Adaptive Methods
 
-### 8.1 Transformer-Based
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| Attention Ensemble | Attention weights on models | Learns importance | Needs lots of data | LOW |
-| Cross-Model Transformer | Transformers on ensemble outputs | Captures interactions | Black box | LOW |
+### 8.1 Online Learning
 
-### 8.2 Hybrid Methods
-| Method | Description | Pros | Cons | Priority |
-|--------|-------------|------|------|----------|
-| **BMA + Stacking** | Bayesian prior + learned weights | Best of both | Complex | **HIGH** |
-| **Regime-Aware Stacking** | Stacking with regime features | Adaptive | Feature engineering | **HIGH** |
-| Dynamic BMA | Time-varying BMA weights | Adapts | MCMC overhead | MEDIUM |
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **Exponential Weights** | Multiplicative weight updates | learning_rate: [0.01, 0.05, 0.1] |
+| **Follow the Leader** | Use best historical model | None |
+| **Follow Regularized Leader** | FTL with regularization | regularization |
+| **Hedge Algorithm** | Optimal regret bounds | learning_rate |
 
----
+### 8.2 Bandit Methods
 
-## 9. Grid Search Dimensions
-
-### Parameters to Optimize:
-1. **Lookback windows:** 30, 60, 90, 120, 180, 252, 365 days
-2. **Model selection thresholds:** Top 1%, 2%, 5%, 10%, 20%, 30%, 50%
-3. **Weighting decay:** λ = 0.9, 0.95, 0.97, 0.99, 1.0
-4. **Regularization strength:** α = 0.001, 0.01, 0.1, 1.0, 10.0
-5. **Number of regimes:** 2, 3, 4
-6. **Aggregation methods:** mean, median, trimmed mean (5%, 10%)
-7. **Horizon-specific vs unified:** test both
-
-### Cross-Validation Strategy:
-- Walk-forward with minimum 5 OOS windows
-- Each OOS window: 30+ days
-- Purged cross-validation (gap between train/test)
+| Method | Description | Grid Search Params |
+|--------|-------------|-------------------|
+| **UCB (Upper Confidence Bound)** | Exploration-exploitation | exploration_bonus |
+| **Thompson Sampling** | Bayesian bandit | prior_params |
+| **EXP3** | Adversarial bandits | gamma |
 
 ---
 
-## 10. NEWLY ADDED: Super-Advanced Methods (Feb 3, 2026)
+## Part 9: Novel/Cutting-Edge Methods
 
-### 10.1 Online Learning Methods
-| Method | Description | Implementation |
-|--------|-------------|----------------|
-| **Hedge Algorithm** | Multiplicative weight update with regret bounds | `advanced_ensemble.py` ✅ |
-| Follow-the-Regularized-Leader | Online optimization | NOT YET |
-| Sleeping Experts | Models go dormant when unreliable | NOT YET |
+### 9.1 Recent Advances (2023-2026)
 
-### 10.2 Hierarchical Forecast Reconciliation  
-| Method | Description | Implementation |
-|--------|-------------|----------------|
-| **MinT Reconciliation** | Minimum trace optimal reconciliation | `advanced_ensemble.py` ✅ |
-| ERM Reconciliation | Empirical risk minimization | NOT YET |
-| Game-Theoretic Reconciliation | Nash equilibrium approach | NOT YET |
+| Method | Source | Description |
+|--------|--------|-------------|
+| **Conformalized Quantile Regression** | Romano et al. | CQR for calibrated intervals |
+| **Deep Ensemble Distillation** | Malinin et al. | Distill ensemble into single model |
+| **Hypernetwork Ensembles** | Krueger et al. | Generate ensemble weights dynamically |
+| **Neural Process Ensembles** | Garnelo et al. | Function-space uncertainty |
+| **Evidential Deep Learning** | Sensoy et al. | Single-pass uncertainty |
 
-### 10.3 Meta-Ensemble (Ensemble of Ensembles)
-| Method | Description | Implementation |
-|--------|-------------|----------------|
-| **Meta-Ensemble (Hedge)** | Hedge algorithm over base methods | `advanced_ensemble.py` ✅ |
-| **Meta-Ensemble (Ridge)** | Ridge regression over base methods | `advanced_ensemble.py` ✅ |
-| **Meta-Ensemble (Best)** | Select best performing method | `advanced_ensemble.py` ✅ |
+### 9.2 Financial-Specific Methods
 
-### 10.4 Information-Theoretic Methods
-| Method | Description | Implementation |
-|--------|-------------|----------------|
-| Mutual Information Weighting | Weight by MI with outcome | NOT YET |
-| Entropy-Weighted | Weight confident forecasts more | NOT YET |
-
-### 10.5 Copula-Based Methods
-| Method | Description | Implementation |
-|--------|-------------|----------------|
-| Copula Combination | Model joint distribution | NOT YET |
-| Vine Copula | Hierarchical dependencies | NOT YET |
+| Method | Description | Source |
+|--------|-------------|--------|
+| **Factor-Mimicking Ensembles** | Align predictions with known factors | Quant finance |
+| **Cross-Asset Signal Propagation** | Use signals from correlated assets | Multi-asset desks |
+| **Order Flow Integration** | Weight by market microstructure | HFT literature |
+| **Sentiment-Adjusted Weights** | Incorporate sentiment signals | Alt data |
 
 ---
 
-## 11. Implementation Priority Tiers
+## Part 10: Recommended Grid Search Strategy
 
-### Tier 1 (Week 1-2) — Quick Wins
-1. Accuracy-weighted averaging
-2. Exponential decay weighting
-3. Top-K by Sharpe
-4. Ridge stacking (linear)
-5. Inverse variance weighting
-
-### Tier 2 (Week 3-4) — Statistical
-1. BMA (classic)
-2. Granger-Ramanathan combination
-3. Minimum variance optimization
-4. Conformal prediction intervals
-
-### Tier 3 (Week 5-6) — Advanced ML
-1. XGBoost stacking
-2. Random Forest stacking
-3. META-DES dynamic selection
-4. Hierarchical Risk Parity
-
-### Tier 4 (Week 7-8) — Regime-Aware
-1. HMM regime switching
-2. Volatility regime weights
-3. Regime-specific ensemble selection
-4. BMA + Stacking hybrid
-
----
-
-## 11. Computational Constraints
-
-### Resources Available:
-- **CPU:** 8-core workstation
-- **RAM:** 32GB
-- **GPU:** None (CPU only)
-- **Time budget:** ~2 hours per full grid search
-
-### Method Feasibility:
-| Method | Time Complexity | Memory | Feasible? |
-|--------|----------------|--------|-----------|
-| Simple averaging | O(n) | Low | ✅ |
-| Ridge stacking | O(n²) | Medium | ✅ |
-| XGBoost stack | O(n log n) | Medium | ✅ |
-| Full BMA MCMC | O(2^m) | High | ⚠️ (subset only) |
-| Neural stack | O(epochs × n) | High | ⚠️ (small net) |
-| META-DES | O(k × n × m) | Medium | ✅ |
-
----
-
-## 12. Success Metrics
-
-### Primary:
-- Sharpe Ratio (annualized, out-of-sample)
-- Directional Accuracy
-- Maximum Drawdown
-
-### Secondary:
-- Profit Factor
-- Win Rate
-- Sortino Ratio
-- Calmar Ratio
-
-### Validation:
-- All metrics must be OOS (walk-forward)
-- Statistical significance via paired t-test
-- Improvement must be >10% to be meaningful
-
----
-
-## Appendix A: Python Libraries
+### Phase 1: Baseline Establishment (Day 1)
 
 ```python
-# Core
-import numpy as np
-import pandas as pd
-from scipy import stats
-from sklearn.linear_model import Ridge, Lasso, ElasticNet
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-import xgboost as xgb
+baseline_methods = [
+    'simple_mean',
+    'median', 
+    'accuracy_weighted',
+    'top_100_models',
+    'top_10_pct'
+]
+# Run on Crude Oil, all horizons
+# Metric: Directional accuracy, Sharpe
+```
 
-# Specialized
-from hmmlearn import hmm  # Regime detection
-from deslib.des import METADES, KNORAE  # Dynamic selection
-from mapie.regression import MapieRegressor  # Conformal prediction
+### Phase 2: Classical Methods (Days 2-3)
 
-# Optimization
-from scipy.optimize import minimize  # Portfolio optimization
-from cvxpy import Variable, Problem, Minimize  # Convex optimization
+```python
+grid_search_params = {
+    'accuracy_weighted': {
+        'lookback': [30, 60, 90, 180, 360],
+        'decay': [None, 0.95, 0.99]
+    },
+    'top_k': {
+        'k': [10, 50, 100, 500, 1000, 2000]
+    },
+    'trimmed_mean': {
+        'trim_pct': [5, 10, 15, 20]
+    },
+    'correlation_filtered': {
+        'threshold': [0.7, 0.8, 0.9],
+        'keep_method': ['best', 'random']
+    }
+}
+```
+
+### Phase 3: Statistical Methods (Days 4-5)
+
+```python
+statistical_methods = {
+    'bayesian_model_averaging': {
+        'prior': ['uniform', 'accuracy'],
+        'likelihood': ['gaussian', 'laplace']
+    },
+    'granger_ramanathan': {
+        'constraint': ['none', 'sum_to_1', 'positive']
+    },
+    'stacking_ridge': {
+        'alpha': [0.001, 0.01, 0.1, 1, 10, 100]
+    },
+    'stacking_elastic': {
+        'alpha': [0.01, 0.1, 1],
+        'l1_ratio': [0.1, 0.5, 0.9]
+    }
+}
+```
+
+### Phase 4: Regime-Adaptive (Days 6-7)
+
+```python
+regime_methods = {
+    'volatility_regime': {
+        'vol_measure': ['ATR', 'realized_vol', 'GARCH'],
+        'n_regimes': [2, 3],
+        'weights_per_regime': 'optimize'
+    },
+    'hmm_regime': {
+        'n_states': [2, 3, 4],
+        'features': ['returns', 'vol', 'both']
+    }
+}
+```
+
+### Phase 5: Advanced Methods (Week 2)
+
+```python
+advanced_methods = {
+    'xgboost_stacking': {
+        'max_depth': [3, 5, 7],
+        'n_estimators': [100, 500],
+        'learning_rate': [0.01, 0.1]
+    },
+    'attention_ensemble': {
+        'hidden_dim': [32, 64, 128],
+        'n_heads': [2, 4, 8]
+    },
+    'mixture_of_experts': {
+        'n_experts': [4, 8, 16],
+        'gating': ['softmax', 'sparse']
+    }
+}
 ```
 
 ---
 
-## Appendix B: References
+## Part 11: Evaluation Framework
 
-1. Timmermann, A. (2006). "Forecast Combinations" — Handbook of Economic Forecasting
-2. Granger & Ramanathan (1984). "Improved Methods of Combining Forecasts"
-3. Raftery et al. (1997). "Bayesian Model Averaging for Linear Regression Models"
-4. Wolpert (1992). "Stacked Generalization"
-5. Ko et al. (2008). "From Dynamic Classifier Selection to Dynamic Ensemble Selection"
-6. Lopez de Prado (2018). "Advances in Financial Machine Learning" — HRP chapter
+### Metrics to Track
+
+| Metric | Description | Target |
+|--------|-------------|--------|
+| **Directional Accuracy** | % correct direction | >55% |
+| **Sharpe Ratio** | Risk-adjusted returns | >1.5 |
+| **Information Ratio** | Alpha / Tracking Error | >0.5 |
+| **Max Drawdown** | Worst peak-to-trough | <15% |
+| **Win Rate** | % profitable trades | >52% |
+| **Profit Factor** | Gross profit / Gross loss | >1.3 |
+| **Calmar Ratio** | Return / Max DD | >1.0 |
+
+### Statistical Validation
+
+1. **Walk-Forward Validation** — Expanding window, no lookahead
+2. **Bootstrap Confidence Intervals** — 1000 resamples
+3. **Reality Check (White, 2000)** — Control for data snooping
+4. **Step-M (Romano-Wolf)** — Multiple testing correction
+5. **Model Confidence Set (Hansen)** — Identify statistically best set
+
+### Cross-Validation Strategy
+
+```python
+cv_strategy = {
+    'method': 'expanding_window',
+    'initial_train': 180,  # days
+    'step_size': 30,       # days
+    'min_test_size': 30,   # days
+    'purge_gap': 5,        # days between train/test
+}
+```
 
 ---
 
-*This document will be updated as we discover and test new methods.*
+## Part 12: Implementation Priority
+
+### Must Test (High Expected Value)
+
+1. ⭐ **Accuracy-weighted with decay** — Simple, proven
+2. ⭐ **Top-K selection** — Quick wins from best models
+3. ⭐ **Ridge stacking** — Robust meta-learning
+4. ⭐ **Regime-switching weights** — Market adaptation
+5. ⭐ **Correlation filtering + accuracy** — Diversity + quality
+
+### Should Test (Medium Expected Value)
+
+6. **Bayesian Model Averaging** — Principled uncertainty
+7. **XGBoost stacking** — Non-linear combination
+8. **Conformal prediction** — Calibrated confidence
+9. **Hierarchical Risk Parity** — Portfolio theory
+10. **Online learning (Hedge)** — Adaptation
+
+### Worth Exploring (Research Value)
+
+11. **Attention-based weighting** — State-of-the-art
+12. **Mixture of Experts** — Conditional combination
+13. **Deep ensemble distillation** — Efficiency
+14. **Factor-mimicking** — Finance-specific
+
+---
+
+## Part 13: Questions for Ale/quantum_ml Team
+
+1. **What ensemble methods are already in quantum_ml?**
+2. **Have they tested any of these? Results?**
+3. **Computational budget per ensemble evaluation?**
+4. **Any methods they've ruled out? Why?**
+5. **Access to model metadata for smarter grouping?**
+
+---
+
+## Part 14: Next Steps
+
+### Immediate (Today)
+- [ ] Share this doc with Amira
+- [ ] Get quantum_ml access (ping Ale again)
+- [ ] Set up evaluation harness
+
+### This Week
+- [ ] Run Phase 1 baseline on Crude Oil
+- [ ] Run Phase 2 classical methods
+- [ ] Document results in ENSEMBLE_RESULTS.md
+
+### Next Week
+- [ ] Phase 3-5 advanced methods
+- [ ] Statistical validation
+- [ ] Select top 3 methods for production
+
+---
+
+*This document will be updated as we run experiments and discover what works.*
