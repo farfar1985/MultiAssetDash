@@ -30,6 +30,12 @@ import pandas as pd
 from datetime import datetime
 from functools import wraps
 import sys
+import traceback
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Add sandbox root to path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -51,7 +57,53 @@ from precalculate_metrics import (
 )
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+
+# CORS Configuration - explicit allowed origins
+# Set CORS_ALLOWED_ORIGINS env var as comma-separated list, or use defaults
+CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
+if CORS_ALLOWED_ORIGINS:
+    allowed_origins = [origin.strip() for origin in CORS_ALLOWED_ORIGINS.split(',')]
+else:
+    # Default to localhost origins for development
+    allowed_origins = [
+        'http://localhost:3000',
+        'http://localhost:5000',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:5000',
+    ]
+
+CORS(app, origins=allowed_origins, supports_credentials=True)
+
+
+# Security Headers Middleware
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to all responses."""
+    # Content Security Policy - restrict resource loading
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+
+    # HTTP Strict Transport Security - force HTTPS (1 year)
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+
+    # Prevent clickjacking
+    response.headers['X-Frame-Options'] = 'DENY'
+
+    # Prevent MIME type sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+
+    # XSS Protection (legacy browsers)
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+
+    # Referrer Policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+
+    # Permissions Policy - disable unnecessary features
+    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+
+    # Remove server identification
+    response.headers.pop('Server', None)
+
+    return response
 
 # Configuration
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -59,15 +111,9 @@ DATA_DIR = os.path.join(SCRIPT_DIR, 'data')
 CONFIGS_DIR = os.path.join(SCRIPT_DIR, 'configs')
 API_KEYS_FILE = os.path.join(SCRIPT_DIR, 'api_keys.json')
 
-# Default API keys (for testing - in production, use secure storage)
-DEFAULT_API_KEYS = {
-    "test_key_123": {
-        "user_id": "test_user",
-        "assets": ["Crude_Oil", "Bitcoin", "SP500"],  # Assets this key can access
-        "created": "2025-01-01",
-        "rate_limit": 1000  # Requests per day
-    }
-}
+# No default API keys - keys must be created via manage_api_keys.py or migrate_api_keys.py
+# Never ship hardcoded credentials in source code
+DEFAULT_API_KEYS = {}
 
 def load_api_keys():
     """Load API keys from JSON file, create default if doesn't exist."""
@@ -512,18 +558,85 @@ def get_metrics(asset_name):
 # ERROR HANDLERS
 # ============================================================================
 
+@app.errorhandler(400)
+def bad_request(error):
+    """Handle bad request errors - don't leak details."""
+    return jsonify({
+        "success": False,
+        "error": "Bad request"
+    }), 400
+
+
+@app.errorhandler(401)
+def unauthorized(error):
+    """Handle unauthorized errors."""
+    return jsonify({
+        "success": False,
+        "error": "Unauthorized"
+    }), 401
+
+
+@app.errorhandler(403)
+def forbidden(error):
+    """Handle forbidden errors."""
+    return jsonify({
+        "success": False,
+        "error": "Forbidden"
+    }), 403
+
+
 @app.errorhandler(404)
 def not_found(error):
+    """Handle not found errors - don't reveal internal paths."""
     return jsonify({
         "success": False,
         "error": "Endpoint not found"
     }), 404
 
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    """Handle method not allowed errors."""
+    return jsonify({
+        "success": False,
+        "error": "Method not allowed"
+    }), 405
+
+
+@app.errorhandler(429)
+def rate_limited(error):
+    """Handle rate limit errors."""
+    return jsonify({
+        "success": False,
+        "error": "Too many requests"
+    }), 429
+
+
 @app.errorhandler(500)
 def internal_error(error):
+    """Handle internal errors - log details but don't expose to client."""
+    # Log the actual error for debugging (server-side only)
+    logger.error(f"Internal server error: {error}")
+    logger.error(traceback.format_exc())
+
+    # Return generic message to client - never expose stack traces
     return jsonify({
         "success": False,
         "error": "Internal server error"
+    }), 500
+
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    """Catch-all exception handler - prevent any stack trace leakage."""
+    # Log the actual error for debugging (server-side only)
+    logger.error(f"Unhandled exception: {type(error).__name__}: {error}")
+    logger.error(traceback.format_exc())
+
+    # Return generic message to client - never expose internals
+    return jsonify({
+        "success": False,
+        "error": "An unexpected error occurred"
     }), 500
 
 # ============================================================================
