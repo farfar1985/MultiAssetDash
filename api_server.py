@@ -68,8 +68,10 @@ else:
     allowed_origins = [
         'http://localhost:3000',
         'http://localhost:5000',
+        'http://localhost:5001',
         'http://127.0.0.1:3000',
         'http://127.0.0.1:5000',
+        'http://127.0.0.1:5001',
     ]
 
 CORS(app, origins=allowed_origins, supports_credentials=True)
@@ -552,6 +554,82 @@ def get_metrics(asset_name):
     return jsonify({
         "success": True,
         **metrics
+    })
+
+@app.route('/api/v1/config/<asset_name>', methods=['GET'])
+@require_api_key
+def get_config(asset_name):
+    """Get strategy configuration for an asset.
+
+    Query params:
+        strategy (optional): Strategy name (e.g., 'vol70_consec3', 'optimal')
+                            Defaults to 'optimal'
+    """
+    if not check_asset_access(asset_name):
+        return jsonify({
+            "success": False,
+            "error": f"Access denied for asset: {asset_name}"
+        }), 403
+
+    # Get strategy from query param, default to 'optimal'
+    strategy = request.args.get('strategy', 'optimal')
+
+    # Build config file path
+    if strategy == 'optimal':
+        config_file = os.path.join(CONFIGS_DIR, f'optimal_{asset_name.lower()}.json')
+    else:
+        config_file = os.path.join(CONFIGS_DIR, f'{strategy}_{asset_name.lower()}.json')
+
+    if not os.path.exists(config_file):
+        return jsonify({
+            "success": False,
+            "error": f"Config not found for strategy '{strategy}' on asset '{asset_name}'"
+        }), 404
+
+    with open(config_file, 'r') as f:
+        config = json.load(f)
+
+    return jsonify({
+        "success": True,
+        "asset": asset_name,
+        "strategy": strategy,
+        "config": config,
+        "timestamp": datetime.now().isoformat()
+    })
+
+@app.route('/api/v1/configs', methods=['GET'])
+@require_api_key
+def list_configs():
+    """List all available strategy configurations."""
+    configs = []
+    for filename in os.listdir(CONFIGS_DIR):
+        if filename.endswith('.json') and not filename.startswith('all_'):
+            # Parse config name and asset from filename
+            # Format: {strategy}_{asset}.json or optimal_{asset}.json
+            parts = filename.replace('.json', '').split('_')
+            if len(parts) >= 2:
+                strategy = parts[0]
+                asset = '_'.join(parts[1:])
+
+                # Load config for summary
+                config_path = os.path.join(CONFIGS_DIR, filename)
+                with open(config_path, 'r') as f:
+                    config_data = json.load(f)
+
+                configs.append({
+                    "filename": filename,
+                    "strategy": strategy,
+                    "asset": asset,
+                    "viable_horizons": config_data.get('viable_horizons', []),
+                    "sharpe_ratio": config_data.get('sharpe_ratio', config_data.get('sharpe_optimized', 0)),
+                    "win_rate": config_data.get('win_rate', 0)
+                })
+
+    return jsonify({
+        "success": True,
+        "configs": configs,
+        "count": len(configs),
+        "timestamp": datetime.now().isoformat()
     })
 
 # ============================================================================
