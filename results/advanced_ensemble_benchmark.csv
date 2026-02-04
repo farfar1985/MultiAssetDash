@@ -1,0 +1,8 @@
+method,directional_accuracy,sharpe,return_pct,vs_baseline
+Simple_Mean,0.3291,0.3345,12.1,BELOW
+Pairwise_Slopes_REFERENCE,,1.757,,BASELINE
+QuantumAnnealing,0.3342,0.4383,15.85,BELOW
+Wasserstein,0.3291,0.3345,12.1,BELOW
+Attention,0.3265,0.3465,12.53,BELOW
+Conformal,0.3291,0.3345,12.1,COVERAGE=90.00%
+Neural,0.3469,0.9598,34.67,BELOW

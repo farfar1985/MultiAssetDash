@@ -336,3 +336,4 @@ date,prediction,actual,best_strat,best_agg,best_q,best_child_prediction
 2026-01-30,65.0265,,Risk_Heavy,median,0.02,65.083
 2026-01-31,65.108,,Risk_Heavy,median,0.02,65.061
 2026-02-01,65.145,,Risk_Heavy,median,0.02,64.711
+2026-02-02,61.814994444444444,,Profit_Heavy,mean,0.2,61.831

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crude Oil Price Trajectory - QDT Nexus</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0e17;
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(34,197,94,0.1));
+            border-radius: 12px;
+            border: 1px solid rgba(59,130,246,0.3);
+        }
+        .header h1 {
+            font-size: 2rem;
+            color: #3b82f6;
+            margin-bottom: 5px;
+        }
+        .header .subtitle { color: #64748b; }
+        #chart { width: 100%; height: 600px; }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .metric {
+            background: rgba(30,41,59,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+        .metric .label { color: #64748b; font-size: 0.8rem; }
+        .metric .value { font-size: 1.4rem; font-weight: bold; margin-top: 5px; }
+        .metric .value.up { color: #22c55e; }
+        .metric .value.down { color: #ef4444; }
+        .metric .value.neutral { color: #3b82f6; }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+        }
+        .legend-color {
+            width: 20px;
+            height: 4px;
+            border-radius: 2px;
+        }
+        .legend-area {
+            width: 20px;
+            height: 12px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛢️ Crude Oil - 60-Day History + 10-Day Forecast</h1>
+            <p class="subtitle">10,179 ML Models | Pairwise Slope Analysis | 90% Confidence Cone</p>
+        </div>
+        
+        <div id="chart"></div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f59e0b;"></div>
+                <span>Historical Prices</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3b82f6; height: 3px;"></div>
+                <span>Forecast Path</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-area" style="background: rgba(59,130,246,0.3);"></div>
+                <span>90% Confidence</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-area" style="background: rgba(59,130,246,0.5);"></div>
+                <span>50% Confidence</span>
+            </div>
+        </div>
+        
+        <div class="metrics">
+            <div class="metric">
+                <div class="label">Current Price</div>
+                <div class="value neutral">$62.14</div>
+            </div>
+            <div class="metric">
+                <div class="label">D+10 Forecast</div>
+                <div class="value down">$61.67</div>
+            </div>
+            <div class="metric">
+                <div class="label">Expected Move</div>
+                <div class="value down">-$0.47 (-0.8%)</div>
+            </div>
+            <div class="metric">
+                <div class="label">60-Day Range</div>
+                <div class="value neutral">$55.27 - $65.42</div>
+            </div>
+            <div class="metric">
+                <div class="label">Forecast Range (90%)</div>
+                <div class="value neutral">$61.25 - $63.61</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Historical prices (60 days)
+        const historicalDates = [
+            "Dec 7", "Dec 8", "Dec 9", "Dec 10", "Dec 11", "Dec 12", "Dec 13", "Dec 14",
+            "Dec 15", "Dec 16", "Dec 17", "Dec 18", "Dec 19", "Dec 20", "Dec 21", "Dec 22",
+            "Dec 23", "Dec 24", "Dec 25", "Dec 26", "Dec 27", "Dec 28", "Dec 29", "Dec 30",
+            "Dec 31", "Jan 1", "Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 6", "Jan 7",
+            "Jan 8", "Jan 9", "Jan 10", "Jan 11", "Jan 12", "Jan 13", "Jan 14", "Jan 15",
+            "Jan 16", "Jan 17", "Jan 18", "Jan 19", "Jan 20", "Jan 21", "Jan 22", "Jan 23",
+            "Jan 24", "Jan 25", "Jan 26", "Jan 27", "Jan 28", "Jan 29", "Jan 30", "Jan 31",
+            "Feb 1", "Feb 2", "Feb 3"
+        ];
+        
+        const historicalPrices = [
+            60.08, 60.08, 58.88, 58.25, 58.46, 57.6, 57.44, 57.44,
+            57.44, 56.82, 55.27, 55.81, 56.0, 56.52, 56.52, 56.52,
+            58.01, 58.38, 58.35, 58.35, 58.35, 56.74, 56.74, 58.08,
+            57.95, 57.42, 57.42, 57.42, 57.32, 57.32, 58.32, 57.13,
+            55.99, 57.76, 59.12, 59.12, 59.12, 59.5, 61.15, 62.02,
+            59.08, 59.34, 59.34, 59.34, 59.34, 59.34, 60.62, 59.36,
+            61.07, 61.07, 61.07, 60.63, 62.39, 63.21, 65.42, 65.21,
+            65.21, 65.21, 62.14
+        ];
+        
+        // Forecast data (D+1 to D+10)
+        const forecastDates = ["Feb 4", "Feb 5", "Feb 6", "Feb 7", "Feb 8", "Feb 9", "Feb 10", "Feb 11", "Feb 12", "Feb 13"];
+        const forecast = [62.22, 61.79, 61.65, 61.65, 61.67, 61.58, 61.60, 61.66, 61.61, 61.67];
+        const upper90 = [62.65, 62.59, 62.47, 62.53, 62.66, 62.67, 62.75, 63.26, 63.18, 63.61];
+        const lower90 = [61.76, 61.25, 61.26, 61.35, 61.33, 61.29, 61.29, 61.28, 61.27, 61.32];
+        const upper50 = [62.40, 62.24, 62.11, 62.16, 62.30, 62.31, 62.37, 62.63, 62.59, 62.94];
+        const lower50 = [62.07, 61.67, 61.52, 61.65, 61.66, 61.60, 61.70, 61.77, 61.70, 61.78];
+        
+        // Combine all dates
+        const allDates = [...historicalDates, ...forecastDates];
+        
+        // Create data series
+        // Historical line (with nulls for forecast period)
+        const historicalLine = [...historicalPrices, ...Array(10).fill(null)];
+        
+        // Forecast line (with nulls for historical period, but include last historical point for continuity)
+        const forecastLine = [...Array(58).fill(null), 62.14, ...forecast];
+        
+        // Confidence bands (only in forecast area)
+        const nullPad = Array(59).fill(null);
+        const upper90Line = [...nullPad, ...upper90];
+        const lower90Line = [...nullPad, ...lower90];
+        const upper50Line = [...nullPad, ...upper50];
+        const lower50Line = [...nullPad, ...lower50];
+        
+        // Initialize chart
+        const chart = echarts.init(document.getElementById('chart'));
+        
+        const option = {
+            backgroundColor: 'transparent',
+            animation: true,
+            animationDuration: 2000,
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderColor: '#3b82f6',
+                textStyle: { color: '#f8fafc' },
+                formatter: function(params) {
+                    const idx = params[0].dataIndex;
+                    let result = '<strong>' + allDates[idx] + '</strong><br/>';
+                    
+                    if (idx < 59) {
+                        result += '<span style="color:#f59e0b">● Historical: $' + historicalPrices[idx].toFixed(2) + '</span>';
+                    } else {
+                        const fIdx = idx - 59;
+                        result += '<span style="color:#3b82f6">● Forecast: $' + forecast[fIdx].toFixed(2) + '</span><br/>';
+                        result += '<span style="color:#64748b">90% Range: $' + lower90[fIdx].toFixed(2) + ' - $' + upper90[fIdx].toFixed(2) + '</span>';
+                    }
+                    return result;
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '3%',
+                bottom: '12%',
+                top: '8%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: allDates,
+                axisLine: { lineStyle: { color: '#334155' } },
+                axisLabel: { 
+                    color: '#64748b',
+                    interval: 6,
+                    rotate: 45
+                },
+                splitLine: { show: false }
+            },
+            yAxis: {
+                type: 'value',
+                min: 54,
+                max: 67,
+                axisLine: { lineStyle: { color: '#334155' } },
+                axisLabel: { 
+                    color: '#64748b',
+                    formatter: '${value}'
+                },
+                splitLine: { lineStyle: { color: 'rgba(51, 65, 85, 0.5)' } }
+            },
+            series: [
+                // 90% Confidence Band
+                {
+                    name: '90% Upper',
+                    type: 'line',
+                    data: upper90Line,
+                    lineStyle: { opacity: 0 },
+                    areaStyle: { opacity: 0 },
+                    stack: 'conf90',
+                    symbol: 'none',
+                    z: 1
+                },
+                {
+                    name: '90% Band',
+                    type: 'line',
+                    data: lower90Line.map((v, i) => v !== null ? upper90Line[i] - v : null),
+                    lineStyle: { opacity: 0 },
+                    areaStyle: {
+                        color: 'rgba(59, 130, 246, 0.2)'
+                    },
+                    stack: 'conf90',
+                    symbol: 'none',
+                    z: 1
+                },
+                // 50% Confidence Band
+                {
+                    name: '50% Upper',
+                    type: 'line',
+                    data: upper50Line,
+                    lineStyle: { opacity: 0 },
+                    areaStyle: { opacity: 0 },
+                    stack: 'conf50',
+                    symbol: 'none',
+                    z: 2
+                },
+                {
+                    name: '50% Band',
+                    type: 'line',
+                    data: lower50Line.map((v, i) => v !== null ? upper50Line[i] - v : null),
+                    lineStyle: { opacity: 0 },
+                    areaStyle: {
+                        color: 'rgba(59, 130, 246, 0.4)'
+                    },
+                    stack: 'conf50',
+                    symbol: 'none',
+                    z: 2
+                },
+                // Historical prices
+                {
+                    name: 'Historical',
+                    type: 'line',
+                    data: historicalLine,
+                    smooth: false,
+                    lineStyle: {
+                        color: '#f59e0b',
+                        width: 2
+                    },
+                    itemStyle: { color: '#f59e0b' },
+                    symbol: 'none',
+                    z: 5
+                },
+                // Forecast line
+                {
+                    name: 'Forecast',
+                    type: 'line',
+                    data: forecastLine,
+                    smooth: true,
+                    lineStyle: {
+                        color: '#3b82f6',
+                        width: 3,
+                        type: 'solid'
+                    },
+                    itemStyle: { color: '#3b82f6' },
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    z: 10
+                },
+                // Current price marker
+                {
+                    name: 'Today',
+                    type: 'scatter',
+                    data: [[58, 62.14]],
+                    symbol: 'diamond',
+                    symbolSize: 15,
+                    itemStyle: {
+                        color: '#22c55e',
+                        shadowColor: 'rgba(34, 197, 94, 0.5)',
+                        shadowBlur: 10
+                    },
+                    z: 15
+                },
+                // Mark line for "today"
+                {
+                    name: 'Today Line',
+                    type: 'line',
+                    markLine: {
+                        silent: true,
+                        symbol: 'none',
+                        lineStyle: {
+                            color: '#22c55e',
+                            type: 'dashed',
+                            width: 1
+                        },
+                        data: [{ xAxis: 58 }],
+                        label: {
+                            formatter: 'TODAY',
+                            position: 'start',
+                            color: '#22c55e'
+                        }
+                    }
+                }
+            ]
+        };
+        
+        chart.setOption(option);
+        window.addEventListener('resize', () => chart.resize());
+    </script>
+</body>
+</html>

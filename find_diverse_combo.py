@@ -221,8 +221,15 @@ def calculate_trading_performance(signals, prices):
     avg_loss = abs(losses['pnl_pct'].mean()) if len(losses) > 0 else 0.001
     profit_factor = (len(wins) * avg_win) / (len(losses) * avg_loss) if len(losses) > 0 and avg_loss > 0 else float('inf')
     
-    if trades_df['pnl_pct'].std() > 0:
-        sharpe = (trades_df['pnl_pct'].mean() / trades_df['pnl_pct'].std()) * np.sqrt(252 / max(1, len(trades_df)))
+    # FIX: Bug #2 - Use avg holding period for annualization, not N_trades
+    # FIX: Bug #3 - Use sample std (ddof=1) instead of population std
+    avg_hold_days = (trades_df['exit_date'] - trades_df['entry_date']).dt.days.mean()
+    avg_hold_days = max(1, avg_hold_days)  # Prevent division by zero
+    trades_per_year = 252 / avg_hold_days
+    
+    std_return = trades_df['pnl_pct'].std(ddof=1)  # Sample std, not population
+    if std_return > 0:
+        sharpe = (trades_df['pnl_pct'].mean() / std_return) * np.sqrt(trades_per_year)
     else:
         sharpe = 0
     

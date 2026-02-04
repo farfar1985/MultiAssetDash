@@ -336,3 +336,4 @@ date,prediction,actual,best_strat,best_agg,best_q,best_child_prediction
 2026-01-30,65.14366666666666,65.21,Balanced,mean,0.01,61.352
 2026-01-31,65.154,,Balanced,median,0.01,64.793
 2026-02-01,64.969,,Balanced,median,0.01,65.646
+2026-02-02,62.106,,Accuracy_Heavy,median,0.05,61.221

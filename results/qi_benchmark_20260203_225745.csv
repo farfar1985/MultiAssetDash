@@ -1,0 +1,11 @@
+Method,Sharpe,Return,WinRate,DA,Trades,Active,Time
+CIM,0.0,0.0,0.0,0.0,0,0,0.0s
+PairSlopes*,0.0,0.0,0.0,0.0,0,N/A,0.1s
+QIEA,,,32.7,32.7,159,0,0.8s
+QPSO,,,32.7,32.7,159,4,0.2s
+SimBifurcation,,,32.7,32.7,159,0,0.1s
+EfficientQA,,,32.7,32.7,159,0,0.5s
+VQI,,,32.7,32.7,159,0,6.8s
+QWalk,,,32.7,32.7,159,0,0.0s
+EqualWeight,,,32.7,32.7,159,990,0s
+InvMSE,,,32.7,32.7,159,990,0s

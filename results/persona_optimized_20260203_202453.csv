@@ -1,0 +1,22 @@
+asset,persona,persona_name,best_method,score,method,tier,sharpe,win_rate,total_return,max_dd,consistency,n_trades
+Crude_Oil,quant,Hardcore Quant,granger_unconstrained,1.027,granger_unconstrained,2,0.893,48.6,-100.0,-128.4,0.447,74
+Crude_Oil,hedging,Hedging Team,equal_weight,23.045,equal_weight,1,-3.991,40.5,-100.0,-227.6,0.57,74
+Crude_Oil,alpha_gen,Alpha Gen Pro,top_k_5pct,-9.875,top_k_5pct,1,-3.419,37.8,-100.0,-0.0,0.623,74
+Crude_Oil,hedge_fund,Hedge Fund,granger_unconstrained,1.072,granger_unconstrained,2,0.893,48.6,-100.0,-128.4,0.447,74
+Crude_Oil,pro_retail,Pro Retail,granger_unconstrained,-0.006,granger_unconstrained,2,0.893,48.6,-100.0,-128.4,0.447,74
+Crude_Oil,retail,Retail,granger_unconstrained,0.084,granger_unconstrained,2,0.893,48.6,-100.0,-128.4,0.447,74
+Crude_Oil,procurement,Procurement,top_k_5pct,1.682,top_k_5pct,1,-3.419,37.8,-100.0,-0.0,0.623,74
+SP500,quant,Hardcore Quant,equal_weight,3.851,equal_weight,1,3.711,54.2,-100.0,-974.3,0.468,72
+SP500,hedging,Hedging Team,top_k_20pct,31627.904,top_k_20pct,1,3.103,48.6,-100.0,-316276.7,0.468,72
+SP500,alpha_gen,Alpha Gen Pro,equal_weight,-9.906,equal_weight,1,3.711,54.2,-100.0,-974.3,0.468,72
+SP500,hedge_fund,Hedge Fund,equal_weight,3.898,equal_weight,1,3.711,54.2,-100.0,-974.3,0.468,72
+SP500,pro_retail,Pro Retail,equal_weight,0.56,equal_weight,1,3.711,54.2,-100.0,-974.3,0.468,72
+SP500,retail,Retail,equal_weight,0.654,equal_weight,1,3.711,54.2,-100.0,-974.3,0.468,72
+SP500,procurement,Procurement,equal_weight,1.264,equal_weight,1,3.711,54.2,-100.0,-974.3,0.468,72
+Bitcoin,quant,Hardcore Quant,inverse_var,2.6,inverse_var,1,2.437,52.2,-6.100879822623178e+25,-224443.0,0.544,113
+Bitcoin,hedging,Hedging Team,ridge_01,540316.19,ridge_01,1,2.403,50.4,2.4256856277740436e+22,-5403159.1,0.561,113
+Bitcoin,alpha_gen,Alpha Gen Pro,top_k_10pct,1.2815439540860572e+25,top_k_10pct,1,2.334,50.4,1.2815439540860572e+26,-361306.4,0.526,113
+Bitcoin,hedge_fund,Hedge Fund,inverse_var,2.655,inverse_var,1,2.437,52.2,-6.100879822623178e+25,-224443.0,0.544,113
+Bitcoin,pro_retail,Pro Retail,inverse_var,0.383,inverse_var,1,2.437,52.2,-6.100879822623178e+25,-224443.0,0.544,113
+Bitcoin,retail,Retail,inverse_var,0.492,inverse_var,1,2.437,52.2,-6.100879822623178e+25,-224443.0,0.544,113
+Bitcoin,procurement,Procurement,ridge_01,1.515,ridge_01,1,2.403,50.4,2.4256856277740436e+22,-5403159.1,0.561,113

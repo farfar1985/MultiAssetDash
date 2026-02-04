@@ -1,0 +1,902 @@
+[
+  {
+    "date": "2025-11-06",
+    "actual": 59.43,
+    "forecast": 59.69,
+    "error": 0.26,
+    "errorPct": 0.44,
+    "signal": 0,
+    "confidence": 0.0,
+    "modelAgreement": 0.0
+  },
+  {
+    "date": "2025-11-07",
+    "actual": 59.75,
+    "forecast": 59.43,
+    "error": -0.32,
+    "errorPct": -0.53,
+    "signal": -1,
+    "confidence": 56.7,
+    "modelAgreement": 0.567
+  },
+  {
+    "date": "2025-11-08",
+    "actual": 59.75,
+    "forecast": 59.72,
+    "error": -0.03,
+    "errorPct": -0.04,
+    "signal": 1,
+    "confidence": 68.4,
+    "modelAgreement": 0.684
+  },
+  {
+    "date": "2025-11-09",
+    "actual": 59.75,
+    "forecast": 59.78,
+    "error": 0.03,
+    "errorPct": 0.04,
+    "signal": 1,
+    "confidence": 26.2,
+    "modelAgreement": 0.262
+  },
+  {
+    "date": "2025-11-10",
+    "actual": 59.75,
+    "forecast": 59.71,
+    "error": -0.04,
+    "errorPct": -0.06,
+    "signal": -1,
+    "confidence": 12.9,
+    "modelAgreement": 0.129
+  },
+  {
+    "date": "2025-11-11",
+    "actual": 61.04,
+    "forecast": 59.85,
+    "error": -1.19,
+    "errorPct": -1.94,
+    "signal": 1,
+    "confidence": 16.3,
+    "modelAgreement": 0.163
+  },
+  {
+    "date": "2025-11-12",
+    "actual": 58.49,
+    "forecast": 61.08,
+    "error": 2.59,
+    "errorPct": 4.43,
+    "signal": 1,
+    "confidence": 95.8,
+    "modelAgreement": 0.958
+  },
+  {
+    "date": "2025-11-13",
+    "actual": 58.69,
+    "forecast": 58.66,
+    "error": -0.03,
+    "errorPct": -0.05,
+    "signal": -1,
+    "confidence": 99.8,
+    "modelAgreement": 0.998
+  },
+  {
+    "date": "2025-11-14",
+    "actual": 60.09,
+    "forecast": 58.73,
+    "error": -1.36,
+    "errorPct": -2.26,
+    "signal": 1,
+    "confidence": 23.6,
+    "modelAgreement": 0.236
+  },
+  {
+    "date": "2025-11-15",
+    "actual": 60.09,
+    "forecast": 60.19,
+    "error": 0.1,
+    "errorPct": 0.16,
+    "signal": 1,
+    "confidence": 99.6,
+    "modelAgreement": 0.996
+  },
+  {
+    "date": "2025-11-16",
+    "actual": 60.09,
+    "forecast": 60.23,
+    "error": 0.14,
+    "errorPct": 0.24,
+    "signal": 1,
+    "confidence": 25.3,
+    "modelAgreement": 0.253
+  },
+  {
+    "date": "2025-11-17",
+    "actual": 60.09,
+    "forecast": 60.09,
+    "error": -0.0,
+    "errorPct": -0.0,
+    "signal": -1,
+    "confidence": 43.3,
+    "modelAgreement": 0.433
+  },
+  {
+    "date": "2025-11-18",
+    "actual": 60.67,
+    "forecast": 60.18,
+    "error": -0.49,
+    "errorPct": -0.81,
+    "signal": -1,
+    "confidence": 1.6,
+    "modelAgreement": 0.016
+  },
+  {
+    "date": "2025-11-19",
+    "actual": 59.25,
+    "forecast": 60.81,
+    "error": 1.56,
+    "errorPct": 2.63,
+    "signal": 1,
+    "confidence": 89.8,
+    "modelAgreement": 0.898
+  },
+  {
+    "date": "2025-11-20",
+    "actual": 59.0,
+    "forecast": 59.46,
+    "error": 0.46,
+    "errorPct": 0.77,
+    "signal": -1,
+    "confidence": 99.6,
+    "modelAgreement": 0.996
+  },
+  {
+    "date": "2025-11-21",
+    "actual": 58.06,
+    "forecast": 59.07,
+    "error": 1.01,
+    "errorPct": 1.74,
+    "signal": -1,
+    "confidence": 83.6,
+    "modelAgreement": 0.836
+  },
+  {
+    "date": "2025-11-22",
+    "actual": 58.06,
+    "forecast": 58.18,
+    "error": 0.12,
+    "errorPct": 0.21,
+    "signal": -1,
+    "confidence": 98.2,
+    "modelAgreement": 0.982
+  },
+  {
+    "date": "2025-11-23",
+    "actual": 58.06,
+    "forecast": 58.19,
+    "error": 0.13,
+    "errorPct": 0.22,
+    "signal": 1,
+    "confidence": 12.4,
+    "modelAgreement": 0.124
+  },
+  {
+    "date": "2025-11-24",
+    "actual": 58.06,
+    "forecast": 58.12,
+    "error": 0.06,
+    "errorPct": 0.1,
+    "signal": -1,
+    "confidence": 27.3,
+    "modelAgreement": 0.273
+  },
+  {
+    "date": "2025-11-25",
+    "actual": 57.95,
+    "forecast": 58.43,
+    "error": 0.48,
+    "errorPct": 0.83,
+    "signal": 1,
+    "confidence": 42.9,
+    "modelAgreement": 0.429
+  },
+  {
+    "date": "2025-11-26",
+    "actual": 58.65,
+    "forecast": 58.07,
+    "error": -0.58,
+    "errorPct": -0.99,
+    "signal": -1,
+    "confidence": 62.3,
+    "modelAgreement": 0.623
+  },
+  {
+    "date": "2025-11-27",
+    "actual": 58.65,
+    "forecast": 58.77,
+    "error": 0.12,
+    "errorPct": 0.2,
+    "signal": 1,
+    "confidence": 95.6,
+    "modelAgreement": 0.956
+  },
+  {
+    "date": "2025-11-28",
+    "actual": 58.65,
+    "forecast": 58.61,
+    "error": -0.04,
+    "errorPct": -0.07,
+    "signal": -1,
+    "confidence": 34.2,
+    "modelAgreement": 0.342
+  },
+  {
+    "date": "2025-11-29",
+    "actual": 58.55,
+    "forecast": 58.78,
+    "error": 0.23,
+    "errorPct": 0.39,
+    "signal": 1,
+    "confidence": 28.8,
+    "modelAgreement": 0.288
+  },
+  {
+    "date": "2025-11-30",
+    "actual": 58.55,
+    "forecast": 58.53,
+    "error": -0.02,
+    "errorPct": -0.03,
+    "signal": -1,
+    "confidence": 85.8,
+    "modelAgreement": 0.858
+  },
+  {
+    "date": "2025-12-01",
+    "actual": 59.32,
+    "forecast": 58.69,
+    "error": -0.63,
+    "errorPct": -1.06,
+    "signal": 1,
+    "confidence": 42.9,
+    "modelAgreement": 0.429
+  },
+  {
+    "date": "2025-12-02",
+    "actual": 58.64,
+    "forecast": 59.43,
+    "error": 0.79,
+    "errorPct": 1.35,
+    "signal": 1,
+    "confidence": 95.3,
+    "modelAgreement": 0.953
+  },
+  {
+    "date": "2025-12-03",
+    "actual": 58.95,
+    "forecast": 58.72,
+    "error": -0.23,
+    "errorPct": -0.39,
+    "signal": -1,
+    "confidence": 95.3,
+    "modelAgreement": 0.953
+  },
+  {
+    "date": "2025-12-04",
+    "actual": 59.67,
+    "forecast": 59.05,
+    "error": -0.62,
+    "errorPct": -1.04,
+    "signal": 1,
+    "confidence": 87.1,
+    "modelAgreement": 0.871
+  },
+  {
+    "date": "2025-12-05",
+    "actual": 60.08,
+    "forecast": 59.72,
+    "error": -0.36,
+    "errorPct": -0.59,
+    "signal": 1,
+    "confidence": 94.7,
+    "modelAgreement": 0.947
+  },
+  {
+    "date": "2025-12-06",
+    "actual": 60.08,
+    "forecast": 60.19,
+    "error": 0.11,
+    "errorPct": 0.18,
+    "signal": 1,
+    "confidence": 97.6,
+    "modelAgreement": 0.976
+  },
+  {
+    "date": "2025-12-07",
+    "actual": 60.08,
+    "forecast": 60.1,
+    "error": 0.02,
+    "errorPct": 0.03,
+    "signal": -1,
+    "confidence": 19.3,
+    "modelAgreement": 0.193
+  },
+  {
+    "date": "2025-12-08",
+    "actual": 58.88,
+    "forecast": 60.24,
+    "error": 1.36,
+    "errorPct": 2.31,
+    "signal": 1,
+    "confidence": 30.7,
+    "modelAgreement": 0.307
+  },
+  {
+    "date": "2025-12-09",
+    "actual": 58.25,
+    "forecast": 58.95,
+    "error": 0.7,
+    "errorPct": 1.19,
+    "signal": -1,
+    "confidence": 99.8,
+    "modelAgreement": 0.998
+  },
+  {
+    "date": "2025-12-10",
+    "actual": 58.46,
+    "forecast": 58.35,
+    "error": -0.11,
+    "errorPct": -0.19,
+    "signal": -1,
+    "confidence": 90.9,
+    "modelAgreement": 0.909
+  },
+  {
+    "date": "2025-12-11",
+    "actual": 57.6,
+    "forecast": 58.6,
+    "error": 1.0,
+    "errorPct": 1.73,
+    "signal": 1,
+    "confidence": 78.7,
+    "modelAgreement": 0.787
+  },
+  {
+    "date": "2025-12-12",
+    "actual": 57.44,
+    "forecast": 57.74,
+    "error": 0.3,
+    "errorPct": 0.53,
+    "signal": -1,
+    "confidence": 99.3,
+    "modelAgreement": 0.993
+  },
+  {
+    "date": "2025-12-13",
+    "actual": 57.44,
+    "forecast": 57.56,
+    "error": 0.12,
+    "errorPct": 0.21,
+    "signal": -1,
+    "confidence": 82.0,
+    "modelAgreement": 0.82
+  },
+  {
+    "date": "2025-12-14",
+    "actual": 57.44,
+    "forecast": 57.43,
+    "error": -0.01,
+    "errorPct": -0.02,
+    "signal": -1,
+    "confidence": 13.2,
+    "modelAgreement": 0.132
+  },
+  {
+    "date": "2025-12-15",
+    "actual": 56.82,
+    "forecast": 57.55,
+    "error": 0.73,
+    "errorPct": 1.29,
+    "signal": 1,
+    "confidence": 13.3,
+    "modelAgreement": 0.133
+  },
+  {
+    "date": "2025-12-16",
+    "actual": 55.27,
+    "forecast": 56.96,
+    "error": 1.69,
+    "errorPct": 3.06,
+    "signal": -1,
+    "confidence": 90.9,
+    "modelAgreement": 0.909
+  },
+  {
+    "date": "2025-12-17",
+    "actual": 55.81,
+    "forecast": 55.39,
+    "error": -0.42,
+    "errorPct": -0.75,
+    "signal": -1,
+    "confidence": 100.0,
+    "modelAgreement": 1.0
+  },
+  {
+    "date": "2025-12-18",
+    "actual": 56.0,
+    "forecast": 55.86,
+    "error": -0.14,
+    "errorPct": -0.25,
+    "signal": 1,
+    "confidence": 91.3,
+    "modelAgreement": 0.913
+  },
+  {
+    "date": "2025-12-19",
+    "actual": 56.52,
+    "forecast": 56.03,
+    "error": -0.49,
+    "errorPct": -0.88,
+    "signal": 1,
+    "confidence": 58.2,
+    "modelAgreement": 0.582
+  },
+  {
+    "date": "2025-12-20",
+    "actual": 56.52,
+    "forecast": 56.61,
+    "error": 0.09,
+    "errorPct": 0.16,
+    "signal": 1,
+    "confidence": 97.3,
+    "modelAgreement": 0.973
+  },
+  {
+    "date": "2025-12-21",
+    "actual": 56.52,
+    "forecast": 56.5,
+    "error": -0.02,
+    "errorPct": -0.04,
+    "signal": -1,
+    "confidence": 17.7,
+    "modelAgreement": 0.177
+  },
+  {
+    "date": "2025-12-22",
+    "actual": 58.01,
+    "forecast": 56.61,
+    "error": -1.4,
+    "errorPct": -2.41,
+    "signal": 1,
+    "confidence": 25.3,
+    "modelAgreement": 0.253
+  },
+  {
+    "date": "2025-12-23",
+    "actual": 58.38,
+    "forecast": 58.01,
+    "error": -0.37,
+    "errorPct": -0.63,
+    "signal": 1,
+    "confidence": 97.6,
+    "modelAgreement": 0.976
+  },
+  {
+    "date": "2025-12-24",
+    "actual": 58.35,
+    "forecast": 58.55,
+    "error": 0.2,
+    "errorPct": 0.34,
+    "signal": 1,
+    "confidence": 88.0,
+    "modelAgreement": 0.88
+  },
+  {
+    "date": "2025-12-25",
+    "actual": 58.35,
+    "forecast": 58.44,
+    "error": 0.09,
+    "errorPct": 0.16,
+    "signal": -1,
+    "confidence": 51.3,
+    "modelAgreement": 0.513
+  },
+  {
+    "date": "2025-12-26",
+    "actual": 58.35,
+    "forecast": 58.38,
+    "error": 0.03,
+    "errorPct": 0.05,
+    "signal": 1,
+    "confidence": 5.3,
+    "modelAgreement": 0.053
+  },
+  {
+    "date": "2025-12-27",
+    "actual": 56.74,
+    "forecast": 58.45,
+    "error": 1.71,
+    "errorPct": 3.01,
+    "signal": -1,
+    "confidence": 5.8,
+    "modelAgreement": 0.058
+  },
+  {
+    "date": "2025-12-28",
+    "actual": 56.74,
+    "forecast": 56.74,
+    "error": -0.0,
+    "errorPct": -0.0,
+    "signal": -1,
+    "confidence": 100.0,
+    "modelAgreement": 1.0
+  },
+  {
+    "date": "2025-12-29",
+    "actual": 58.08,
+    "forecast": 56.87,
+    "error": -1.21,
+    "errorPct": -2.09,
+    "signal": 1,
+    "confidence": 21.7,
+    "modelAgreement": 0.217
+  },
+  {
+    "date": "2025-12-30",
+    "actual": 57.95,
+    "forecast": 58.16,
+    "error": 0.21,
+    "errorPct": 0.36,
+    "signal": 1,
+    "confidence": 98.9,
+    "modelAgreement": 0.989
+  },
+  {
+    "date": "2025-12-31",
+    "actual": 57.42,
+    "forecast": 58.0,
+    "error": 0.58,
+    "errorPct": 1.01,
+    "signal": -1,
+    "confidence": 60.9,
+    "modelAgreement": 0.609
+  },
+  {
+    "date": "2026-01-01",
+    "actual": 57.42,
+    "forecast": 57.49,
+    "error": 0.07,
+    "errorPct": 0.13,
+    "signal": -1,
+    "confidence": 92.2,
+    "modelAgreement": 0.922
+  },
+  {
+    "date": "2026-01-02",
+    "actual": 57.42,
+    "forecast": 57.41,
+    "error": -0.01,
+    "errorPct": -0.02,
+    "signal": -1,
+    "confidence": 5.9,
+    "modelAgreement": 0.059
+  },
+  {
+    "date": "2026-01-03",
+    "actual": 57.32,
+    "forecast": 57.51,
+    "error": 0.19,
+    "errorPct": 0.34,
+    "signal": 1,
+    "confidence": 7.1,
+    "modelAgreement": 0.071
+  },
+  {
+    "date": "2026-01-04",
+    "actual": 57.32,
+    "forecast": 57.28,
+    "error": -0.04,
+    "errorPct": -0.07,
+    "signal": -1,
+    "confidence": 88.8,
+    "modelAgreement": 0.888
+  },
+  {
+    "date": "2026-01-05",
+    "actual": 58.32,
+    "forecast": 57.44,
+    "error": -0.88,
+    "errorPct": -1.5,
+    "signal": 1,
+    "confidence": 30.6,
+    "modelAgreement": 0.306
+  },
+  {
+    "date": "2026-01-06",
+    "actual": 57.13,
+    "forecast": 58.37,
+    "error": 1.24,
+    "errorPct": 2.17,
+    "signal": 1,
+    "confidence": 96.7,
+    "modelAgreement": 0.967
+  },
+  {
+    "date": "2026-01-07",
+    "actual": 55.99,
+    "forecast": 57.21,
+    "error": 1.22,
+    "errorPct": 2.17,
+    "signal": -1,
+    "confidence": 98.2,
+    "modelAgreement": 0.982
+  },
+  {
+    "date": "2026-01-08",
+    "actual": 57.76,
+    "forecast": 56.09,
+    "error": -1.67,
+    "errorPct": -2.89,
+    "signal": -1,
+    "confidence": 98.9,
+    "modelAgreement": 0.989
+  },
+  {
+    "date": "2026-01-09",
+    "actual": 59.12,
+    "forecast": 57.8,
+    "error": -1.32,
+    "errorPct": -2.23,
+    "signal": 1,
+    "confidence": 99.8,
+    "modelAgreement": 0.998
+  },
+  {
+    "date": "2026-01-10",
+    "actual": 59.12,
+    "forecast": 59.17,
+    "error": 0.05,
+    "errorPct": 0.09,
+    "signal": 1,
+    "confidence": 99.6,
+    "modelAgreement": 0.996
+  },
+  {
+    "date": "2026-01-11",
+    "actual": 59.12,
+    "forecast": 59.1,
+    "error": -0.02,
+    "errorPct": -0.03,
+    "signal": -1,
+    "confidence": 3.9,
+    "modelAgreement": 0.039
+  },
+  {
+    "date": "2026-01-12",
+    "actual": 59.5,
+    "forecast": 59.23,
+    "error": -0.27,
+    "errorPct": -0.45,
+    "signal": 1,
+    "confidence": 20.2,
+    "modelAgreement": 0.202
+  },
+  {
+    "date": "2026-01-13",
+    "actual": 61.15,
+    "forecast": 59.65,
+    "error": -1.5,
+    "errorPct": -2.45,
+    "signal": 1,
+    "confidence": 83.8,
+    "modelAgreement": 0.838
+  },
+  {
+    "date": "2026-01-14",
+    "actual": 62.02,
+    "forecast": 61.3,
+    "error": -0.72,
+    "errorPct": -1.15,
+    "signal": 1,
+    "confidence": 100.0,
+    "modelAgreement": 1.0
+  },
+  {
+    "date": "2026-01-15",
+    "actual": 59.08,
+    "forecast": 62.13,
+    "error": 3.05,
+    "errorPct": 5.16,
+    "signal": 1,
+    "confidence": 96.9,
+    "modelAgreement": 0.969
+  },
+  {
+    "date": "2026-01-16",
+    "actual": 59.34,
+    "forecast": 59.19,
+    "error": -0.15,
+    "errorPct": -0.26,
+    "signal": -1,
+    "confidence": 100.0,
+    "modelAgreement": 1.0
+  },
+  {
+    "date": "2026-01-17",
+    "actual": 59.34,
+    "forecast": 59.43,
+    "error": 0.09,
+    "errorPct": 0.15,
+    "signal": 1,
+    "confidence": 81.2,
+    "modelAgreement": 0.812
+  },
+  {
+    "date": "2026-01-18",
+    "actual": 59.34,
+    "forecast": 59.35,
+    "error": 0.01,
+    "errorPct": 0.01,
+    "signal": -1,
+    "confidence": 3.9,
+    "modelAgreement": 0.039
+  },
+  {
+    "date": "2026-01-19",
+    "actual": 59.34,
+    "forecast": 59.49,
+    "error": 0.15,
+    "errorPct": 0.24,
+    "signal": 1,
+    "confidence": 23.8,
+    "modelAgreement": 0.238
+  },
+  {
+    "date": "2026-01-20",
+    "actual": 59.34,
+    "forecast": 59.31,
+    "error": -0.03,
+    "errorPct": -0.06,
+    "signal": -1,
+    "confidence": 20.2,
+    "modelAgreement": 0.202
+  },
+  {
+    "date": "2026-01-21",
+    "actual": 60.62,
+    "forecast": 59.47,
+    "error": -1.15,
+    "errorPct": -1.89,
+    "signal": 1,
+    "confidence": 15.7,
+    "modelAgreement": 0.157
+  },
+  {
+    "date": "2026-01-22",
+    "actual": 59.36,
+    "forecast": 60.78,
+    "error": 1.42,
+    "errorPct": 2.38,
+    "signal": 1,
+    "confidence": 99.3,
+    "modelAgreement": 0.993
+  },
+  {
+    "date": "2026-01-23",
+    "actual": 61.07,
+    "forecast": 59.39,
+    "error": -1.68,
+    "errorPct": -2.75,
+    "signal": -1,
+    "confidence": 99.3,
+    "modelAgreement": 0.993
+  },
+  {
+    "date": "2026-01-24",
+    "actual": 61.07,
+    "forecast": 61.14,
+    "error": 0.07,
+    "errorPct": 0.11,
+    "signal": 1,
+    "confidence": 100.0,
+    "modelAgreement": 1.0
+  },
+  {
+    "date": "2026-01-25",
+    "actual": 61.07,
+    "forecast": 61.02,
+    "error": -0.05,
+    "errorPct": -0.08,
+    "signal": -1,
+    "confidence": 26.1,
+    "modelAgreement": 0.261
+  },
+  {
+    "date": "2026-01-26",
+    "actual": 60.63,
+    "forecast": 61.16,
+    "error": 0.53,
+    "errorPct": 0.88,
+    "signal": 1,
+    "confidence": 32.4,
+    "modelAgreement": 0.324
+  },
+  {
+    "date": "2026-01-27",
+    "actual": 62.39,
+    "forecast": 60.67,
+    "error": -1.72,
+    "errorPct": -2.76,
+    "signal": -1,
+    "confidence": 92.0,
+    "modelAgreement": 0.92
+  },
+  {
+    "date": "2026-01-28",
+    "actual": 63.21,
+    "forecast": 62.34,
+    "error": -0.87,
+    "errorPct": -1.37,
+    "signal": 1,
+    "confidence": 97.3,
+    "modelAgreement": 0.973
+  },
+  {
+    "date": "2026-01-29",
+    "actual": 65.42,
+    "forecast": 63.26,
+    "error": -2.16,
+    "errorPct": -3.3,
+    "signal": 1,
+    "confidence": 94.2,
+    "modelAgreement": 0.942
+  },
+  {
+    "date": "2026-01-30",
+    "actual": 65.21,
+    "forecast": 65.46,
+    "error": 0.25,
+    "errorPct": 0.39,
+    "signal": 1,
+    "confidence": 100.0,
+    "modelAgreement": 1.0
+  },
+  {
+    "date": "2026-01-31",
+    "actual": 65.21,
+    "forecast": 65.3,
+    "error": 0.09,
+    "errorPct": 0.13,
+    "signal": -1,
+    "confidence": 63.2,
+    "modelAgreement": 0.632
+  },
+  {
+    "date": "2026-02-01",
+    "actual": 65.21,
+    "forecast": 65.23,
+    "error": 0.02,
+    "errorPct": 0.04,
+    "signal": 1,
+    "confidence": 6.9,
+    "modelAgreement": 0.069
+  },
+  {
+    "date": "2026-02-02",
+    "actual": 62.14,
+    "forecast": 65.24,
+    "error": 3.1,
+    "errorPct": 4.98,
+    "signal": -1,
+    "confidence": 7.8,
+    "modelAgreement": 0.078
+  },
+  {
+    "date": "2026-02-03",
+    "actual": NaN,
+    "forecast": 62.18,
+    "error": NaN,
+    "errorPct": NaN,
+    "signal": -1,
+    "confidence": 100.0,
+    "modelAgreement": 1.0
+  }
+]

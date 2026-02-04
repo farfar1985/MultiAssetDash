@@ -5817,6 +5817,10 @@ def build_html(all_data):
             let t1Hits = 0;
             let skippedNeutral = 0;  // Debug counter
             
+            // FIX: Bug #4 - Use ATR-based T1 target instead of hardcoded 0.5%
+            // 0.5% is almost guaranteed for BTC but strict for low-vol assets
+            const atrPercents = getATRPercent(data.prices, 14);
+            
             // Loop through last ~40 possible trade entries to get ~20 valid trades
             for (let i = data.dates.length - 1; i >= evalWindow && totalTrades < 20; i--) {{
                 const entryIdx = i - evalWindow;
@@ -5831,10 +5835,15 @@ def build_html(all_data):
                 const entryPrice = data.prices[entryIdx];
                 if (!entryPrice || isNaN(entryPrice)) continue;
                 
-                // Check if T1 target was hit (0.5% move in signal direction)
+                // FIX: T1 target scaled by ATR (half of daily ATR as target)
+                // This makes accuracy comparable across assets with different volatility
+                let atrPct = atrPercents && atrPercents[entryIdx] ? atrPercents[entryIdx] : 0.5;
+                atrPct = Math.max(0.1, Math.min(atrPct, 5.0));  // Clamp to reasonable range
+                const t1Multiplier = 1 + (atrPct / 200);  // Half of 1-day ATR as target
+                
                 const t1Target = signal === 'BULLISH' 
-                    ? entryPrice * 1.005 
-                    : entryPrice * 0.995;
+                    ? entryPrice * t1Multiplier 
+                    : entryPrice * (2 - t1Multiplier);
                 
                 let hitT1 = false;
                 for (let j = entryIdx + 1; j <= Math.min(entryIdx + evalWindow, data.prices.length - 1); j++) {{
@@ -6715,6 +6724,51 @@ def build_html(all_data):
                         liveColor = 'rgba(100, 100, 100, 0.7)';  // Grey for neutral/flat
                     }}
                     
+                    // ==================== EXPANDING CONFIDENCE CONE ====================
+                    // Build cone that expands around the forecast line
+                    const coneDates = [data.dates[data.dates.length - 1]];  // Start at last actual date
+                    const coneUpper = [basePrice];  // Cone starts at base price
+                    const coneLower = [basePrice];
+                    
+                    // Build expanding cone for each forecast point
+                    for (let i = 1; i < futureDates.length; i++) {{
+                        const forecastPrice = futurePrices[i];
+                        const horizonDays = i;  // Approximate horizon
+                        
+                        // Uncertainty expands with sqrt(time) - financial standard
+                        const baseUncertainty = Math.abs(forecastPrice - basePrice) * 0.25;
+                        const timeExpansion = baseUncertainty * Math.sqrt(horizonDays);
+                        
+                        coneDates.push(futureDates[i]);
+                        coneUpper.push(forecastPrice + timeExpansion);
+                        coneLower.push(forecastPrice - timeExpansion);
+                    }}
+                    
+                    // Add lower bound trace (invisible, just for fill reference)
+                    traces.push({{
+                        x: coneDates,
+                        y: coneLower,
+                        mode: 'lines',
+                        line: {{ color: 'rgba(255, 215, 0, 0.5)', width: 1 }},
+                        name: 'Cone Lower',
+                        showlegend: false,
+                        hoverinfo: 'skip'
+                    }});
+                    
+                    // Add upper bound trace with fill to lower
+                    traces.push({{
+                        x: coneDates,
+                        y: coneUpper,
+                        mode: 'lines',
+                        fill: 'tonexty',
+                        fillcolor: 'rgba(255, 215, 0, 0.15)',
+                        line: {{ color: 'rgba(255, 215, 0, 0.5)', width: 1 }},
+                        name: 'Confidence Cone',
+                        showlegend: false,
+                        hoverinfo: 'skip'
+                    }});
+                    
+                    // Add the forecast line ON TOP of the cone
                     traces.push({{
                         x: futureDates,
                         y: futurePrices,
@@ -6924,39 +6978,88 @@ def build_html(all_data):
                     
                     // Color based on current signal (yellow/gold for visibility)
                     const lineColor = 'rgba(255, 215, 0, 0.7)';  // Gold color for the lines
-                    const bandColor = 'rgba(255, 215, 0, 0.08)';  // Subtle gold fill
+                    const bandColor = 'rgba(255, 215, 0, 0.12)';  // Subtle gold fill
                     
-                    // Create forecast band (rectangle from min to max with border lines)
-                    forecastBandShapes = [
-                        // Filled rectangle for the band
-                        {{
-                            type: 'rect',
-                            x0: lastDataDate,
-                            x1: maxForecastDate,
-                            y0: minForecast,
-                            y1: maxForecast,
-                            fillcolor: bandColor,
-                            line: {{ width: 0 }}
-                        }},
-                        // Top line of the band (max forecast)
-                        {{
-                            type: 'line',
-                            x0: lastDataDate,
-                            x1: maxForecastDate,
-                            y0: maxForecast,
-                            y1: maxForecast,
-                            line: {{ color: lineColor, width: 2 }}
-                        }},
-                        // Bottom line of the band (min forecast)
-                        {{
-                            type: 'line',
-                            x0: lastDataDate,
-                            x1: maxForecastDate,
-                            y0: minForecast,
-                            y1: minForecast,
-                            line: {{ color: lineColor, width: 2 }}
+                    // ==================== EXPANDING CONFIDENCE CONE ====================
+                    // Build cone that starts narrow at base price and expands over time
+                    // Collect forecast data per horizon for cone construction
+                    const conePoints = [];
+                    
+                    // Start point: base price at last data date (cone starts here)
+                    conePoints.push({{
+                        date: lastDataDate,
+                        upper: basePrice,
+                        lower: basePrice,
+                        center: basePrice
+                    }});
+                    
+                    // Build expanding cone - for each horizon, calculate spread
+                    horizons.forEach(h => {{
+                        const key = 'D+' + h;
+                        const pred = data.live_forecast.forecasts[key];
+                        if (pred !== null && pred !== undefined) {{
+                            const amplified = basePrice + (pred - basePrice) * 3.0;
+                            const dateObj = new Date(lastDateObj);
+                            dateObj.setDate(dateObj.getDate() + h);
+                            const dateStr = dateObj.toISOString().split('T')[0];
+                            
+                            // Calculate cone spread that expands with horizon
+                            // Uncertainty grows roughly with sqrt of time (random walk)
+                            const baseSpread = Math.abs(amplified - basePrice) * 0.3;  // 30% of move as base uncertainty
+                            const timeSpread = baseSpread * Math.sqrt(h / horizons[0]);  // Expands with sqrt(time)
+                            
+                            conePoints.push({{
+                                date: dateStr,
+                                upper: amplified + timeSpread,
+                                lower: amplified - timeSpread,
+                                center: amplified
+                            }});
                         }}
-                    ];
+                    }});
+                    
+                    // Build SVG path for the cone (polygon)
+                    // Go forward along upper bound, then backward along lower bound
+                    if (conePoints.length > 1) {{
+                        const upperPath = conePoints.map(p => `${{p.date}},${{p.upper}}`);
+                        const lowerPath = conePoints.slice().reverse().map(p => `${{p.date}},${{p.lower}}`);
+                        
+                        // Create filled cone shape using Plotly path
+                        forecastBandShapes = [
+                            // Upper boundary line
+                            {{
+                                type: 'path',
+                                path: 'M ' + conePoints.map(p => {{
+                                    const dateMs = new Date(p.date).getTime();
+                                    return `${{p.date}} ${{p.upper}}`;
+                                }}).join(' L '),
+                                line: {{ color: lineColor, width: 2 }}
+                            }},
+                            // Lower boundary line  
+                            {{
+                                type: 'path',
+                                path: 'M ' + conePoints.map(p => {{
+                                    return `${{p.date}} ${{p.lower}}`;
+                                }}).join(' L '),
+                                line: {{ color: lineColor, width: 2 }}
+                            }}
+                        ];
+                        
+                        // Add cone annotation showing expansion
+                        console.log(`📊 Confidence cone: starts at ${{basePrice.toFixed(2)}}, expands to ${{conePoints[conePoints.length-1].lower.toFixed(2)}} - ${{conePoints[conePoints.length-1].upper.toFixed(2)}} (horizon D+${{maxHorizon}})`);
+                    }} else {{
+                        // Fallback to simple rectangle if not enough points
+                        forecastBandShapes = [
+                            {{
+                                type: 'rect',
+                                x0: lastDataDate,
+                                x1: maxForecastDate,
+                                y0: minForecast,
+                                y1: maxForecast,
+                                fillcolor: bandColor,
+                                line: {{ width: 0 }}
+                            }}
+                        ];
+                    }}
                     
                     console.log(`📊 Forecast band: ${{minForecast.toFixed(2)}} - ${{maxForecast.toFixed(2)}} (${{amplifiedPrices.length}} points, max horizon: ${{maxHorizon}} days)`);
                 }}
@@ -8462,18 +8565,15 @@ def build_html(all_data):
             let pctT2 = ((t2 - currentPrice) / currentPrice * 100);
             let pctT3 = ((t3 - currentPrice) / currentPrice * 100);
             
-            // IMPORTANT: Ensure sign matches signal direction
-            // If BULLISH but prices are below current, flip to show upside potential
-            if (signal === 'BULLISH' && pctT1 < 0) {{
-                pctT1 = Math.abs(pctT1);
-                pctT2 = Math.abs(pctT2);
-                pctT3 = Math.abs(pctT3);
+            // FIX: Bug #6 - Don't flip signs! Show actual forecast values
+            // If forecasts disagree with signal, users need to see this contradiction
+            // Previously: sign was force-flipped, hiding model disagreement - DANGEROUS
+            let forecastDisagreement = false;
+            if (signal === 'BULLISH' && pctT2 < 0) {{
+                forecastDisagreement = true;  // Signal says up, but forecasts say down
             }}
-            // If BEARISH but prices are above current, flip to show downside risk
-            if (signal === 'BEARISH' && pctT1 > 0) {{
-                pctT1 = -Math.abs(pctT1);
-                pctT2 = -Math.abs(pctT2);
-                pctT3 = -Math.abs(pctT3);
+            if (signal === 'BEARISH' && pctT2 > 0) {{
+                forecastDisagreement = true;  // Signal says down, but forecasts say up
             }}
             
             // Max horizon from ENABLED horizons (not just viable)
@@ -8489,6 +8589,10 @@ def build_html(all_data):
             const formatPct = (pct) => pct >= 0 ? `+${{pct.toFixed(1)}}%` : `${{pct.toFixed(1)}}%`;
             
             section.innerHTML = `
+                ${{forecastDisagreement ? `<div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 12px;">
+                    <span style="color: #ef4444; font-weight: 600;">⚠️ Forecast Contradiction</span><br>
+                    <span style="color: var(--text-secondary);">Model forecasts disagree with signal direction. Consider reducing position size or waiting for confirmation.</span>
+                </div>` : ''}}
                 <div class="price-targets-header">
                     <div class="price-targets-title">
                         🎯 Price Targets

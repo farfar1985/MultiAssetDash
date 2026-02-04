@@ -1,0 +1,9 @@
+{
+  "horizons": "D+5+D+7+D+10",
+  "threshold": 0.4,
+  "aggregation": "top10",
+  "sharpe": 1.757,
+  "total_return": 12.36,
+  "da": 38.18,
+  "win_rate": 67.74
+}

@@ -184,11 +184,23 @@ def run_horizon(h):
         X_tr = X_train_all.loc[window_start:window_end]
         y_tr = y_train_all.loc[window_start:window_end]
         
+        # FIX: Split into train/validate to prevent data leakage (Bug #1)
+        # Previously: models were scored AND validated on the same data → overfitting
+        # Now: score models on fit portion (70%), validate ensemble on holdout (30%)
+        split_point = int(len(X_tr) * 0.7)
+        X_fit, X_val = X_tr.iloc[:split_point], X_tr.iloc[split_point:]
+        y_fit, y_val = y_tr.iloc[:split_point], y_tr.iloc[split_point:]
+        
+        # Fall back to full window if splits are too small
+        if len(X_fit) < 10 or len(X_val) < 5:
+            X_fit, X_val = X_tr, X_tr
+            y_fit, y_val = y_tr, y_tr
+        
         best_combo = None
         best_combo_score = -float('inf')
         
         for strat_name, weights in SCORING_STRATEGIES.items():
-            metrics = calculate_metrics(X_tr, y_tr)
+            metrics = calculate_metrics(X_fit, y_fit)  # Score on fit portion
             ranked = score_models(metrics, weights)
             
             for agg in AGGREGATORS:
@@ -196,10 +208,10 @@ def run_horizon(h):
                     top_n = max(1, int(len(ranked) * q))
                     top_cols = ranked.head(top_n).index
                     
-                    if agg == 'mean': ens_hist = X_tr[top_cols].mean(axis=1)
-                    else: ens_hist = X_tr[top_cols].median(axis=1)
+                    if agg == 'mean': ens_hist = X_val[top_cols].mean(axis=1)  # Ensemble on validate
+                    else: ens_hist = X_val[top_cols].median(axis=1)
                     
-                    score = evaluate_ensemble_quality(ens_hist, y_tr)
+                    score = evaluate_ensemble_quality(ens_hist, y_val)  # Evaluate on validate
                     
                     if score > best_combo_score:
                         best_combo_score = score

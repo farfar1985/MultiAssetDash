@@ -1,0 +1,37 @@
+{
+  "totalModels": 990,
+  "tierCounts": {
+    "elite": 315,
+    "above_avg": 251,
+    "below_avg": 241,
+    "weak": 183
+  },
+  "tierSignals": {
+    "elite": {
+      "bullish": 0.0,
+      "bearish": 100.0,
+      "net": -100.0
+    },
+    "above_avg": {
+      "bullish": 0.0,
+      "bearish": 100.0,
+      "net": -100.0
+    },
+    "below_avg": {
+      "bullish": 0.0,
+      "bearish": 100.0,
+      "net": -100.0
+    },
+    "weak": {
+      "bullish": 0.0,
+      "bearish": 100.0,
+      "net": -100.0
+    }
+  },
+  "accuracyStats": {
+    "min": 0.182,
+    "max": 0.374,
+    "mean": 0.273,
+    "median": 0.273
+  }
+}

@@ -336,3 +336,5 @@ date,prediction,actual,best_strat,best_agg,best_q,best_child_prediction
 2026-01-30,6987.6525,,MSE_Only,median,0.01,6992.387
 2026-01-31,6980.324500000001,,MSE_Only,median,0.01,6983.519
 2026-02-01,7018.0755,,MSE_Only,median,0.01,7033.996
+2026-02-02,7082.437,,Balanced,median,0.02,7023.82
+2026-02-03,7000.83,,Balanced,median,0.02,6965.469

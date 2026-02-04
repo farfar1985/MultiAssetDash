@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "assetId": 1866,
+    "assetName": "Crude Oil",
+    "generatedAt": "2026-02-03T20:55:49.078134",
+    "dataPoints": 398,
+    "horizonsAvailable": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "latestPrice": NaN
+  },
+  "summary": {
+    "currentSignal": "NEUTRAL",
+    "signalStrength": 0.0,
+    "priceTarget5D": 61.96,
+    "expectedMove": NaN,
+    "confidence90": [
+      61.33,
+      62.66
+    ],
+    "recentMAE": NaN,
+    "totalModels": 990
+  },
+  "chartConfig": {
+    "colors": {
+      "bullish": "#22c55e",
+      "bearish": "#ef4444",
+      "neutral": "#f59e0b",
+      "confidence90": "rgba(59, 130, 246, 0.15)",
+      "confidence50": "rgba(59, 130, 246, 0.3)",
+      "actual": "#f8fafc",
+      "forecast": "#3b82f6"
+    },
+    "historicalDays": 90,
+    "forecastDays": 10
+  }
+}

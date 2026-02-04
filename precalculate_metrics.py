@@ -198,7 +198,7 @@ def calculate_metrics(trades, prices):
     trade_returns = [t['pnl'] / 100 for t in trades]
     if len(trade_returns) > 1:
         avg_return = np.mean(trade_returns)
-        std_return = np.std(trade_returns)
+        std_return = np.std(trade_returns, ddof=1)  # FIX: Bug #3 - Use sample std
         # Estimate trades per year (assuming ~252 trading days)
         avg_hold_days = np.mean([t['holding_days'] for t in trades])
         trades_per_year = 252 / avg_hold_days if avg_hold_days > 0 else 50
@@ -248,12 +248,16 @@ def calculate_directional_accuracy(forecast_df, prices, horizons, threshold):
     correct = 0
     total = 0
     
-    for i in range(1, len(signals)):
+    # FIX: Bug #5 - Temporal alignment fix
+    # Signal at time i is a FORECAST about the future, not an explanation of the past
+    # Compare signal[i] with price change from i to i+1 (forward-looking)
+    # Previously: compared with i-1 to i (backward-looking) - WRONG
+    for i in range(len(signals) - 1):  # Stop 1 before end to allow forward look
         if signals.iloc[i] == 'NEUTRAL':
             continue
         
         pred_direction = 1 if signals.iloc[i] == 'BULLISH' else -1
-        actual_direction = 1 if prices.iloc[i] > prices.iloc[i-1] else -1
+        actual_direction = 1 if prices.iloc[i+1] > prices.iloc[i] else -1  # Forward-looking
         
         if pred_direction == actual_direction:
             correct += 1

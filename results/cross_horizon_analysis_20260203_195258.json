@@ -1,0 +1,467 @@
+{
+  "Crude_Oil": {
+    "correlation_matrix": {
+      "D+1": {
+        "D+1": 1.0,
+        "D+2": 0.5022526239655337,
+        "D+3": 0.4667601915331229,
+        "D+5": 0.4796647979231817,
+        "D+7": 0.5062653094543634,
+        "D+10": 0.5307720309821732
+      },
+      "D+2": {
+        "D+1": 0.5022526239655337,
+        "D+2": 1.0,
+        "D+3": 0.6485925338628222,
+        "D+5": 0.6024225736536059,
+        "D+7": 0.6078719322648195,
+        "D+10": 0.607298021897641
+      },
+      "D+3": {
+        "D+1": 0.4667601915331229,
+        "D+2": 0.6485925338628222,
+        "D+3": 1.0,
+        "D+5": 0.672135757595663,
+        "D+7": 0.6565117631092625,
+        "D+10": 0.6203997450715544
+      },
+      "D+5": {
+        "D+1": 0.4796647979231817,
+        "D+2": 0.6024225736536059,
+        "D+3": 0.672135757595663,
+        "D+5": 1.0,
+        "D+7": 0.7629399426961042,
+        "D+10": 0.7449441056910563
+      },
+      "D+7": {
+        "D+1": 0.5062653094543634,
+        "D+2": 0.6078719322648195,
+        "D+3": 0.6565117631092625,
+        "D+5": 0.7629399426961042,
+        "D+7": 1.0,
+        "D+10": 0.7913109058778997
+      },
+      "D+10": {
+        "D+1": 0.5307720309821732,
+        "D+2": 0.607298021897641,
+        "D+3": 0.6203997450715544,
+        "D+5": 0.7449441056910563,
+        "D+7": 0.7913109058778997,
+        "D+10": 1.0
+      }
+    },
+    "agreement_accuracy": {
+      "2": {
+        "accuracy": 33.5,
+        "n_signals": 397,
+        "pct_of_total": 100.0
+      },
+      "3": {
+        "accuracy": 33.5,
+        "n_signals": 397,
+        "pct_of_total": 100.0
+      },
+      "4": {
+        "accuracy": 32.1,
+        "n_signals": 365,
+        "pct_of_total": 91.9
+      },
+      "5": {
+        "accuracy": 35.1,
+        "n_signals": 299,
+        "pct_of_total": 75.3
+      },
+      "6": {
+        "accuracy": 37.7,
+        "n_signals": 231,
+        "pct_of_total": 58.2
+      }
+    },
+    "pair_predictive_power": {
+      "D+1_D+2": {
+        "agreement_rate": 75.1,
+        "accuracy_when_agree": 34.2,
+        "D+1_right_when_disagree": 26.3,
+        "D+2_right_when_disagree": 26.3
+      },
+      "D+1_D+3": {
+        "agreement_rate": 73.0,
+        "accuracy_when_agree": 36.9,
+        "D+1_right_when_disagree": 23.4,
+        "D+3_right_when_disagree": 38.3
+      },
+      "D+1_D+5": {
+        "agreement_rate": 73.8,
+        "accuracy_when_agree": 33.1,
+        "D+1_right_when_disagree": 33.7,
+        "D+5_right_when_disagree": 26.9
+      },
+      "D+1_D+7": {
+        "agreement_rate": 75.1,
+        "accuracy_when_agree": 33.2,
+        "D+1_right_when_disagree": 37.4,
+        "D+7_right_when_disagree": 23.2
+      },
+      "D+1_D+10": {
+        "agreement_rate": 76.6,
+        "accuracy_when_agree": 32.2,
+        "D+1_right_when_disagree": 34.4,
+        "D+10_right_when_disagree": 24.7
+      },
+      "D+2_D+3": {
+        "agreement_rate": 82.4,
+        "accuracy_when_agree": 35.8,
+        "D+2_right_when_disagree": 24.3,
+        "D+3_right_when_disagree": 25.7
+      },
+      "D+2_D+5": {
+        "agreement_rate": 80.1,
+        "accuracy_when_agree": 36.5,
+        "D+2_right_when_disagree": 30.4,
+        "D+5_right_when_disagree": 20.3
+      },
+      "D+2_D+7": {
+        "agreement_rate": 80.4,
+        "accuracy_when_agree": 34.5,
+        "D+2_right_when_disagree": 24.4,
+        "D+7_right_when_disagree": 23.1
+      },
+      "D+2_D+10": {
+        "agreement_rate": 80.4,
+        "accuracy_when_agree": 34.5,
+        "D+2_right_when_disagree": 25.6,
+        "D+10_right_when_disagree": 28.2
+      },
+      "D+3_D+5": {
+        "agreement_rate": 83.6,
+        "accuracy_when_agree": 36.4,
+        "D+3_right_when_disagree": 30.8,
+        "D+5_right_when_disagree": 21.5
+      },
+      "D+3_D+7": {
+        "agreement_rate": 82.9,
+        "accuracy_when_agree": 35.9,
+        "D+3_right_when_disagree": 29.4,
+        "D+7_right_when_disagree": 22.1
+      },
+      "D+3_D+10": {
+        "agreement_rate": 80.9,
+        "accuracy_when_agree": 37.7,
+        "D+3_right_when_disagree": 23.7,
+        "D+10_right_when_disagree": 25.0
+      },
+      "D+5_D+7": {
+        "agreement_rate": 88.2,
+        "accuracy_when_agree": 32.0,
+        "D+5_right_when_disagree": 25.5,
+        "D+7_right_when_disagree": 21.3
+      },
+      "D+5_D+10": {
+        "agreement_rate": 87.2,
+        "accuracy_when_agree": 31.2,
+        "D+5_right_when_disagree": 17.6,
+        "D+10_right_when_disagree": 31.4
+      },
+      "D+7_D+10": {
+        "agreement_rate": 89.4,
+        "accuracy_when_agree": 31.0,
+        "D+7_right_when_disagree": 21.4,
+        "D+10_right_when_disagree": 31.0
+      }
+    }
+  },
+  "SP500": {
+    "correlation_matrix": {
+      "D+1": {
+        "D+1": 1.0,
+        "D+3": 0.6068882176706054,
+        "D+5": 0.6171013893675568,
+        "D+8": 0.603140446939239,
+        "D+13": 0.5555309188484896,
+        "D+21": 0.5194072930058247
+      },
+      "D+3": {
+        "D+1": 0.6068882176706054,
+        "D+3": 1.0,
+        "D+5": 0.6467336173666055,
+        "D+8": 0.5946685016663803,
+        "D+13": 0.6210186284289575,
+        "D+21": 0.6011898319263722
+      },
+      "D+5": {
+        "D+1": 0.6171013893675568,
+        "D+3": 0.6467336173666055,
+        "D+5": 1.0,
+        "D+8": 0.655499059553923,
+        "D+13": 0.6210186284289572,
+        "D+21": 0.6314801796063486
+      },
+      "D+8": {
+        "D+1": 0.603140446939239,
+        "D+3": 0.5946685016663803,
+        "D+5": 0.655499059553923,
+        "D+8": 1.0,
+        "D+13": 0.6694554784226658,
+        "D+21": 0.6197889393079387
+      },
+      "D+13": {
+        "D+1": 0.5555309188484896,
+        "D+3": 0.6210186284289575,
+        "D+5": 0.6210186284289572,
+        "D+8": 0.6694554784226658,
+        "D+13": 1.0,
+        "D+21": 0.6156023170093202
+      },
+      "D+21": {
+        "D+1": 0.5194072930058247,
+        "D+3": 0.6011898319263722,
+        "D+5": 0.6314801796063486,
+        "D+8": 0.6197889393079387,
+        "D+13": 0.6156023170093202,
+        "D+21": 1.0
+      }
+    },
+    "agreement_accuracy": {
+      "2": {
+        "accuracy": 31.7,
+        "n_signals": 397,
+        "pct_of_total": 100.0
+      },
+      "3": {
+        "accuracy": 31.7,
+        "n_signals": 397,
+        "pct_of_total": 100.0
+      },
+      "4": {
+        "accuracy": 33.3,
+        "n_signals": 354,
+        "pct_of_total": 89.2
+      },
+      "5": {
+        "accuracy": 39.6,
+        "n_signals": 283,
+        "pct_of_total": 71.3
+      },
+      "6": {
+        "accuracy": 40.6,
+        "n_signals": 244,
+        "pct_of_total": 61.5
+      }
+    },
+    "pair_predictive_power": {
+      "D+1_D+3": {
+        "agreement_rate": 80.4,
+        "accuracy_when_agree": 35.6,
+        "D+1_right_when_disagree": 23.1,
+        "D+3_right_when_disagree": 25.6
+      },
+      "D+1_D+5": {
+        "agreement_rate": 80.9,
+        "accuracy_when_agree": 34.8,
+        "D+1_right_when_disagree": 31.6,
+        "D+5_right_when_disagree": 25.0
+      },
+      "D+1_D+8": {
+        "agreement_rate": 80.4,
+        "accuracy_when_agree": 36.1,
+        "D+1_right_when_disagree": 21.8,
+        "D+8_right_when_disagree": 30.8
+      },
+      "D+1_D+13": {
+        "agreement_rate": 78.1,
+        "accuracy_when_agree": 37.3,
+        "D+1_right_when_disagree": 21.8,
+        "D+13_right_when_disagree": 27.6
+      },
+      "D+1_D+21": {
+        "agreement_rate": 76.1,
+        "accuracy_when_agree": 36.3,
+        "D+1_right_when_disagree": 33.7,
+        "D+21_right_when_disagree": 25.3
+      },
+      "D+3_D+5": {
+        "agreement_rate": 82.4,
+        "accuracy_when_agree": 36.6,
+        "D+3_right_when_disagree": 22.9,
+        "D+5_right_when_disagree": 28.6
+      },
+      "D+3_D+8": {
+        "agreement_rate": 79.8,
+        "accuracy_when_agree": 37.9,
+        "D+3_right_when_disagree": 26.2,
+        "D+8_right_when_disagree": 26.2
+      },
+      "D+3_D+13": {
+        "agreement_rate": 81.2,
+        "accuracy_when_agree": 37.2,
+        "D+3_right_when_disagree": 13.3,
+        "D+13_right_when_disagree": 32.0
+      },
+      "D+3_D+21": {
+        "agreement_rate": 80.2,
+        "accuracy_when_agree": 37.0,
+        "D+3_right_when_disagree": 25.3,
+        "D+21_right_when_disagree": 26.6
+      },
+      "D+5_D+8": {
+        "agreement_rate": 82.9,
+        "accuracy_when_agree": 37.7,
+        "D+5_right_when_disagree": 22.1,
+        "D+8_right_when_disagree": 32.4
+      },
+      "D+5_D+13": {
+        "agreement_rate": 81.2,
+        "accuracy_when_agree": 37.2,
+        "D+5_right_when_disagree": 18.7,
+        "D+13_right_when_disagree": 28.0
+      },
+      "D+5_D+21": {
+        "agreement_rate": 81.7,
+        "accuracy_when_agree": 35.7,
+        "D+5_right_when_disagree": 20.5,
+        "D+21_right_when_disagree": 28.8
+      },
+      "D+8_D+13": {
+        "agreement_rate": 83.6,
+        "accuracy_when_agree": 36.4,
+        "D+8_right_when_disagree": 27.7,
+        "D+13_right_when_disagree": 24.6
+      },
+      "D+8_D+21": {
+        "agreement_rate": 81.1,
+        "accuracy_when_agree": 36.6,
+        "D+8_right_when_disagree": 29.3,
+        "D+21_right_when_disagree": 26.7
+      },
+      "D+13_D+21": {
+        "agreement_rate": 80.9,
+        "accuracy_when_agree": 35.1,
+        "D+13_right_when_disagree": 23.7,
+        "D+21_right_when_disagree": 26.3
+      }
+    }
+  },
+  "Bitcoin": {
+    "correlation_matrix": {
+      "D+1": {
+        "D+1": 1.0,
+        "D+3": 0.748115249076693,
+        "D+5": 0.7885933306267364,
+        "D+8": 0.7585743134200954,
+        "D+10": 0.7581926701503715
+      },
+      "D+3": {
+        "D+1": 0.748115249076693,
+        "D+3": 1.0,
+        "D+5": 0.8190541490509338,
+        "D+8": 0.7992180003639728,
+        "D+10": 0.8185833968012185
+      },
+      "D+5": {
+        "D+1": 0.7885933306267364,
+        "D+3": 0.8190541490509338,
+        "D+5": 1.0,
+        "D+8": 0.8488664481960917,
+        "D+10": 0.8190541490509334
+      },
+      "D+8": {
+        "D+1": 0.7585743134200954,
+        "D+3": 0.7992180003639728,
+        "D+5": 0.8488664481960917,
+        "D+8": 1.0,
+        "D+10": 0.8496166194224423
+      },
+      "D+10": {
+        "D+1": 0.7581926701503715,
+        "D+3": 0.8185833968012185,
+        "D+5": 0.8190541490509334,
+        "D+8": 0.8496166194224423,
+        "D+10": 1.0
+      }
+    },
+    "agreement_accuracy": {
+      "2": {
+        "accuracy": 43.8,
+        "n_signals": 397,
+        "pct_of_total": 100.0
+      },
+      "3": {
+        "accuracy": 43.8,
+        "n_signals": 397,
+        "pct_of_total": 100.0
+      },
+      "4": {
+        "accuracy": 45.0,
+        "n_signals": 367,
+        "pct_of_total": 92.4
+      },
+      "5": {
+        "accuracy": 50.2,
+        "n_signals": 313,
+        "pct_of_total": 78.8
+      }
+    },
+    "pair_predictive_power": {
+      "D+1_D+3": {
+        "agreement_rate": 87.4,
+        "accuracy_when_agree": 46.4,
+        "D+1_right_when_disagree": 42.0,
+        "D+3_right_when_disagree": 56.0
+      },
+      "D+1_D+5": {
+        "agreement_rate": 89.4,
+        "accuracy_when_agree": 47.3,
+        "D+1_right_when_disagree": 45.2,
+        "D+5_right_when_disagree": 52.4
+      },
+      "D+1_D+8": {
+        "agreement_rate": 87.9,
+        "accuracy_when_agree": 47.6,
+        "D+1_right_when_disagree": 43.8,
+        "D+8_right_when_disagree": 54.2
+      },
+      "D+1_D+10": {
+        "agreement_rate": 87.9,
+        "accuracy_when_agree": 46.4,
+        "D+1_right_when_disagree": 50.0,
+        "D+10_right_when_disagree": 47.9
+      },
+      "D+3_D+5": {
+        "agreement_rate": 90.9,
+        "accuracy_when_agree": 46.3,
+        "D+3_right_when_disagree": 41.7,
+        "D+5_right_when_disagree": 55.6
+      },
+      "D+3_D+8": {
+        "agreement_rate": 89.9,
+        "accuracy_when_agree": 45.9,
+        "D+3_right_when_disagree": 50.0,
+        "D+8_right_when_disagree": 47.5
+      },
+      "D+3_D+10": {
+        "agreement_rate": 90.9,
+        "accuracy_when_agree": 46.5,
+        "D+3_right_when_disagree": 50.0,
+        "D+10_right_when_disagree": 47.2
+      },
+      "D+5_D+8": {
+        "agreement_rate": 92.4,
+        "accuracy_when_agree": 45.8,
+        "D+5_right_when_disagree": 53.3,
+        "D+8_right_when_disagree": 43.3
+      },
+      "D+5_D+10": {
+        "agreement_rate": 90.9,
+        "accuracy_when_agree": 46.8,
+        "D+5_right_when_disagree": 41.7,
+        "D+10_right_when_disagree": 55.6
+      },
+      "D+8_D+10": {
+        "agreement_rate": 92.4,
+        "accuracy_when_agree": 47.1,
+        "D+8_right_when_disagree": 46.7,
+        "D+10_right_when_disagree": 50.0
+      }
+    }
+  }
+}

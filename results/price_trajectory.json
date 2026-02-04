@@ -1,0 +1,287 @@
+{
+  "current": {
+    "date": "2026-02-03",
+    "price": 62.14,
+    "type": "actual"
+  },
+  "path": [
+    {
+      "horizon": 1,
+      "date": "2026-02-04",
+      "days_out": 1,
+      "price_forecast": 62.22,
+      "price_all_models": 62.18,
+      "conf_90": [
+        61.76,
+        62.65
+      ],
+      "conf_50": [
+        62.11,
+        62.35
+      ],
+      "uncertainty": 0.3,
+      "move_from_current": 0.08,
+      "move_pct": 0.12,
+      "trend_slope": 0.08,
+      "trend_direction": "FLAT",
+      "bullish_pct": 5.2,
+      "bearish_pct": 3.6,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 900,
+      "model_spread": 0.61
+    },
+    {
+      "horizon": 2,
+      "date": "2026-02-05",
+      "days_out": 2,
+      "price_forecast": 61.79,
+      "price_all_models": 61.94,
+      "conf_90": [
+        61.25,
+        62.59
+      ],
+      "conf_50": [
+        61.74,
+        62.16
+      ],
+      "uncertainty": 0.41,
+      "move_from_current": -0.35,
+      "move_pct": -0.57,
+      "trend_slope": -0.43,
+      "trend_direction": "DOWN",
+      "bullish_pct": 4.4,
+      "bearish_pct": 18.6,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 900,
+      "model_spread": 0.46
+    },
+    {
+      "horizon": 3,
+      "date": "2026-02-06",
+      "days_out": 3,
+      "price_forecast": 61.65,
+      "price_all_models": 61.82,
+      "conf_90": [
+        61.26,
+        62.47
+      ],
+      "conf_50": [
+        61.58,
+        62.02
+      ],
+      "uncertainty": 0.41,
+      "move_from_current": -0.49,
+      "move_pct": -0.79,
+      "trend_slope": -0.14,
+      "trend_direction": "DOWN",
+      "bullish_pct": 2.0,
+      "bearish_pct": 31.1,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 900,
+      "model_spread": 0.37
+    },
+    {
+      "horizon": 4,
+      "date": "2026-02-07",
+      "days_out": 4,
+      "price_forecast": 61.65,
+      "price_all_models": 61.91,
+      "conf_90": [
+        61.35,
+        62.53
+      ],
+      "conf_50": [
+        61.71,
+        62.1
+      ],
+      "uncertainty": 0.29,
+      "move_from_current": -0.49,
+      "move_pct": -0.79,
+      "trend_slope": -0.0,
+      "trend_direction": "FLAT",
+      "bullish_pct": 3.2,
+      "bearish_pct": 19.6,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 780,
+      "model_spread": 0.36
+    },
+    {
+      "horizon": 5,
+      "date": "2026-02-08",
+      "days_out": 5,
+      "price_forecast": 61.67,
+      "price_all_models": 61.98,
+      "conf_90": [
+        61.33,
+        62.66
+      ],
+      "conf_50": [
+        61.73,
+        62.23
+      ],
+      "uncertainty": 0.43,
+      "move_from_current": -0.47,
+      "move_pct": -0.75,
+      "trend_slope": 0.03,
+      "trend_direction": "FLAT",
+      "bullish_pct": 5.4,
+      "bearish_pct": 18.8,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 990,
+      "model_spread": 0.41
+    },
+    {
+      "horizon": 6,
+      "date": "2026-02-09",
+      "days_out": 6,
+      "price_forecast": 61.58,
+      "price_all_models": 61.96,
+      "conf_90": [
+        61.29,
+        62.67
+      ],
+      "conf_50": [
+        61.69,
+        62.24
+      ],
+      "uncertainty": 0.35,
+      "move_from_current": -0.56,
+      "move_pct": -0.9,
+      "trend_slope": -0.1,
+      "trend_direction": "FLAT",
+      "bullish_pct": 5.9,
+      "bearish_pct": 21.5,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 826,
+      "model_spread": 0.42
+    },
+    {
+      "horizon": 7,
+      "date": "2026-02-10",
+      "days_out": 7,
+      "price_forecast": 61.6,
+      "price_all_models": 62.04,
+      "conf_90": [
+        61.29,
+        62.75
+      ],
+      "conf_50": [
+        61.78,
+        62.31
+      ],
+      "uncertainty": 0.46,
+      "move_from_current": -0.54,
+      "move_pct": -0.87,
+      "trend_slope": 0.02,
+      "trend_direction": "FLAT",
+      "bullish_pct": 7.8,
+      "bearish_pct": 16.9,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 1157,
+      "model_spread": 0.45
+    },
+    {
+      "horizon": 8,
+      "date": "2026-02-11",
+      "days_out": 8,
+      "price_forecast": 61.66,
+      "price_all_models": 62.21,
+      "conf_90": [
+        61.28,
+        63.26
+      ],
+      "conf_50": [
+        61.85,
+        62.55
+      ],
+      "uncertainty": 0.61,
+      "move_from_current": -0.48,
+      "move_pct": -0.78,
+      "trend_slope": 0.06,
+      "trend_direction": "FLAT",
+      "bullish_pct": 19.9,
+      "bearish_pct": 14.4,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 1455,
+      "model_spread": 0.61
+    },
+    {
+      "horizon": 9,
+      "date": "2026-02-12",
+      "days_out": 9,
+      "price_forecast": 61.61,
+      "price_all_models": 62.17,
+      "conf_90": [
+        61.27,
+        63.18
+      ],
+      "conf_50": [
+        61.79,
+        62.51
+      ],
+      "uncertainty": 0.48,
+      "move_from_current": -0.53,
+      "move_pct": -0.85,
+      "trend_slope": -0.04,
+      "trend_direction": "FLAT",
+      "bullish_pct": 18.2,
+      "bearish_pct": 17.7,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 1285,
+      "model_spread": 0.61
+    },
+    {
+      "horizon": 10,
+      "date": "2026-02-13",
+      "days_out": 10,
+      "price_forecast": 61.67,
+      "price_all_models": 62.35,
+      "conf_90": [
+        61.32,
+        63.61
+      ],
+      "conf_50": [
+        61.86,
+        62.8
+      ],
+      "uncertainty": 0.67,
+      "move_from_current": -0.47,
+      "move_pct": -0.75,
+      "trend_slope": 0.06,
+      "trend_direction": "FLAT",
+      "bullish_pct": 31.7,
+      "bearish_pct": 13.8,
+      "consensus": "NEUTRAL",
+      "consensus_color": "#f59e0b",
+      "n_models": 986,
+      "model_spread": 0.72
+    }
+  ],
+  "summary": {
+    "current_price": 62.14,
+    "final_target": 61.67,
+    "total_move": -0.47,
+    "total_move_pct": -0.76,
+    "bullish_horizons": 0,
+    "bearish_horizons": 0,
+    "trend_consistency": 20.0,
+    "avg_uncertainty": 0.44
+  },
+  "trading_signal": {
+    "signal": "HOLD",
+    "confidence": "LOW",
+    "target_price": 61.67,
+    "stop_loss": 62.38,
+    "take_profit": 61.44,
+    "risk_reward": 3.0
+  }
+}

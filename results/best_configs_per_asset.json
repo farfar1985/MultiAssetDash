@@ -1,0 +1,9 @@
+{
+  "Bitcoin": {
+    "asset_id": "1860",
+    "horizons": "D1+D3+D13",
+    "threshold": 0.3,
+    "sharpe": 1350907779.907,
+    "return": 0.85,
+    "win_rate": 100.0,
+    "trades": 
