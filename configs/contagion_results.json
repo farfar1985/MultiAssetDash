@@ -1,0 +1,617 @@
+{
+  "generated_at": "2026-02-05T11:32:20.711048",
+  "method": "quantum_contagion_detection",
+  "assets": [
+    "SP500",
+    "Bitcoin",
+    "Crude_Oil"
+  ],
+  "n_periods": 368,
+  "statistics": {
+    "mean_contagion": 0.291,
+    "max_contagion": 0.657,
+    "std_contagion": 0.122
+  },
+  "alert_distribution": {
+    "LOW": 255,
+    "MODERATE": 99,
+    "HIGH": 14,
+    "CRITICAL": 0
+  },
+  "pair_summary": {
+    "SP500-Bitcoin": {
+      "mean": 0.336,
+      "max": 0.689
+    },
+    "SP500-Crude_Oil": {
+      "mean": 0.259,
+      "max": 0.788
+    },
+    "Bitcoin-Crude_Oil": {
+      "mean": 0.279,
+      "max": 0.695
+    }
+  },
+  "warnings": [
+    {
+      "t": 29,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.402,
+      "contagion_level": 0.307
+    },
+    {
+      "t": 35,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.454,
+      "contagion_level": 0.158
+    },
+    {
+      "t": 62,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.452,
+      "contagion_level": 0.297
+    },
+    {
+      "t": 83,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.432,
+      "contagion_level": 0.424
+    },
+    {
+      "t": 89,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.408,
+      "contagion_level": 0.51
+    },
+    {
+      "t": 93,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.434,
+      "contagion_level": 0.421
+    },
+    {
+      "t": 99,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.45,
+      "contagion_level": 0.51
+    },
+    {
+      "t": 120,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.567,
+      "contagion_level": 0.255
+    },
+    {
+      "t": 121,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.574,
+      "contagion_level": 0.282
+    },
+    {
+      "t": 174,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.536,
+      "contagion_level": 0.457
+    },
+    {
+      "t": 194,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.409,
+      "contagion_level": 0.186
+    },
+    {
+      "t": 195,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.438,
+      "contagion_level": 0.186
+    },
+    {
+      "t": 213,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.493,
+      "contagion_level": 0.282
+    },
+    {
+      "t": 283,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.576,
+      "contagion_level": 0.46
+    },
+    {
+      "t": 284,
+      "warning": "RISING CORRELATION",
+      "probability": 0.315,
+      "contagion_level": 0.469
+    },
+    {
+      "t": 285,
+      "warning": "RISING CORRELATION",
+      "probability": 0.357,
+      "contagion_level": 0.483
+    },
+    {
+      "t": 286,
+      "warning": "RISING CORRELATION",
+      "probability": 0.352,
+      "contagion_level": 0.501
+    },
+    {
+      "t": 303,
+      "warning": "ELEVATED CONTAGION RISK",
+      "probability": 0.59,
+      "contagion_level": 0.27
+    }
+  ],
+  "sample_results": [
+    {
+      "timestamp_idx": 383,
+      "system_contagion": 0.256,
+      "max_contagion": 0.597,
+      "alert_level": "MODERATE",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": 0.071,
+          "entanglement": 0.017,
+          "contagion_score": 0.096,
+          "vol_a": 0.054,
+          "vol_b": 0.25
+        },
+        "SP500-Crude_Oil": {
+          "correlation": 0.018,
+          "entanglement": 0.002,
+          "contagion_score": 0.075,
+          "vol_a": 0.054,
+          "vol_b": 0.282
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.559,
+          "entanglement": 0.669,
+          "contagion_score": 0.597,
+          "vol_a": 0.25,
+          "vol_b": 0.282
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.09615390282993183,
+          0.0750642207435276
+        ],
+        [
+          0.09615390282993183,
+          0.0,
+          0.597348749957241
+        ],
+        [
+          0.0750642207435276,
+          0.597348749957241,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 384,
+      "system_contagion": 0.25,
+      "max_contagion": 0.58,
+      "alert_level": "MODERATE",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": -0.028,
+          "entanglement": 0.003,
+          "contagion_score": 0.072,
+          "vol_a": 0.046,
+          "vol_b": 0.251
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.065,
+          "entanglement": 0.015,
+          "contagion_score": 0.097,
+          "vol_a": 0.046,
+          "vol_b": 0.279
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.54,
+          "entanglement": 0.645,
+          "contagion_score": 0.58,
+          "vol_a": 0.251,
+          "vol_b": 0.279
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.07215478709247147,
+          0.09717922466190558
+        ],
+        [
+          0.07215478709247147,
+          0.0,
+          0.5796745081979638
+        ],
+        [
+          0.09717922466190558,
+          0.5796745081979638,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 385,
+      "system_contagion": 0.229,
+      "max_contagion": 0.514,
+      "alert_level": "MODERATE",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": 0.013,
+          "entanglement": 0.001,
+          "contagion_score": 0.075,
+          "vol_a": 0.046,
+          "vol_b": 0.301
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.065,
+          "entanglement": 0.015,
+          "contagion_score": 0.097,
+          "vol_a": 0.046,
+          "vol_b": 0.279
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.468,
+          "entanglement": 0.526,
+          "contagion_score": 0.514,
+          "vol_a": 0.301,
+          "vol_b": 0.279
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.07490883422335959,
+          0.09717922466190558
+        ],
+        [
+          0.07490883422335959,
+          0.0,
+          0.5135743634165871
+        ],
+        [
+          0.09717922466190558,
+          0.5135743634165871,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 386,
+      "system_contagion": 0.279,
+      "max_contagion": 0.54,
+      "alert_level": "MODERATE",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": -0.076,
+          "entanglement": 0.02,
+          "contagion_score": 0.11,
+          "vol_a": 0.059,
+          "vol_b": 0.3
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.2,
+          "entanglement": 0.097,
+          "contagion_score": 0.188,
+          "vol_a": 0.059,
+          "vol_b": 0.288
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.496,
+          "entanglement": 0.56,
+          "contagion_score": 0.54,
+          "vol_a": 0.3,
+          "vol_b": 0.288
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.10982735823130561,
+          0.18809053801378695
+        ],
+        [
+          0.10982735823130561,
+          0.0,
+          0.5400522586419066
+        ],
+        [
+          0.18809053801378695,
+          0.5400522586419066,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 387,
+      "system_contagion": 0.289,
+      "max_contagion": 0.523,
+      "alert_level": "MODERATE",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": -0.073,
+          "entanglement": 0.018,
+          "contagion_score": 0.108,
+          "vol_a": 0.061,
+          "vol_b": 0.299
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.263,
+          "entanglement": 0.149,
+          "contagion_score": 0.237,
+          "vol_a": 0.061,
+          "vol_b": 0.3
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.478,
+          "entanglement": 0.53,
+          "contagion_score": 0.523,
+          "vol_a": 0.299,
+          "vol_b": 0.3
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.10844401519844706,
+          0.2366980314926053
+        ],
+        [
+          0.10844401519844706,
+          0.0,
+          0.5226690643557009
+        ],
+        [
+          0.2366980314926053,
+          0.5226690643557009,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 388,
+      "system_contagion": 0.284,
+      "max_contagion": 0.511,
+      "alert_level": "MODERATE",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": -0.071,
+          "entanglement": 0.018,
+          "contagion_score": 0.107,
+          "vol_a": 0.061,
+          "vol_b": 0.296
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.256,
+          "entanglement": 0.141,
+          "contagion_score": 0.234,
+          "vol_a": 0.061,
+          "vol_b": 0.314
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.468,
+          "entanglement": 0.504,
+          "contagion_score": 0.511,
+          "vol_a": 0.296,
+          "vol_b": 0.314
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.10684456250577154,
+          0.23357307050604914
+        ],
+        [
+          0.10684456250577154,
+          0.0,
+          0.5105717091764528
+        ],
+        [
+          0.23357307050604914,
+          0.5105717091764528,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 389,
+      "system_contagion": 0.329,
+      "max_contagion": 0.489,
+      "alert_level": "LOW",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": -0.221,
+          "entanglement": 0.113,
+          "contagion_score": 0.201,
+          "vol_a": 0.057,
+          "vol_b": 0.278
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.343,
+          "entanglement": 0.214,
+          "contagion_score": 0.296,
+          "vol_a": 0.057,
+          "vol_b": 0.31
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.444,
+          "entanglement": 0.485,
+          "contagion_score": 0.489,
+          "vol_a": 0.278,
+          "vol_b": 0.31
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.20054237697171268,
+          0.29609600152991533
+        ],
+        [
+          0.20054237697171268,
+          0.0,
+          0.48906048784262407
+        ],
+        [
+          0.29609600152991533,
+          0.48906048784262407,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 390,
+      "system_contagion": 0.316,
+      "max_contagion": 0.501,
+      "alert_level": "MODERATE",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": -0.243,
+          "entanglement": 0.127,
+          "contagion_score": 0.217,
+          "vol_a": 0.052,
+          "vol_b": 0.293
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.261,
+          "entanglement": 0.141,
+          "contagion_score": 0.231,
+          "vol_a": 0.052,
+          "vol_b": 0.298
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.457,
+          "entanglement": 0.501,
+          "contagion_score": 0.501,
+          "vol_a": 0.293,
+          "vol_b": 0.298
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.21689007332152213,
+          0.23099888370114946
+        ],
+        [
+          0.21689007332152213,
+          0.0,
+          0.5014542207468674
+        ],
+        [
+          0.23099888370114946,
+          0.5014542207468674,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 391,
+      "system_contagion": 0.302,
+      "max_contagion": 0.397,
+      "alert_level": "LOW",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": -0.204,
+          "entanglement": 0.098,
+          "contagion_score": 0.19,
+          "vol_a": 0.054,
+          "vol_b": 0.292
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.381,
+          "entanglement": 0.245,
+          "contagion_score": 0.319,
+          "vol_a": 0.054,
+          "vol_b": 0.288
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.347,
+          "entanglement": 0.354,
+          "contagion_score": 0.397,
+          "vol_a": 0.292,
+          "vol_b": 0.288
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.1901385923544506,
+          0.3186225476454407
+        ],
+        [
+          0.1901385923544506,
+          0.0,
+          0.39654781998195787
+        ],
+        [
+          0.3186225476454407,
+          0.39654781998195787,
+          0.0
+        ]
+      ]
+    },
+    {
+      "timestamp_idx": 392,
+      "system_contagion": 0.286,
+      "max_contagion": 0.445,
+      "alert_level": "LOW",
+      "highest_contagion_pair": "Bitcoin-Crude_Oil",
+      "pair_details": {
+        "SP500-Bitcoin": {
+          "correlation": -0.164,
+          "entanglement": 0.07,
+          "contagion_score": 0.164,
+          "vol_a": 0.056,
+          "vol_b": 0.295
+        },
+        "SP500-Crude_Oil": {
+          "correlation": -0.288,
+          "entanglement": 0.166,
+          "contagion_score": 0.25,
+          "vol_a": 0.056,
+          "vol_b": 0.285
+        },
+        "Bitcoin-Crude_Oil": {
+          "correlation": 0.397,
+          "entanglement": 0.426,
+          "contagion_score": 0.445,
+          "vol_a": 0.295,
+          "vol_b": 0.285
+        }
+      },
+      "contagion_matrix": [
+        [
+          0.0,
+          0.16381939290092895,
+          0.24989072156171493
+        ],
+        [
+          0.16381939290092895,
+          0.0,
+          0.4453024163929579
+        ],
+        [
+          0.24989072156171493,
+          0.4453024163929579,
+          0.0
+        ]
+      ]
+    }
+  ]
+}
