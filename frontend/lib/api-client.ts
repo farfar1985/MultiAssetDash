@@ -240,7 +240,10 @@ export function setApiKey(key: string) {
  * Get the current API key
  */
 export function getApiKey(): string | null {
-  return apiKey || (typeof window !== "undefined" ? localStorage.getItem("qdt_api_key") : null);
+  // Check in order: module-level variable, env var, localStorage
+  return apiKey
+    || process.env.NEXT_PUBLIC_API_KEY
+    || (typeof window !== "undefined" ? localStorage.getItem("qdt_api_key") : null);
 }
 
 /**

@@ -180,6 +180,40 @@ def check_asset_access(asset_name):
     
     return asset_name in allowed_assets
 
+def normalize_asset_name(input_name):
+    """Normalize asset name from various formats to backend format.
+
+    Supports:
+    - crude-oil -> Crude_Oil
+    - CRUDE_OIL -> Crude_Oil
+    - crude_oil -> Crude_Oil
+    - Crude_Oil -> Crude_Oil (passthrough)
+    """
+    # First check if it's already a valid asset name
+    if input_name in DASHBOARD_ASSETS:
+        return input_name
+
+    # Build a lookup map for case-insensitive matching
+    name_map = {}
+    for asset_name in DASHBOARD_ASSETS.keys():
+        # Add various formats to the map
+        name_map[asset_name.lower()] = asset_name
+        name_map[asset_name.lower().replace('_', '-')] = asset_name
+        name_map[asset_name.upper()] = asset_name
+
+    # Try to find a match
+    normalized = input_name.lower().replace('-', '_')
+    if normalized in name_map:
+        return name_map[normalized]
+
+    # Try kebab-case
+    kebab = input_name.lower()
+    if kebab in name_map:
+        return name_map[kebab]
+
+    # No match found, return original (will cause proper 404)
+    return input_name
+
 def get_asset_data_dir(asset_name):
     """Get data directory for an asset."""
     asset_config = DASHBOARD_ASSETS.get(asset_name)
@@ -237,6 +271,7 @@ def list_assets():
 @require_api_key
 def get_ohlcv(asset_name):
     """Get historical OHLCV data for an asset."""
+    asset_name = normalize_asset_name(asset_name)
     if not check_asset_access(asset_name):
         return jsonify({
             "success": False,
@@ -300,6 +335,7 @@ def get_ohlcv(asset_name):
 @require_api_key
 def get_signals(asset_name):
     """Get historical signals (snake chart data) for an asset."""
+    asset_name = normalize_asset_name(asset_name)
     if not check_asset_access(asset_name):
         return jsonify({
             "success": False,
@@ -361,6 +397,7 @@ def get_signals(asset_name):
 @require_api_key
 def get_forecast(asset_name):
     """Get live forecast for an asset."""
+    asset_name = normalize_asset_name(asset_name)
     if not check_asset_access(asset_name):
         return jsonify({
             "success": False,
@@ -403,6 +440,7 @@ def get_forecast(asset_name):
 @require_api_key
 def get_confidence(asset_name):
     """Get historical confidence values for an asset."""
+    asset_name = normalize_asset_name(asset_name)
     if not check_asset_access(asset_name):
         return jsonify({
             "success": False,
@@ -439,6 +477,7 @@ def get_confidence(asset_name):
 @require_api_key
 def get_equity(asset_name):
     """Get equity curve data for an asset."""
+    asset_name = normalize_asset_name(asset_name)
     if not check_asset_access(asset_name):
         return jsonify({
             "success": False,
@@ -506,6 +545,7 @@ def get_equity(asset_name):
 @require_api_key
 def get_metrics(asset_name):
     """Get quant details/performance metrics for an asset."""
+    asset_name = normalize_asset_name(asset_name)
     if not check_asset_access(asset_name):
         return jsonify({
             "success": False,
@@ -565,6 +605,7 @@ def get_config(asset_name):
         strategy (optional): Strategy name (e.g., 'vol70_consec3', 'optimal')
                             Defaults to 'optimal'
     """
+    asset_name = normalize_asset_name(asset_name)
     if not check_asset_access(asset_name):
         return jsonify({
             "success": False,
