@@ -3,7 +3,7 @@ import { PERSONAS, type PersonaId, ASSETS } from "@/types";
 import { SignalCard } from "@/components/dashboard/SignalCard";
 import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
 import { Separator } from "@/components/ui/separator";
-import { AlphaProDashboard } from "@/components/dashboard/AlphaProDashboard";
+import { AlphaProDashboardV2 } from "@/components/dashboard/AlphaProDashboardV2";
 import { HedgingDashboard } from "@/components/dashboard/HedgingDashboard";
 import { QuantDashboard } from "@/components/dashboard/QuantDashboard";
 import { RetailDashboard } from "@/components/dashboard/RetailDashboard";
@@ -29,9 +29,9 @@ export default function PersonaDashboardPage({ params }: PersonaDashboardProps) 
     notFound();
   }
 
-  // Specialized dashboard for Alpha Gen Pro persona
+  // Specialized dashboard for Alpha Gen Pro persona - using V2 for meeting demo
   if (personaId === "alphapro") {
-    return <AlphaProDashboard />;
+    return <AlphaProDashboardV2 />;
   }
 
   // Specialized dashboard for Hedging Team persona
