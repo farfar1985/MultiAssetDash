@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { MOCK_ASSETS, MOCK_SIGNALS, type SignalData } from "@/lib/mock-data";
+import { MOCK_ASSETS, MOCK_SIGNALS } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
   TrendingUp,

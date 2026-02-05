@@ -11,21 +11,14 @@ import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/
 import type { AssetId } from "@/types";
 import {
   BarChart3,
-  TrendingUp,
-  TrendingDown,
   Activity,
   Sigma,
   GitBranch,
-  LineChart,
-  AlertTriangle,
-  Calculator,
   Binary,
-  Braces,
   FlaskConical,
   Database,
   Crosshair,
   Gauge,
-  Scale,
   PieChart,
   ArrowDownRight,
   ArrowUpRight,
@@ -139,13 +132,6 @@ function incompleteBeta(x: number, a: number, b: number): number {
   return bt / (a + (a * b) / (a + 1));
 }
 
-function chiSquaredCDF(x: number, df: number): number {
-  // Approximation using normal distribution for large df
-  const z = Math.pow(x / df, 1/3) - (1 - 2 / (9 * df));
-  const se = Math.sqrt(2 / (9 * df));
-  return normalCDF(z / se);
-}
-
 // ============================================================================
 // Metric Calculations
 // ============================================================================
@@ -187,7 +173,6 @@ function calculateHorizonStatistics(signal: SignalData): HorizonStatistics {
 
   // Risk metrics (VaR/CVaR)
   const z95 = 1.645;
-  const z99 = 2.326;
   const var95 = -(dailyReturn - z95 * dailyVol) * 100;
   const cvar95 = var95 * 1.25; // Approximate CVaR
   const tailRatio = avgWin / Math.abs(avgLoss) * (winRate / (100 - winRate));
