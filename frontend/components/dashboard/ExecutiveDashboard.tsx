@@ -3,20 +3,16 @@
 import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
+import { MOCK_ASSETS, MOCK_SIGNALS, type SignalData } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
   TrendingUp,
   TrendingDown,
   Minus,
-  Briefcase,
-  DollarSign,
-  Target,
-  Activity,
+  Crown,
+  AlertTriangle,
   CheckCircle,
-  AlertCircle,
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
@@ -29,9 +25,15 @@ interface MarketSummary {
   bullishCount: number;
   bearishCount: number;
   neutralCount: number;
-  topOpportunity: { name: string; direction: "bullish" | "bearish" | "neutral"; confidence: number } | null;
   overallSentiment: "bullish" | "bearish" | "mixed";
   avgConfidence: number;
+}
+
+interface TopSignal {
+  name: string;
+  symbol: string;
+  direction: "bullish" | "bearish" | "neutral";
+  confidence: number;
 }
 
 // ============================================================================
@@ -44,9 +46,8 @@ function getMarketSummary(): MarketSummary {
   let neutralCount = 0;
   let totalConfidence = 0;
   let signalCount = 0;
-  let topSignal: { name: string; direction: SignalData["direction"]; confidence: number } | null = null;
 
-  Object.entries(MOCK_ASSETS).forEach(([assetId, asset]) => {
+  Object.entries(MOCK_ASSETS).forEach(([assetId]) => {
     const signal = MOCK_SIGNALS[assetId as AssetId]?.["D+1"];
     if (signal) {
       signalCount++;
@@ -55,10 +56,6 @@ function getMarketSummary(): MarketSummary {
       if (signal.direction === "bullish") bullishCount++;
       else if (signal.direction === "bearish") bearishCount++;
       else neutralCount++;
-
-      if (!topSignal || signal.confidence > topSignal.confidence) {
-        topSignal = { name: asset.name, direction: signal.direction, confidence: signal.confidence };
-      }
     }
   });
 
@@ -70,68 +67,63 @@ function getMarketSummary(): MarketSummary {
     bullishCount,
     bearishCount,
     neutralCount,
-    topOpportunity: topSignal,
     overallSentiment,
     avgConfidence: signalCount > 0 ? totalConfidence / signalCount : 0,
   };
 }
 
-function generateOutlookText(summary: MarketSummary): string {
-  const { overallSentiment, bullishCount, bearishCount, avgConfidence, topOpportunity } = summary;
+function getTopSignals(count: number = 3): TopSignal[] {
+  const signals: TopSignal[] = [];
 
-  if (overallSentiment === "bullish") {
-    return `Markets are showing positive momentum with ${bullishCount} assets signaling upward movement. Our AI models have ${avgConfidence.toFixed(0)}% average confidence in current predictions. ${topOpportunity ? `${topOpportunity.name} presents the strongest opportunity today.` : ""} Consider maintaining or increasing exposure to growth positions.`;
-  }
+  Object.entries(MOCK_ASSETS).forEach(([assetId, asset]) => {
+    const signal = MOCK_SIGNALS[assetId as AssetId]?.["D+1"];
+    if (signal && signal.direction !== "neutral" && signal.confidence >= 65) {
+      signals.push({
+        name: asset.name,
+        symbol: asset.symbol,
+        direction: signal.direction,
+        confidence: signal.confidence,
+      });
+    }
+  });
 
-  if (overallSentiment === "bearish") {
-    return `Markets are showing cautionary signals with ${bearishCount} assets trending downward. Our AI models have ${avgConfidence.toFixed(0)}% average confidence. ${topOpportunity ? `Watch ${topOpportunity.name} closely for potential movements.` : ""} Consider reviewing risk exposure and hedging strategies.`;
-  }
+  return signals
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, count);
+}
 
-  return `Markets are showing mixed signals with ${bullishCount} bullish and ${bearishCount} bearish indicators. Our AI models have ${avgConfidence.toFixed(0)}% average confidence. ${topOpportunity ? `${topOpportunity.name} shows the clearest direction currently.` : ""} Selective positioning recommended.`;
+function getRiskLevel(summary: MarketSummary): { level: "low" | "moderate" | "elevated"; score: number } {
+  const volatilityProxy = Math.abs(summary.bullishCount - summary.bearishCount);
+  const confidenceInverse = 100 - summary.avgConfidence;
+
+  const riskScore = Math.round((volatilityProxy * 5) + (confidenceInverse * 0.3));
+
+  if (riskScore < 25) return { level: "low", score: riskScore };
+  if (riskScore < 50) return { level: "moderate", score: riskScore };
+  return { level: "elevated", score: Math.min(riskScore, 100) };
 }
 
 // ============================================================================
-// Headline Metric Card
+// Summary Card Component
 // ============================================================================
 
-interface HeadlineMetricProps {
-  label: string;
-  value: string;
-  subtext?: string;
-  trend?: "up" | "down" | "neutral";
-  icon: React.ReactNode;
+interface SummaryCardProps {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
 }
 
-function HeadlineMetric({ label, value, subtext, trend, icon }: HeadlineMetricProps) {
+function SummaryCard({ title, children, className }: SummaryCardProps) {
   return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
+    <Card className={cn(
+      "bg-neutral-950 border-amber-900/30",
+      className
+    )}>
       <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-3">
-          <span className="text-sm text-neutral-400">{label}</span>
-          <div className="p-2 bg-neutral-800/50 rounded-lg">
-            {icon}
-          </div>
-        </div>
-        <div className="flex items-end gap-2">
-          <span className={cn(
-            "text-3xl font-bold font-mono",
-            trend === "up" ? "text-green-400" :
-            trend === "down" ? "text-red-400" : "text-neutral-100"
-          )}>
-            {value}
-          </span>
-          {trend && trend !== "neutral" && (
-            <span className={cn(
-              "flex items-center text-sm mb-1",
-              trend === "up" ? "text-green-400" : "text-red-400"
-            )}>
-              {trend === "up" ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-            </span>
-          )}
-        </div>
-        {subtext && (
-          <p className="text-xs text-neutral-500 mt-2">{subtext}</p>
-        )}
+        <h3 className="text-xs uppercase tracking-widest text-amber-600/80 mb-4 font-medium">
+          {title}
+        </h3>
+        {children}
       </CardContent>
     </Card>
   );
@@ -141,171 +133,189 @@ function HeadlineMetric({ label, value, subtext, trend, icon }: HeadlineMetricPr
 // Market Outlook Card
 // ============================================================================
 
-interface MarketOutlookProps {
-  summary: MarketSummary;
-}
-
-function MarketOutlook({ summary }: MarketOutlookProps) {
-  const outlookText = generateOutlookText(summary);
-
-  const sentimentConfig = {
-    bullish: { icon: TrendingUp, color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20", label: "Positive" },
-    bearish: { icon: TrendingDown, color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", label: "Cautious" },
-    mixed: { icon: Minus, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", label: "Mixed" },
+function MarketOutlookCard({ summary }: { summary: MarketSummary }) {
+  const outlookConfig = {
+    bullish: {
+      label: "Positive",
+      icon: TrendingUp,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/30"
+    },
+    bearish: {
+      label: "Cautious",
+      icon: TrendingDown,
+      color: "text-red-400",
+      bg: "bg-red-500/10",
+      border: "border-red-500/30"
+    },
+    mixed: {
+      label: "Mixed",
+      icon: Minus,
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/30"
+    },
   };
 
-  const config = sentimentConfig[summary.overallSentiment];
-  const SentimentIcon = config.icon;
+  const config = outlookConfig[summary.overallSentiment];
+  const OutlookIcon = config.icon;
 
   return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-neutral-100">Market Outlook</h3>
-          <Badge className={cn("px-3 py-1", config.bg, config.border, config.color)}>
-            <SentimentIcon className="w-3.5 h-3.5 mr-1.5" />
-            {config.label}
-          </Badge>
-        </div>
-        <p className="text-neutral-300 leading-relaxed">
-          {outlookText}
-        </p>
-
-        <Separator className="bg-neutral-800 my-4" />
-
-        {/* Quick Stats Row */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <TrendingUp className="w-4 h-4 text-green-400" />
-              <span className="text-xl font-bold font-mono text-green-400">{summary.bullishCount}</span>
-            </div>
-            <span className="text-xs text-neutral-500">Bullish</span>
+    <SummaryCard title="Market Outlook">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className={cn(
+            "p-3 rounded-xl border",
+            config.bg,
+            config.border
+          )}>
+            <OutlookIcon className={cn("w-8 h-8", config.color)} />
           </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <TrendingDown className="w-4 h-4 text-red-400" />
-              <span className="text-xl font-bold font-mono text-red-400">{summary.bearishCount}</span>
+          <div>
+            <div className={cn("text-3xl font-bold", config.color)}>
+              {config.label}
             </div>
-            <span className="text-xs text-neutral-500">Bearish</span>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Minus className="w-4 h-4 text-neutral-400" />
-              <span className="text-xl font-bold font-mono text-neutral-400">{summary.neutralCount}</span>
+            <div className="text-sm text-neutral-500 mt-1">
+              {summary.bullishCount} up / {summary.bearishCount} down / {summary.neutralCount} neutral
             </div>
-            <span className="text-xs text-neutral-500">Neutral</span>
           </div>
         </div>
-      </CardContent>
-    </Card>
+        <div className="text-right">
+          <div className="text-2xl font-mono font-bold text-amber-500">
+            {summary.avgConfidence.toFixed(0)}%
+          </div>
+          <div className="text-xs text-neutral-500">Avg Confidence</div>
+        </div>
+      </div>
+    </SummaryCard>
   );
 }
 
 // ============================================================================
-// Top Opportunities List
+// Top 3 Signals Card
 // ============================================================================
 
-function TopOpportunities() {
-  const opportunities = useMemo(() => {
-    const items: { name: string; symbol: string; direction: string; confidence: number }[] = [];
-
-    Object.entries(MOCK_ASSETS).forEach(([assetId, asset]) => {
-      const signal = MOCK_SIGNALS[assetId as AssetId]?.["D+1"];
-      if (signal && signal.direction !== "neutral" && signal.confidence >= 70) {
-        items.push({
-          name: asset.name,
-          symbol: asset.symbol,
-          direction: signal.direction,
-          confidence: signal.confidence,
-        });
-      }
-    });
-
-    return items.sort((a, b) => b.confidence - a.confidence).slice(0, 5);
-  }, []);
-
+function TopSignalsCard({ signals }: { signals: TopSignal[] }) {
   return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardContent className="p-6">
-        <h3 className="text-lg font-semibold text-neutral-100 mb-4">Top Opportunities</h3>
-        {opportunities.length > 0 ? (
-          <div className="space-y-3">
-            {opportunities.map((opp) => (
-              <div
-                key={opp.symbol}
-                className="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "p-1.5 rounded",
-                    opp.direction === "bullish" ? "bg-green-500/10" : "bg-red-500/10"
-                  )}>
-                    {opp.direction === "bullish" ? (
-                      <TrendingUp className="w-4 h-4 text-green-400" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4 text-red-400" />
-                    )}
-                  </div>
-                  <div>
-                    <span className="font-medium text-neutral-200">{opp.name}</span>
-                    <span className="text-xs text-neutral-500 ml-2">{opp.symbol}</span>
-                  </div>
+    <SummaryCard title="Top 3 Signals">
+      <div className="space-y-4">
+        {signals.map((signal, idx) => {
+          const isBullish = signal.direction === "bullish";
+          return (
+            <div
+              key={signal.symbol}
+              className="flex items-center justify-between py-2 border-b border-neutral-800/50 last:border-0"
+            >
+              <div className="flex items-center gap-4">
+                <div className={cn(
+                  "w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold",
+                  idx === 0 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" :
+                  "bg-neutral-800 text-neutral-500"
+                )}>
+                  {idx + 1}
                 </div>
-                <div className="text-right">
-                  <span className={cn(
-                    "font-mono font-bold",
-                    opp.direction === "bullish" ? "text-green-400" : "text-red-400"
-                  )}>
-                    {opp.confidence}%
-                  </span>
-                  <div className="text-xs text-neutral-500">confidence</div>
+                <div>
+                  <div className="font-medium text-neutral-100">{signal.name}</div>
+                  <div className="text-xs text-neutral-500">{signal.symbol}</div>
                 </div>
               </div>
-            ))}
+              <div className="flex items-center gap-3">
+                <Badge className={cn(
+                  "text-xs px-2 py-1",
+                  isBullish
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                    : "bg-red-500/10 border-red-500/30 text-red-400"
+                )}>
+                  {isBullish ? (
+                    <ArrowUpRight className="w-3 h-3 mr-1" />
+                  ) : (
+                    <ArrowDownRight className="w-3 h-3 mr-1" />
+                  )}
+                  {signal.direction.toUpperCase()}
+                </Badge>
+                <span className="font-mono font-bold text-lg text-amber-500">
+                  {signal.confidence}%
+                </span>
+              </div>
+            </div>
+          );
+        })}
+        {signals.length === 0 && (
+          <div className="text-neutral-500 text-sm text-center py-4">
+            No high-confidence signals at this time
           </div>
-        ) : (
-          <p className="text-neutral-500 text-sm">No high-confidence opportunities at this time.</p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </SummaryCard>
   );
 }
 
 // ============================================================================
-// System Status
+// Risk Indicator Card
 // ============================================================================
 
-function SystemStatus() {
+function RiskIndicatorCard({ summary }: { summary: MarketSummary }) {
+  const risk = getRiskLevel(summary);
+
+  const riskConfig = {
+    low: {
+      icon: CheckCircle,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/30",
+      label: "Low Risk",
+      description: "Market conditions favorable"
+    },
+    moderate: {
+      icon: AlertTriangle,
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/30",
+      label: "Moderate Risk",
+      description: "Monitor positions closely"
+    },
+    elevated: {
+      icon: AlertTriangle,
+      color: "text-red-400",
+      bg: "bg-red-500/10",
+      border: "border-red-500/30",
+      label: "Elevated Risk",
+      description: "Consider hedging exposure"
+    },
+  };
+
+  const config = riskConfig[risk.level];
+  const RiskIcon = config.icon;
+
   return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardContent className="p-6">
-        <h3 className="text-lg font-semibold text-neutral-100 mb-4">System Status</h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-400" />
-              <span className="text-sm text-neutral-300">AI Models</span>
-            </div>
-            <span className="text-xs text-green-400">10,179 active</span>
+    <SummaryCard title="Key Risk Indicator">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className={cn(
+            "p-3 rounded-xl border",
+            config.bg,
+            config.border
+          )}>
+            <RiskIcon className={cn("w-8 h-8", config.color)} />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-400" />
-              <span className="text-sm text-neutral-300">Data Feeds</span>
+          <div>
+            <div className={cn("text-2xl font-bold", config.color)}>
+              {config.label}
             </div>
-            <span className="text-xs text-green-400">Live</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-400" />
-              <span className="text-sm text-neutral-300">Signal Generation</span>
+            <div className="text-sm text-neutral-500 mt-1">
+              {config.description}
             </div>
-            <span className="text-xs text-green-400">Operational</span>
           </div>
         </div>
-      </CardContent>
-    </Card>
+        <div className="text-right">
+          <div className={cn("text-3xl font-mono font-bold", config.color)}>
+            {risk.score}
+          </div>
+          <div className="text-xs text-neutral-500">Risk Score</div>
+        </div>
+      </div>
+    </SummaryCard>
   );
 }
 
@@ -315,82 +325,51 @@ function SystemStatus() {
 
 export function ExecutiveDashboard() {
   const summary = useMemo(() => getMarketSummary(), []);
-
-  // Mock portfolio values (would come from real data)
-  const portfolioValue = "$12.4M";
-  const dailyPnL = "+$284K";
-  const winRate = "61.3%";
-  const activeSignals = "10";
+  const topSignals = useMemo(() => getTopSignals(3), []);
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
-            <Briefcase className="w-8 h-8 text-slate-300" />
+    <div className="min-h-screen bg-neutral-950 -m-6 p-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-6 border-b border-amber-900/20">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-amber-600/20 to-amber-800/20 rounded-xl border border-amber-600/30">
+              <Crown className="w-8 h-8 text-amber-500" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-100">Executive Brief</h1>
+              <p className="text-sm text-neutral-500">
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric"
+                })}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-neutral-100">Executive Summary</h1>
-            <p className="text-sm text-neutral-400">
-              {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-            </p>
-          </div>
-        </div>
-        <Badge className="bg-blue-500/10 border-blue-500/30 text-blue-300 px-3 py-1.5">
-          <Activity className="w-3.5 h-3.5 mr-1.5" />
-          Live
-        </Badge>
-      </div>
-
-      {/* Headline Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <HeadlineMetric
-          label="Portfolio Value"
-          value={portfolioValue}
-          subtext="Total AUM"
-          icon={<DollarSign className="w-5 h-5 text-neutral-400" />}
-        />
-        <HeadlineMetric
-          label="Today's P&L"
-          value={dailyPnL}
-          trend="up"
-          subtext="vs. yesterday"
-          icon={<TrendingUp className="w-5 h-5 text-green-400" />}
-        />
-        <HeadlineMetric
-          label="Win Rate"
-          value={winRate}
-          subtext="30-day rolling"
-          icon={<Target className="w-5 h-5 text-neutral-400" />}
-        />
-        <HeadlineMetric
-          label="Active Signals"
-          value={activeSignals}
-          subtext="Across all assets"
-          icon={<Activity className="w-5 h-5 text-neutral-400" />}
-        />
-      </div>
-
-      <Separator className="bg-neutral-800" />
-
-      {/* Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Market Outlook - Main */}
-        <div className="lg:col-span-2">
-          <MarketOutlook summary={summary} />
+          <Badge className="bg-amber-500/10 border-amber-500/30 text-amber-400 px-4 py-2">
+            <span className="relative flex h-2 w-2 mr-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+            </span>
+            Live
+          </Badge>
         </div>
 
-        {/* Sidebar */}
+        {/* Summary Cards */}
         <div className="space-y-6">
-          <TopOpportunities />
-          <SystemStatus />
+          <MarketOutlookCard summary={summary} />
+          <TopSignalsCard signals={topSignals} />
+          <RiskIndicatorCard summary={summary} />
         </div>
-      </div>
 
-      {/* Footer */}
-      <div className="text-center text-xs text-neutral-500 pt-4">
-        AI-generated insights from 10,179 ensemble models. Updated in real-time.
+        {/* Footer */}
+        <div className="text-center pt-6 border-t border-amber-900/20">
+          <p className="text-xs text-neutral-600">
+            AI-powered insights from 10,179 ensemble models
+          </p>
+        </div>
       </div>
     </div>
   );
