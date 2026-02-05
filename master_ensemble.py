@@ -21,11 +21,20 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def load_all_horizons():
-    """Load all Crude Oil horizon data."""
-    data_dir = Path("data/1866_Crude_Oil/horizons_wide")
+def load_all_horizons(asset_dir="data/1866_Crude_Oil"):
+    """Load all horizon data for an asset.
+    
+    Args:
+        asset_dir: Path to asset data directory
+        
+    Returns:
+        horizons dict and current_prices array
+    """
+    data_dir = Path(asset_dir) / "horizons_wide"
     
     horizons = {}
+    current_prices = None
+    
     for h in range(1, 11):
         f = data_dir / f"horizon_{h}.joblib"
         if f.exists():
@@ -34,8 +43,46 @@ def load_all_horizons():
             y = data['y'].values if hasattr(data['y'], 'values') else data['y']
             X = np.nan_to_num(X, nan=0.0)
             y = np.nan_to_num(y, nan=0.0)
-            horizons[h] = {'X': np.array(X), 'y': np.array(y)}
+            horizons[h] = {'X': np.array(X), 'y': np.array(y), 'horizon': h}
+            
+            # For horizon 1, we can derive current prices: y[t] = price at t+1
+            # So current_price[t] can be approximated by looking at what became y[t-1]
+            # But it's cleaner to load from the index
+            if h == 1 and hasattr(data['X'], 'index'):
+                # Store the index for later price lookups
+                horizons[h]['dates'] = data['X'].index
     
+    # Try to load current prices from parquet for accurate backtest
+    # Try both possible names
+    parquet_path = Path(asset_dir) / "training_data.parquet"
+    if not parquet_path.exists():
+        parquet_path = Path(asset_dir) / "master_dataset.parquet"
+    if parquet_path.exists():
+        try:
+            df = pd.read_parquet(parquet_path)
+            df['time'] = pd.to_datetime(df['time']).dt.tz_localize(None)
+            
+            # Apply same date filter as golden_engine.py
+            START_DATE = '2025-01-01'
+            df = df[df['time'] >= pd.to_datetime(START_DATE)]
+            
+            prices_series = df.groupby('time')['target_var_price'].first().sort_index()
+            
+            # Align with horizon dates if available
+            if 1 in horizons and 'dates' in horizons[1]:
+                horizon_dates = horizons[1]['dates']
+                prices_series = prices_series.reindex(horizon_dates)
+            
+            current_prices = prices_series.values
+        except Exception as e:
+            print(f"Warning: Could not load current prices from parquet: {e}")
+    
+    return horizons, current_prices
+
+
+def load_all_horizons_legacy():
+    """Legacy loader for backward compatibility."""
+    horizons, _ = load_all_horizons()
     return horizons
 
 
@@ -116,7 +163,8 @@ def calculate_pairwise_slope_signal(horizons: dict, t: int,
 def backtest_pairwise_strategy(horizons: dict, 
                                horizon_subset: list = None,
                                threshold: float = 0.0,
-                               aggregation: str = 'mean') -> dict:
+                               aggregation: str = 'mean',
+                               current_prices: np.ndarray = None) -> dict:
     """
     Backtest the pairwise slopes strategy.
     
@@ -125,20 +173,44 @@ def backtest_pairwise_strategy(horizons: dict,
         horizon_subset: Which horizons to use (default all)
         threshold: Only trade when |net_prob| > threshold
         aggregation: How to aggregate models within horizon
+        current_prices: Array of current prices (unshifted) for accurate return calc
+        
+    Note on return calculation:
+        - y[t] in horizons is the FUTURE price (price at t+h, shifted back)
+        - For accurate backtesting, we need: (future_price - current_price) / current_price
+        - If current_prices is provided, we use it; otherwise we approximate
     """
     if horizon_subset is None:
         horizon_subset = list(horizons.keys())
     
+    # Filter to horizons that exist
+    horizon_subset = [h for h in horizon_subset if h in horizons]
+    if not horizon_subset:
+        return {'sharpe': 0, 'win_rate': 0, 'total_return': 0, 'signals': []}
+    
     min_len = min(horizons[h]['X'].shape[0] for h in horizon_subset)
     train_end = int(min_len * 0.7)
     
-    # Use horizon 1's actuals as price
-    y = horizons[min(horizon_subset)]['y']
+    # Get the horizon for return calculation (use minimum horizon for most responsive signal)
+    eval_horizon = min(horizon_subset)
+    y_future = horizons[eval_horizon]['y']  # This is price at t+h
+    
+    # Get current prices for proper return calculation
+    if current_prices is not None and len(current_prices) >= min_len:
+        y_current = current_prices[:min_len]
+    else:
+        # Fallback: derive current price from shifted data
+        # y_future[t] = price at t+h, so y_future[t-h] ≈ price at t (for t >= h)
+        # This is an approximation that works for backtesting
+        y_current = np.zeros_like(y_future)
+        h = eval_horizon
+        y_current[h:] = y_future[:-h] if h > 0 else y_future
+        y_current[:h] = y_future[:h]  # Fill early values (will be excluded anyway)
     
     signals = []
     returns = []
     
-    for t in range(train_end, min_len - 1):
+    for t in range(train_end, min_len - eval_horizon):  # Leave room for horizon
         # Get signal
         sig_info = calculate_pairwise_slope_signal(horizons, t, horizon_subset, aggregation)
         net_prob = sig_info['net_prob']
@@ -149,9 +221,10 @@ def backtest_pairwise_strategy(horizons: dict,
         else:
             signal = 1 if net_prob > 0 else -1
         
-        # Calculate actual return
-        if y[t] != 0:
-            actual_return = (y[t + 1] - y[t]) / y[t]
+        # Calculate actual return: from current price to future price (at t+h)
+        # y_future[t] = price at t+h, y_current[t] = price at t
+        if y_current[t] != 0:
+            actual_return = (y_future[t] - y_current[t]) / y_current[t]
         else:
             actual_return = 0
         
@@ -170,9 +243,16 @@ def backtest_pairwise_strategy(horizons: dict,
     returns = np.array(returns)
     
     # Calculate metrics
+    # Note: returns are multi-day (horizon-period returns), not daily
+    # Adjust Sharpe ratio annualization accordingly
+    periods_per_year = 252 / eval_horizon  # e.g., ~50 periods for 5-day horizon
+    
     if len(returns) > 0:
-        total_return = (1 + returns).prod() - 1
-        sharpe = returns.mean() / (returns.std() + 1e-8) * np.sqrt(252)
+        # Simple total return (sum, not compound, since periods may overlap)
+        total_return = returns.sum()
+        
+        # Sharpe: annualized based on horizon period
+        sharpe = returns.mean() / (returns.std() + 1e-8) * np.sqrt(periods_per_year)
         
         # Win rate (when we trade)
         trades = returns[returns != 0]
@@ -184,10 +264,10 @@ def backtest_pairwise_strategy(horizons: dict,
         total_trades = sum(1 for s in signals if s['signal'] != 0)
         da = correct / total_trades if total_trades > 0 else 0
         
-        # Max drawdown
-        cum_returns = (1 + returns).cumprod()
+        # Max drawdown (using cumulative sum for non-compounding)
+        cum_returns = returns.cumsum()
         peak = np.maximum.accumulate(cum_returns)
-        drawdown = (cum_returns - peak) / peak
+        drawdown = cum_returns - peak  # Absolute drawdown
         max_dd = drawdown.min()
     else:
         total_return = 0
@@ -205,6 +285,7 @@ def backtest_pairwise_strategy(horizons: dict,
         'max_dd': round(max_dd * 100, 2),
         'n_trades': total_trades,
         'n_days': len(returns),
+        'signals': signals  # Include for debugging
     }
 
 

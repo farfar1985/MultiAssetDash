@@ -187,7 +187,9 @@ def load_forecast_data(data_dir):
     print(f"  [INFO] Loaded {len(horizons)} horizons: {sorted(horizons.keys())}")
     
     df = pd.DataFrame(horizons)
-    df = df.ffill().bfill()
+    # Only forward-fill to avoid data leakage from future values
+    # bfill() was removed as it leaks future information backward in time
+    df = df.ffill()
     return df, sorted(horizons.keys())
 
 

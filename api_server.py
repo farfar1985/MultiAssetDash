@@ -614,6 +614,15 @@ def get_config(asset_name):
 
     # Get strategy from query param, default to 'optimal'
     strategy = request.args.get('strategy', 'optimal')
+    
+    # SECURITY: Sanitize strategy to prevent path traversal attacks
+    # Only allow alphanumeric characters and underscores
+    import re
+    if not re.match(r'^[A-Za-z0-9_\-]+$', strategy):
+        return jsonify({
+            "success": False,
+            "error": "Invalid strategy name. Only alphanumeric characters, underscores, and hyphens allowed."
+        }), 400
 
     # Build config file path
     if strategy == 'optimal':
