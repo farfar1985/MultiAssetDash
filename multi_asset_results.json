@@ -1,0 +1,521 @@
+{
+  "timestamp": "2026-02-04T11:09:36.630668",
+  "results": [
+    {
+      "asset": "Crude_Oil",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        2,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 99.08,
+      "sharpe": 7.745,
+      "win_rate": 58.5,
+      "total_trades": 94,
+      "profit_factor": 6.77,
+      "max_drawdown": -2.78
+    },
+    {
+      "asset": "Crude_Oil",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 122.42,
+      "sharpe": 4.279,
+      "win_rate": 60.6,
+      "total_trades": 99,
+      "profit_factor": 5.52,
+      "max_drawdown": -6.12
+    },
+    {
+      "asset": "Crude_Oil",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 155.27,
+      "sharpe": 4.999,
+      "win_rate": 67.0,
+      "total_trades": 109,
+      "profit_factor": 7.33,
+      "max_drawdown": -5.16
+    },
+    {
+      "asset": "Crude_Oil",
+      "config": "User Baseline",
+      "horizons": [
+        5,
+        7,
+        10
+      ],
+      "method": "equal_weight",
+      "threshold": 0.1,
+      "total_return": -26.21,
+      "sharpe": -0.823,
+      "win_rate": 42.6,
+      "total_trades": 68,
+      "profit_factor": 0.71,
+      "max_drawdown": -38.17
+    },
+    {
+      "asset": "Bitcoin",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 112.83,
+      "sharpe": 2.678,
+      "win_rate": 59.0,
+      "total_trades": 139,
+      "profit_factor": 2.1,
+      "max_drawdown": -18.29
+    },
+    {
+      "asset": "Bitcoin",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 112.83,
+      "sharpe": 2.678,
+      "win_rate": 59.0,
+      "total_trades": 139,
+      "profit_factor": 2.1,
+      "max_drawdown": -18.29
+    },
+    {
+      "asset": "Bitcoin",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 112.83,
+      "sharpe": 2.678,
+      "win_rate": 59.0,
+      "total_trades": 139,
+      "profit_factor": 2.1,
+      "max_drawdown": -18.29
+    },
+    {
+      "asset": "Bitcoin",
+      "config": "User Baseline",
+      "horizons": [
+        5,
+        10
+      ],
+      "method": "equal_weight",
+      "threshold": 0.1,
+      "total_return": 32.1,
+      "sharpe": 0.925,
+      "win_rate": 54.0,
+      "total_trades": 63,
+      "profit_factor": 1.46,
+      "max_drawdown": -16.0
+    },
+    {
+      "asset": "SP500",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 54.43,
+      "sharpe": 2.668,
+      "win_rate": 49.0,
+      "total_trades": 96,
+      "profit_factor": 3.2,
+      "max_drawdown": -4.39
+    },
+    {
+      "asset": "SP500",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 54.43,
+      "sharpe": 2.668,
+      "win_rate": 49.0,
+      "total_trades": 96,
+      "profit_factor": 3.2,
+      "max_drawdown": -4.39
+    },
+    {
+      "asset": "SP500",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 53.95,
+      "sharpe": 2.638,
+      "win_rate": 49.0,
+      "total_trades": 96,
+      "profit_factor": 3.14,
+      "max_drawdown": -4.39
+    },
+    {
+      "asset": "NASDAQ",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 31.95,
+      "sharpe": 1.525,
+      "win_rate": 43.4,
+      "total_trades": 99,
+      "profit_factor": 1.82,
+      "max_drawdown": -10.61
+    },
+    {
+      "asset": "NASDAQ",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 31.95,
+      "sharpe": 1.525,
+      "win_rate": 43.4,
+      "total_trades": 99,
+      "profit_factor": 1.82,
+      "max_drawdown": -10.61
+    },
+    {
+      "asset": "NASDAQ",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 31.95,
+      "sharpe": 1.525,
+      "win_rate": 43.4,
+      "total_trades": 99,
+      "profit_factor": 1.82,
+      "max_drawdown": -10.61
+    },
+    {
+      "asset": "RUSSEL",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 48.57,
+      "sharpe": 2.126,
+      "win_rate": 51.0,
+      "total_trades": 96,
+      "profit_factor": 2.24,
+      "max_drawdown": -7.03
+    },
+    {
+      "asset": "RUSSEL",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 48.57,
+      "sharpe": 2.126,
+      "win_rate": 51.0,
+      "total_trades": 96,
+      "profit_factor": 2.24,
+      "max_drawdown": -7.03
+    },
+    {
+      "asset": "RUSSEL",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 50.05,
+      "sharpe": 2.212,
+      "win_rate": 51.6,
+      "total_trades": 95,
+      "profit_factor": 2.33,
+      "max_drawdown": -5.63
+    },
+    {
+      "asset": "Nifty_50",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 34.31,
+      "sharpe": 3.019,
+      "win_rate": 50.0,
+      "total_trades": 136,
+      "profit_factor": 2.39,
+      "max_drawdown": -4.25
+    },
+    {
+      "asset": "Nifty_50",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 34.31,
+      "sharpe": 3.019,
+      "win_rate": 50.0,
+      "total_trades": 136,
+      "profit_factor": 2.39,
+      "max_drawdown": -4.25
+    },
+    {
+      "asset": "Nifty_50",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 34.31,
+      "sharpe": 3.019,
+      "win_rate": 50.0,
+      "total_trades": 136,
+      "profit_factor": 2.39,
+      "max_drawdown": -4.25
+    },
+    {
+      "asset": "Nifty_Bank",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 36.2,
+      "sharpe": 2.213,
+      "win_rate": 48.2,
+      "total_trades": 114,
+      "profit_factor": 2.48,
+      "max_drawdown": -7.11
+    },
+    {
+      "asset": "Nifty_Bank",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 36.2,
+      "sharpe": 2.213,
+      "win_rate": 48.2,
+      "total_trades": 114,
+      "profit_factor": 2.48,
+      "max_drawdown": -7.11
+    },
+    {
+      "asset": "Nifty_Bank",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 36.2,
+      "sharpe": 2.213,
+      "win_rate": 48.2,
+      "total_trades": 114,
+      "profit_factor": 2.48,
+      "max_drawdown": -7.11
+    },
+    {
+      "asset": "MCX_Copper",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 11.51,
+      "sharpe": 0.546,
+      "win_rate": 39.8,
+      "total_trades": 98,
+      "profit_factor": 1.26,
+      "max_drawdown": -11.64
+    },
+    {
+      "asset": "MCX_Copper",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 11.51,
+      "sharpe": 0.546,
+      "win_rate": 39.8,
+      "total_trades": 98,
+      "profit_factor": 1.26,
+      "max_drawdown": -11.64
+    },
+    {
+      "asset": "MCX_Copper",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 12.26,
+      "sharpe": 0.588,
+      "win_rate": 41.4,
+      "total_trades": 99,
+      "profit_factor": 1.28,
+      "max_drawdown": -11.64
+    },
+    {
+      "asset": "SPDR_China_ETF",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 8.04,
+      "sharpe": 0.339,
+      "win_rate": 37.7,
+      "total_trades": 106,
+      "profit_factor": 1.14,
+      "max_drawdown": -19.23
+    },
+    {
+      "asset": "SPDR_China_ETF",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 8.04,
+      "sharpe": 0.339,
+      "win_rate": 37.7,
+      "total_trades": 106,
+      "profit_factor": 1.14,
+      "max_drawdown": -19.23
+    },
+    {
+      "asset": "SPDR_China_ETF",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 8.75,
+      "sharpe": 0.394,
+      "win_rate": 38.1,
+      "total_trades": 105,
+      "profit_factor": 1.15,
+      "max_drawdown": -17.68
+    },
+    {
+      "asset": "DOW_JONES_Mini",
+      "config": "Best Overall",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "inverse_spread_weighted",
+      "threshold": 0.2,
+      "total_return": 23.0,
+      "sharpe": 1.246,
+      "win_rate": 41.6,
+      "total_trades": 113,
+      "profit_factor": 1.59,
+      "max_drawdown": -9.86
+    },
+    {
+      "asset": "DOW_JONES_Mini",
+      "config": "Best Equal Weight",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "equal_weight",
+      "threshold": 0.0,
+      "total_return": 23.0,
+      "sharpe": 1.246,
+      "win_rate": 41.6,
+      "total_trades": 113,
+      "profit_factor": 1.59,
+      "max_drawdown": -9.86
+    },
+    {
+      "asset": "DOW_JONES_Mini",
+      "config": "Simple Pair",
+      "horizons": [
+        1,
+        3
+      ],
+      "method": "normalized_drift",
+      "threshold": 0.2,
+      "total_return": 23.0,
+      "sharpe": 1.246,
+      "win_rate": 41.6,
+      "total_trades": 113,
+      "profit_factor": 1.59,
+      "max_drawdown": -9.86
+    }
+  ]
+}

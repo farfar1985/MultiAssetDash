@@ -59,3 +59,11 @@ Thumbs.db
 # Test files
 test_*.py
 *_test.py
+
+# Large experiment result files (keep scripts, ignore large outputs)
+comprehensive_diverse_results.json
+diverse_horizon_results.json
+experiment_results.json
+
+# Playwright reports (auto-generated)
+frontend/playwright-report/
