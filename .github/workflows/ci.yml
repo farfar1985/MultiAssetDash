@@ -67,6 +67,8 @@ jobs:
   python-test:
     name: Python Tests
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
 
@@ -78,7 +80,7 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest flask
+          pip install "pytest>=7.0" flask
 
       - name: Run pytest
         run: pytest tests/ -v
