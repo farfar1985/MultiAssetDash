@@ -6,7 +6,8 @@ export type PersonaId =
   | "hedgefund"
   | "alphapro"
   | "proretail"
-  | "retail";
+  | "retail"
+  | "executive";
 
 export interface Persona {
   id: PersonaId;
@@ -57,6 +58,12 @@ export const PERSONAS: Record<PersonaId, Persona> = {
     name: "Retail Trader",
     description: "Simple buy/sell/hold signals in plain English",
     icon: "sparkles",
+  },
+  executive: {
+    id: "executive",
+    name: "Executive",
+    description: "Headline metrics and market outlook for leadership",
+    icon: "briefcase",
   },
 };
 
