@@ -1,0 +1,199 @@
+{
+  "generated_at": "2026-02-05T13:41:07.933015",
+  "purpose": "walk_forward_validation_for_2pm_meeting",
+  "transaction_cost_bps": 5.0,
+  "results": {
+    "SP500": {
+      "walk_forward": {
+        "asset": "SP500",
+        "horizons": [
+          3,
+          8
+        ],
+        "transaction_cost_bps": 5.0,
+        "validation": {
+          "sharpe_net": 1.537,
+          "sharpe_gross": 1.604,
+          "win_rate": 65.4,
+          "max_drawdown": -8.34,
+          "total_return": 13.74,
+          "n_periods": 80,
+          "n_trades": 6,
+          "avg_trade_return": 0.1718
+        },
+        "test": {
+          "sharpe_net": 1.467,
+          "sharpe_gross": 1.564,
+          "win_rate": 57.3,
+          "max_drawdown": -4.31,
+          "total_return": 10.6,
+          "n_periods": 77,
+          "n_trades": 7,
+          "avg_trade_return": 0.1377
+        }
+      },
+      "robustness": {
+        "asset": "SP500",
+        "n_windows": 3,
+        "windows": [
+          {
+            "window": 1,
+            "start_idx": 50,
+            "end_idx": 166,
+            "sharpe": 0.551,
+            "total_return": 17.03,
+            "n_periods": 116
+          },
+          {
+            "window": 2,
+            "start_idx": 166,
+            "end_idx": 282,
+            "sharpe": 2.865,
+            "total_return": 32.87,
+            "n_periods": 116
+          },
+          {
+            "window": 3,
+            "start_idx": 282,
+            "end_idx": 398,
+            "sharpe": 1.671,
+            "total_return": 19.32,
+            "n_periods": 113
+          }
+        ],
+        "all_positive": true,
+        "sharpe_min": 0.551,
+        "sharpe_max": 2.865,
+        "sharpe_std": 0.945
+      }
+    },
+    "Bitcoin": {
+      "walk_forward": {
+        "asset": "Bitcoin",
+        "horizons": [
+          3,
+          5
+        ],
+        "transaction_cost_bps": 5.0,
+        "validation": {
+          "sharpe_net": -0.22,
+          "sharpe_gross": -0.169,
+          "win_rate": 53.8,
+          "max_drawdown": -40.79,
+          "total_return": -6.98,
+          "n_periods": 80,
+          "n_trades": 16,
+          "avg_trade_return": -0.0872
+        },
+        "test": {
+          "sharpe_net": 0.798,
+          "sharpe_gross": 0.893,
+          "win_rate": 50.6,
+          "max_drawdown": -26.89,
+          "total_return": 25.11,
+          "n_periods": 77,
+          "n_trades": 30,
+          "avg_trade_return": 0.3262
+        }
+      },
+      "robustness": {
+        "asset": "Bitcoin",
+        "n_windows": 3,
+        "windows": [
+          {
+            "window": 1,
+            "start_idx": 50,
+            "end_idx": 166,
+            "sharpe": 1.212,
+            "total_return": 63.21,
+            "n_periods": 116
+          },
+          {
+            "window": 2,
+            "start_idx": 166,
+            "end_idx": 282,
+            "sharpe": 0.164,
+            "total_return": 6.07,
+            "n_periods": 116
+          },
+          {
+            "window": 3,
+            "start_idx": 282,
+            "end_idx": 398,
+            "sharpe": 0.389,
+            "total_return": 18.3,
+            "n_periods": 113
+          }
+        ],
+        "all_positive": true,
+        "sharpe_min": 0.164,
+        "sharpe_max": 1.212,
+        "sharpe_std": 0.45
+      }
+    },
+    "Crude_Oil": {
+      "walk_forward": {
+        "asset": "Crude_Oil",
+        "horizons": [
+          9,
+          10
+        ],
+        "transaction_cost_bps": 5.0,
+        "validation": {
+          "sharpe_net": 0.341,
+          "sharpe_gross": 0.35,
+          "win_rate": 60.0,
+          "max_drawdown": -53.86,
+          "total_return": 19.31,
+          "n_periods": 80,
+          "n_trades": 5,
+          "avg_trade_return": 0.2413
+        },
+        "test": {
+          "sharpe_net": 2.658,
+          "sharpe_gross": 2.692,
+          "win_rate": 71.8,
+          "max_drawdown": -19.92,
+          "total_return": 118.46,
+          "n_periods": 71,
+          "n_trades": 15,
+          "avg_trade_return": 1.6685
+        }
+      },
+      "robustness": {
+        "asset": "Crude_Oil",
+        "n_windows": 3,
+        "windows": [
+          {
+            "window": 1,
+            "start_idx": 50,
+            "end_idx": 166,
+            "sharpe": 1.84,
+            "total_return": 245.3,
+            "n_periods": 116
+          },
+          {
+            "window": 2,
+            "start_idx": 166,
+            "end_idx": 282,
+            "sharpe": 0.629,
+            "total_return": 60.7,
+            "n_periods": 116
+          },
+          {
+            "window": 3,
+            "start_idx": 282,
+            "end_idx": 398,
+            "sharpe": 1.458,
+            "total_return": 103.76,
+            "n_periods": 107
+          }
+        ],
+        "all_positive": true,
+        "sharpe_min": 0.629,
+        "sharpe_max": 1.84,
+        "sharpe_std": 0.505
+      }
+    }
+  }
+}
