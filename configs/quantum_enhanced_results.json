@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-02-05T11:53:52.165115",
+  "method": "quantum_enhanced_signal",
+  "components": [
+    "per_asset_optimal_horizons",
+    "pairwise_slopes",
+    "quantum_regime_detection",
+    "contagion_adjustment"
+  ],
+  "summary": {
+    "SP500": {
+      "sharpe": 0.552,
+      "win_rate": 55.4,
+      "max_drawdown": -5.0,
+      "total_return": 1.67,
+      "n_signals": 110
+    },
+    "Bitcoin": {
+      "sharpe": 0.425,
+      "win_rate": 53.6,
+      "max_drawdown": -14.24,
+      "total_return": 3.81,
+      "n_signals": 110
+    },
+    "Crude_Oil": {
+      "sharpe": 2.676,
+      "win_rate": 52.9,
+      "max_drawdown": -3.41,
+      "total_return": 17.13,
+      "n_signals": 110
+    }
+  }
+}
