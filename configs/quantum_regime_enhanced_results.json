@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-02-05T12:55:40.527429",
+  "version": "enhanced",
+  "data_sources": [
+    "price_volatility",
+    "implied_vol_proxy",
+    "positioning_proxy",
+    "sentiment_proxy",
+    "macro_proxy",
+    "contagion_score"
+  ],
+  "potential_real_sources": [
+    "ingest_cme_cvol.py",
+    "ingest_cftc_cot.py",
+    "ingest_cboe_indices.py",
+    "ingest_fred.py",
+    "ingest_gdelt.py"
+  ],
+  "results": {
+    "SP500": {
+      "regime_distribution": {
+        "LOW_VOL": 158,
+        "NORMAL": 100,
+        "ELEVATED": 56,
+        "CRISIS": 19
+      },
+      "avg_vol_premium": 0.0557,
+      "crowded_pct": 0.0,
+      "stress_pct": 9.3,
+      "avg_entropy": 0.0,
+      "avg_enhanced_confidence": 0.821
+    },
+    "Bitcoin": {
+      "regime_distribution": {
+        "NORMAL": 114,
+        "ELEVATED": 92,
+        "LOW_VOL": 83,
+        "CRISIS": 44
+      },
+      "avg_vol_premium": 0.046,
+      "crowded_pct": 3.6,
+      "stress_pct": 6.9,
+      "avg_entropy": 0.0,
+      "avg_enhanced_confidence": 0.801
+    },
+    "Crude_Oil": {
+      "regime_distribution": {
+        "NORMAL": 143,
+        "LOW_VOL": 93,
+        "ELEVATED": 68,
+        "CRISIS": 29
+      },
+      "avg_vol_premium": 0.0512,
+      "crowded_pct": 2.4,
+      "stress_pct": 7.5,
+      "avg_entropy": 0.0,
+      "avg_enhanced_confidence": 0.827
+    }
+  }
+}

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Regime Analysis: Bitcoin | Nexus v2</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2em;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(30, 30, 60, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(100, 200, 255, 0.1);
+        }
+        .card h2 {
+            color: #00d4ff;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .full-width { grid-column: 1 / -1; }
+        
+        .regime-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .regime-LOW_VOL { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
+        .regime-NORMAL { background: rgba(0, 212, 255, 0.2); color: #00d4ff; }
+        .regime-ELEVATED { background: rgba(255, 170, 0, 0.2); color: #ffaa00; }
+        .regime-CRISIS { background: rgba(255, 68, 68, 0.2); color: #ff4444; }
+        
+        .metrics-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .metric {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .metric-label {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+        
+        .boundary-list {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .boundary {
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        
+        .regime-bar {
+            display: flex;
+            height: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        .regime-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .phase-indicator {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        .phase-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #7c3aed;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚛️ Quantum Regime Analysis: Bitcoin</h1>
+        <p style="color: #888; margin-top: 10px;">Real-time volatility regime detection using quantum simulation</p>
+    </div>
+
+    <div class="grid">
+        <!-- Current State -->
+        <div class="card">
+            <h2>📊 Current Regime State</h2>
+            <div style="text-align: center; padding: 20px;">
+                <span class="regime-badge regime-ELEVATED">ELEVATED</span>
+                <p style="margin-top: 15px; color: #888;">Confidence: 86.2%</p>
+            </div>
+            
+            <div class="metrics-row">
+                <div class="metric">
+                    <div class="metric-value">35.6%</div>
+                    <div class="metric-label">Volatility</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">0.487</div>
+                    <div class="metric-label">Scale Coherence</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">0.0239</div>
+                    <div class="metric-label">Susceptibility</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase State -->
+        <div class="card">
+            <h2>🌀 Phase Transition Analysis</h2>
+            <div class="phase-indicator">
+                <div class="phase-name">MEAN_REVERTING</div>
+                <p style="color: #888; margin-top: 10px;">Order Parameter: -0.263</p>
+            </div>
+            
+            <div class="metrics-row">
+                <div class="metric">
+                    <div class="metric-value" style="color: #00ff88">
+                        ✓ NO
+                    </div>
+                    <div class="metric-label">Transition Imminent</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">21%</div>
+                    <div class="metric-label">Transition Prob</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learned Boundaries -->
+        <div class="card">
+            <h2>🎯 Adaptive Boundaries (Learned)</h2>
+            <p style="color: #888; font-size: 0.9em;">Thresholds learned from Bitcoin's historical data</p>
+            
+            <div class="boundary-list">
+                <div class="boundary">
+                    <span style="color: #00ff88;">LOW_VOL</span> &lt; 24.0%
+                </div>
+                <div class="boundary">
+                    <span style="color: #00d4ff;">NORMAL</span> &lt; 31.8%
+                </div>
+                <div class="boundary">
+                    <span style="color: #ffaa00;">ELEVATED</span> &lt; 44.7%
+                </div>
+                <div class="boundary">
+                    <span style="color: #ff4444;">CRISIS</span> ≥ 44.7%
+                </div>
+            </div>
+        </div>
+
+        <!-- Regime Distribution -->
+        <div class="card">
+            <h2>📈 Regime Distribution</h2>
+            <div class="regime-bar">
+                <div class="regime-segment" style="width: 24.42528735632184%; background: #00ff8840; color: #00ff88;">LOW VOL<br>24%</div><div class="regime-segment" style="width: 35.3448275862069%; background: #00d4ff40; color: #00d4ff;">NORMAL<br>35%</div><div class="regime-segment" style="width: 27.586206896551722%; background: #ffaa0040; color: #ffaa00;">ELEVATED<br>28%</div><div class="regime-segment" style="width: 12.643678160919542%; background: #ff444440; color: #ff4444;">CRISIS<br>13%</div>
+            </div>
+        </div>
+
+        <!-- Volatility Timeline -->
+        <div class="card full-width">
+            <h2>📉 Volatility & Regime Timeline</h2>
+            <div class="chart-container">
+                <canvas id="volChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Order Parameter Chart -->
+        <div class="card">
+            <h2>🧲 Order Parameter (Market Direction)</h2>
+            <div class="chart-container">
+                <canvas id="orderChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Scale Coherence Chart -->
+        <div class="card">
+            <h2>🔗 Multi-Scale Coherence</h2>
+            <div class="chart-container">
+                <canvas id="coherenceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Volatility Timeline with regime background
+        const volCtx = document.getElementById('volChart').getContext('2d');
+        new Chart(volCtx, {
+            type: 'line',
+            data: {
+                labels: [148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347],
+                datasets: [{
+                    label: 'Volatility',
+                    data: [23.68, 24.3, 23.68, 22.97, 21.12, 22.05, 21.56, 21.75, 22.04, 21.52, 21.71, 21.56, 15.77, 15.07, 16.36, 16.95, 16.67, 16.97, 16.93, 16.9, 16.97, 18.81, 18.9, 18.9, 19.25, 18.98, 19.39, 21.26, 26.16, 25.89, 25.56, 25.56, 25.81, 27.14, 26.42, 26.95, 29.94, 30.27, 30.72, 32.24, 31.68, 31.64, 32.03, 32.87, 33.02, 32.45, 30.66, 28.98, 29.04, 29.11, 29.11, 28.99, 27.4, 27.18, 26.66, 23.79, 23.91, 23.12, 20.12, 19.77, 19.63, 19.68, 13.36, 13.37, 14.2, 14.09, 13.08, 15.56, 15.35, 15.84, 21.05, 20.95, 20.67, 22.25, 21.96, 21.4, 25.81, 26.34, 26.5, 26.49, 26.35, 26.35, 28.43, 28.31, 28.93, 39.16, 38.99, 41.33, 41.16, 39.27, 40.02, 40.95, 40.34, 39.68, 40.12, 37.66, 37.31, 36.6, 38.03, 38.01, 37.83, 38.52, 37.88, 37.79, 29.38, 29.09, 25.52, 25.61, 24.92, 27.08, 30.75, 31.76, 32.68, 33.15, 32.39, 33.2, 33.47, 33.54, 33.42, 33.62, 35.09, 35.8, 35.84, 35.67, 36.11, 35.47, 38.38, 37.9, 37.04, 36.65, 35.95, 35.42, 37.5, 37.9, 36.29, 35.66, 34.87, 37.41, 43.86, 41.14, 41.22, 42.24, 41.58, 41.74, 41.39, 36.84, 36.27, 36.11, 36.71, 36.31, 37.12, 35.32, 35.73, 36.21, 36.27, 38.16, 34.42, 27.19, 25.54, 25.44, 23.32, 23.37, 22.8, 22.91, 21.11, 21.15, 21.86, 20.47, 21.2, 20.04, 18.52, 17.99, 18.1, 17.58, 18.02, 18.09, 18.26, 18.26, 17.56, 17.57, 23.15, 23.47, 24.48, 24.52, 24.26, 24.97, 25.07, 30.08, 29.97, 29.85, 29.6, 27.85, 29.3, 29.22, 29.48, 29.44, 34.66, 34.51, 40.59, 35.63],
+                    borderColor: '#00d4ff',
+                    backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#888' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#888', maxTicksLimit: 10 }
+                    }
+                }
+            }
+        });
+
+        // Order Parameter Chart
+        const orderCtx = document.getElementById('orderChart').getContext('2d');
+        new Chart(orderCtx, {
+            type: 'line',
+            data: {
+                labels: [248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347],
+                datasets: [{
+                    label: 'Order Parameter',
+                    data: [-0.053, 0.053, -0.053, -0.053, -0.053, -0.053, -0.053, -0.053, 0.053, 0.053, 0.053, 0.158, 0.053, 0.053, -0.053, 0.053, 0.158, 0.053, -0.053, -0.158, -0.263, -0.158, -0.158, -0.158, -0.053, -0.158, -0.263, -0.368, -0.368, -0.263, -0.263, -0.263, -0.263, -0.158, -0.263, -0.368, -0.368, -0.368, -0.263, -0.158, -0.263, -0.263, -0.263, -0.263, -0.158, -0.053, -0.053, 0.053, -0.053, -0.158, -0.158, -0.263, -0.263, -0.263, -0.263, -0.158, -0.053, -0.053, -0.158, -0.158, -0.053, -0.053, -0.053, -0.053, -0.053, -0.053, -0.053, -0.053, 0.053, 0.158, 0.263, 0.263, 0.368, 0.368, 0.263, 0.158, 0.053, 0.053, 0.158, 0.158, 0.263, 0.263, 0.158, 0.053, 0.053, -0.053, -0.053, -0.158, -0.158, -0.158, -0.158, -0.263, -0.263, -0.158, -0.053, 0.053, 0.053, -0.053, -0.158, -0.263],
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        min: -1, max: 1,
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#888' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Scale Coherence Chart
+        const cohCtx = document.getElementById('coherenceChart').getContext('2d');
+        new Chart(cohCtx, {
+            type: 'line',
+            data: {
+                labels: [248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347],
+                datasets: [{
+                    label: 'Coherence',
+                    data: [0.176, 0.148, 0.176, 0.225, 0.321, 0.162, 0.236, 0.243, 0.172, 0.334, 0.424, 0.544, 0.514, 0.574, 0.407, 0.419, 0.322, 0.424, 0.414, 0.292, 0.314, 0.434, 0.418, 0.422, 0.276, 0.22, 0.416, 0.416, 0.358, 0.527, 0.338, 0.31, 0.378, 0.371, 0.384, 0.272, 0.131, 0.358, 0.704, 0.722, 0.739, 0.667, 0.439, 0.393, 0.393, 0.332, 0.286, 0.195, 0.292, 0.197, 0.217, 0.177, 0.271, 0.278, 0.227, 0.35, 0.329, 0.254, 0.227, 0.143, 0.126, 0.11, 0.098, 0.077, 0.034, 0.049, 0.096, 0.119, 0.15, 0.134, 0.121, 0.052, 0.105, 0.14, 0.311, 0.3, 0.164, 0.161, 0.098, 0.098, 0.345, 0.304, 0.395, 0.386, 0.2, 0.161, 0.164, 0.339, 0.413, 0.379, 0.378, 0.135, 0.214, 0.313, 0.333, 0.331, 0.514, 0.441, 0.569, 0.487],
+                    borderColor: '#00ff88',
+                    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#888' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <div style="text-align: center; padding: 30px; color: #666; font-size: 0.9em;">
+        <p>Nexus v2 Quantum Regime Detection | QDT | Generated: 2026-02-05 12:53</p>
+    </div>
+</body>
+</html>
