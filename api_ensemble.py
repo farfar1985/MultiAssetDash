@@ -281,8 +281,181 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.utcnow().isoformat() + 'Z',
-        'version': '1.0.0'
+        'version': '2.0.0-quantum'
     })
+
+
+# ============ QUANTUM REGIME ENDPOINTS ============
+
+# Lazy-load quantum detectors (heavy imports)
+_quantum_detectors = {}
+
+def get_quantum_detector(asset_id: int):
+    """Get or create quantum detector for an asset."""
+    if asset_id not in _quantum_detectors:
+        try:
+            from quantum_volatility_detector import EnhancedQuantumRegimeDetector
+            _quantum_detectors[asset_id] = EnhancedQuantumRegimeDetector(lookback=20)
+        except ImportError:
+            return None
+    return _quantum_detectors[asset_id]
+
+def get_asset_prices(asset_id: int):
+    """Load price data for an asset."""
+    from per_asset_optimizer import load_asset_data
+    asset = ASSETS.get(asset_id)
+    if not asset:
+        return None
+    folder = f"{asset_id}_{asset['name']}"
+    asset_dir = os.path.join(DATA_DIR, folder)
+    _, prices = load_asset_data(asset_dir)
+    return prices
+
+
+@app.route('/api/v1/quantum/regime/<int:asset_id>', methods=['GET'])
+def get_quantum_regime(asset_id):
+    """
+    Get current quantum-detected volatility regime for an asset.
+    
+    Returns:
+    - regime: LOW_VOL | NORMAL | ELEVATED | CRISIS
+    - confidence: 0-1 probability
+    - features: realized_vol, vol_of_vol, downside_vol, vol_skew
+    - transition: probability of regime change in progress
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+    
+    detector = get_quantum_detector(asset_id)
+    if not detector:
+        return jsonify({'error': True, 'code': 'QUANTUM_UNAVAILABLE', 
+                       'message': 'Quantum detector not available'}), 503
+    
+    prices = get_asset_prices(asset_id)
+    if prices is None or len(prices) < 30:
+        return jsonify({'error': True, 'code': 'INSUFFICIENT_DATA'}), 400
+    
+    # Detect regime at latest time point
+    t = len(prices) - 1
+    result = detector.detect_regime(prices, t)
+    
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': ASSETS[asset_id]['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'regime': result['regime'],
+        'confidence': result['confidence'],
+        'probabilities': result['probabilities'],
+        'features': result['features'],
+        'transition': result.get('transition'),
+        'position_recommendation': {
+            'LOW_VOL': 'Full position, longer horizons',
+            'NORMAL': 'Standard position',
+            'ELEVATED': 'Half position, shorter horizons',
+            'CRISIS': 'Quarter position or flat'
+        }.get(result['regime'], 'Unknown')
+    })
+
+
+@app.route('/api/v1/quantum/contagion', methods=['GET'])
+def get_quantum_contagion():
+    """
+    Get cross-asset contagion analysis.
+    
+    Returns:
+    - system_contagion: overall market stress level
+    - pair_details: contagion between each asset pair
+    - alert_level: LOW | MODERATE | HIGH | CRITICAL
+    """
+    try:
+        from quantum_contagion_detector import ContagionDetector
+    except ImportError:
+        return jsonify({'error': True, 'code': 'QUANTUM_UNAVAILABLE'}), 503
+    
+    # Load all asset prices
+    asset_prices = {}
+    for asset_id, asset in ASSETS.items():
+        prices = get_asset_prices(asset_id)
+        if prices is not None and len(prices) > 30:
+            asset_prices[asset['name']] = prices
+    
+    if len(asset_prices) < 2:
+        return jsonify({'error': True, 'code': 'INSUFFICIENT_ASSETS',
+                       'message': 'Need at least 2 assets with data'}), 400
+    
+    # Run contagion detection at latest time
+    detector = ContagionDetector(lookback=20)
+    min_len = min(len(p) for p in asset_prices.values())
+    t = min_len - 1
+    
+    result = detector.detect_contagion(asset_prices, t)
+    
+    return jsonify({
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'assets_analyzed': list(asset_prices.keys()),
+        'system_contagion': result['system_contagion'],
+        'max_contagion': result['max_contagion'],
+        'alert_level': result['alert_level'],
+        'highest_risk_pair': result['highest_contagion_pair'],
+        'pair_details': result['pair_details'],
+        'interpretation': {
+            'LOW': 'Markets diversified - normal conditions',
+            'MODERATE': 'Elevated correlation - monitor closely',
+            'HIGH': 'High contagion risk - reduce exposure',
+            'CRITICAL': 'Extreme correlation - hedges may fail'
+        }.get(result['alert_level'], 'Unknown')
+    })
+
+
+@app.route('/api/v1/quantum/dashboard', methods=['GET'])
+def get_quantum_dashboard():
+    """
+    Combined quantum dashboard endpoint.
+    Returns regime status for all assets plus contagion analysis.
+    """
+    dashboard = {
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'regimes': {},
+        'contagion': None
+    }
+    
+    # Get regime for each asset
+    for asset_id, asset in ASSETS.items():
+        detector = get_quantum_detector(asset_id)
+        prices = get_asset_prices(asset_id)
+        
+        if detector and prices is not None and len(prices) > 30:
+            t = len(prices) - 1
+            result = detector.detect_regime(prices, t)
+            dashboard['regimes'][asset['name']] = {
+                'regime': result['regime'],
+                'confidence': result['confidence'],
+                'realized_vol': result['features']['realized_vol']
+            }
+    
+    # Get contagion
+    try:
+        from quantum_contagion_detector import ContagionDetector
+        
+        asset_prices = {}
+        for asset_id, asset in ASSETS.items():
+            prices = get_asset_prices(asset_id)
+            if prices is not None and len(prices) > 30:
+                asset_prices[asset['name']] = prices
+        
+        if len(asset_prices) >= 2:
+            detector = ContagionDetector(lookback=20)
+            min_len = min(len(p) for p in asset_prices.values())
+            result = detector.detect_contagion(asset_prices, min_len - 1)
+            dashboard['contagion'] = {
+                'level': result['alert_level'],
+                'score': result['system_contagion'],
+                'highest_risk_pair': result['highest_contagion_pair']
+            }
+    except ImportError:
+        pass
+    
+    return jsonify(dashboard)
 
 
 if __name__ == '__main__':
