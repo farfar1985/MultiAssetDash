@@ -15,7 +15,7 @@ from typing import Optional, Tuple, List
 class ValidationError(Exception):
     """Raised when input validation fails."""
     
-    def __init__(self, message: str, field: str = None):
+    def __init__(self, message: str, field: Optional[str] = None):
         self.message = message
         self.field = field
         super().__init__(self.message)
@@ -267,47 +267,55 @@ class InputValidator:
             min_val=1,
             max_val=10000
         )
-        
+
         per_page_num = InputValidator.validate_integer(
             per_page or "100",
             param_name="per_page",
             min_val=1,
             max_val=1000
         )
-        
+
+        # These will never be None since we provide default values
+        assert page_num is not None
+        assert per_page_num is not None
         return page_num, per_page_num
     
     @staticmethod
     def validate_horizon(horizon: str) -> int:
         """
         Validate forecast horizon.
-        
+
         Valid range: 1-200 (based on current data)
         """
-        return InputValidator.validate_integer(
+        result = InputValidator.validate_integer(
             horizon,
             param_name="horizon",
             min_val=1,
             max_val=200
         )
+        # Will never be None since allow_none defaults to False
+        assert result is not None
+        return result
     
     @staticmethod
     def validate_strategy(strategy: str) -> int:
         """
         Validate trading strategy.
-        
+
         Valid values:
             9 = long-only
             10 = short-only
             11 = long/short
         """
-        strategy_int = InputValidator.validate_integer(
+        result = InputValidator.validate_integer(
             strategy,
             param_name="strategy",
             min_val=9,
             max_val=11
         )
-        return strategy_int
+        # Will never be None since allow_none defaults to False
+        assert result is not None
+        return result
     
     @staticmethod
     def validate_string(
