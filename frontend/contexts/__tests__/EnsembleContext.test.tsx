@@ -6,6 +6,7 @@ import {
   useEnsembleMethod,
 } from "../EnsembleContext";
 import type { EnsembleMethod, EnsembleResult } from "@/lib/api-client";
+import type { AssetId } from "@/types";
 
 // Helper to create a wrapper for hooks
 function createWrapper(defaultMethod?: EnsembleMethod) {
@@ -26,7 +27,7 @@ function createMockResult(
   return {
     method,
     signal: {
-      assetId: assetId as any,
+      assetId: assetId as AssetId,
       direction: "bullish",
       confidence: 75,
       horizon: "D+1",

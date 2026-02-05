@@ -386,7 +386,8 @@ describe("SignalCard", () => {
 
       render(<SignalCard assetId="crude-oil" />);
 
-      const badge = screen.getByText("neutral").closest("span");
+      // The Badge component renders as a div
+      const badge = screen.getByText("neutral").closest("div");
       expect(badge).toHaveClass("bg-yellow-500/10");
       expect(badge).toHaveClass("text-yellow-500");
     });

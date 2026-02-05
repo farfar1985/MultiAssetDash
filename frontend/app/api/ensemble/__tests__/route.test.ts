@@ -50,7 +50,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         expect(response.status).toBe(200);
         expect(body.success).toBe(true);
         expect(body.data).toBeDefined();
-        expect(body.data.signal.assetId).toBe("crude-oil");
+        expect(body.data!.signal.assetId).toBe("crude-oil");
       });
 
       it("returns data for lowercase ticker symbol", async () => {
@@ -61,7 +61,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const body = await parseResponse<EnsembleResult>(response);
 
         expect(response.status).toBe(200);
-        expect(body.data.signal.assetId).toBe("crude-oil");
+        expect(body.data!.signal.assetId).toBe("crude-oil");
       });
 
       it("returns data for asset ID directly (crude-oil)", async () => {
@@ -72,7 +72,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const body = await parseResponse<EnsembleResult>(response);
 
         expect(response.status).toBe(200);
-        expect(body.data.signal.assetId).toBe("crude-oil");
+        expect(body.data!.signal.assetId).toBe("crude-oil");
       });
 
       it("resolves all ticker symbols correctly", async () => {
@@ -97,7 +97,7 @@ describe("GET /api/ensemble/[symbol]", () => {
           const body = await parseResponse<EnsembleResult>(response);
 
           expect(response.status).toBe(200);
-          expect(body.data.signal.assetId).toBe(mapping.assetId);
+          expect(body.data!.signal.assetId).toBe(mapping.assetId);
         }
       });
 
@@ -123,7 +123,7 @@ describe("GET /api/ensemble/[symbol]", () => {
           const body = await parseResponse<EnsembleResult>(response);
 
           expect(response.status).toBe(200);
-          expect(body.data.signal.assetId).toBe(assetId);
+          expect(body.data!.signal.assetId).toBe(assetId);
         }
       });
     });
@@ -136,7 +136,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        expect(body.data.method).toBe("accuracy_weighted");
+        expect(body.data!.method).toBe("accuracy_weighted");
       });
     });
 
@@ -160,7 +160,7 @@ describe("GET /api/ensemble/[symbol]", () => {
 
           expect(response.status).toBe(200);
           expect(body.success).toBe(true);
-          expect(body.data.method).toBe(method);
+          expect(body.data!.method).toBe(method);
         });
       });
 
@@ -174,7 +174,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        expect(body.data.signal.confidence).toBe(88);
+        expect(body.data!.signal.confidence).toBe(88);
       });
 
       it("applies correct confidence multiplier for exponential_decay (0.95)", async () => {
@@ -187,7 +187,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        expect(body.data.signal.confidence).toBe(80);
+        expect(body.data!.signal.confidence).toBe(80);
       });
 
       it("caps confidence at 99 for high-confidence assets", async () => {
@@ -200,7 +200,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        expect(body.data.signal.confidence).toBeLessThanOrEqual(99);
+        expect(body.data!.signal.confidence).toBeLessThanOrEqual(99);
       });
 
       it("applies correct sharpe boost for top_k_sharpe (0.25)", async () => {
@@ -217,8 +217,8 @@ describe("GET /api/ensemble/[symbol]", () => {
         const bodyTopK = await parseResponse<EnsembleResult>(responseTopK);
 
         // top_k_sharpe should have +0.25 sharpe boost over base (0)
-        expect(bodyTopK.data.signal.sharpeRatio).toBeCloseTo(
-          bodyBase.data.signal.sharpeRatio + 0.25,
+        expect(bodyTopK.data!.signal.sharpeRatio).toBeCloseTo(
+          bodyBase.data!.signal.sharpeRatio + 0.25,
           2
         );
       });
@@ -231,7 +231,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const body = await parseResponse<EnsembleResult>(response);
 
         // lstm_volatility base is 0.18, top_k_sharpe adds 0.05
-        expect(body.data.modelWeights.lstm_volatility).toBeCloseTo(0.23, 2);
+        expect(body.data!.modelWeights.lstm_volatility).toBeCloseTo(0.23, 2);
       });
 
       it("applies model weight boost for accuracy_weighted transformer_trend", async () => {
@@ -242,7 +242,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const body = await parseResponse<EnsembleResult>(response);
 
         // transformer_trend base is 0.22, accuracy_weighted adds 0.03
-        expect(body.data.modelWeights.transformer_trend).toBeCloseTo(0.25, 2);
+        expect(body.data!.modelWeights.transformer_trend).toBeCloseTo(0.25, 2);
       });
 
       it("applies model weight boost for pairwise_slope gradient_boost_macro", async () => {
@@ -253,7 +253,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const body = await parseResponse<EnsembleResult>(response);
 
         // gradient_boost_macro base is 0.15, pairwise_slope adds 0.04
-        expect(body.data.modelWeights.gradient_boost_macro).toBeCloseTo(0.19, 2);
+        expect(body.data!.modelWeights.gradient_boost_macro).toBeCloseTo(0.19, 2);
       });
     });
 
@@ -278,7 +278,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        const signal = body.data.signal;
+        const signal = body.data!.signal;
         expect(signal).toHaveProperty("assetId");
         expect(signal).toHaveProperty("direction");
         expect(signal).toHaveProperty("confidence");
@@ -312,7 +312,7 @@ describe("GET /api/ensemble/[symbol]", () => {
           const response = await GET(request, { params });
           const body = await parseResponse<EnsembleResult>(response);
 
-          expect(body.data.signal.direction).toBe(expected.direction);
+          expect(body.data!.signal.direction).toBe(expected.direction);
         }
       });
 
@@ -323,7 +323,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        expect(body.data.signal.horizon).toBe("D+1");
+        expect(body.data!.signal.horizon).toBe("D+1");
       });
 
       it("returns modelsTotal as 10179", async () => {
@@ -333,7 +333,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        expect(body.data.signal.modelsTotal).toBe(10179);
+        expect(body.data!.signal.modelsTotal).toBe(10179);
       });
 
       it("calculates modelsAgreeing correctly", async () => {
@@ -347,9 +347,9 @@ describe("GET /api/ensemble/[symbol]", () => {
         const body = await parseResponse<EnsembleResult>(response);
 
         const expectedModelsAgreeing = Math.round(
-          10179 * (body.data.signal.confidence / 100) * 0.95
+          10179 * (body.data!.signal.confidence / 100) * 0.95
         );
-        expect(body.data.signal.modelsAgreeing).toBe(expectedModelsAgreeing);
+        expect(body.data!.signal.modelsAgreeing).toBe(expectedModelsAgreeing);
       });
 
       it("returns all 6 model weights", async () => {
@@ -359,7 +359,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        const weights = body.data.modelWeights;
+        const weights = body.data!.modelWeights;
         expect(Object.keys(weights)).toHaveLength(6);
         expect(weights).toHaveProperty("lstm_volatility");
         expect(weights).toHaveProperty("transformer_trend");
@@ -376,7 +376,7 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        const metrics = body.data.backtestMetrics;
+        const metrics = body.data!.backtestMetrics;
         expect(metrics).toHaveProperty("sharpeRatio");
         expect(metrics).toHaveProperty("directionalAccuracy");
         expect(metrics).toHaveProperty("totalReturn");
@@ -390,10 +390,10 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        const confidence = body.data.signal.confidence;
+        const confidence = body.data!.signal.confidence;
         // directionalAccuracy = 55 + confidence * 0.08
         const expectedDA = 55 + confidence * 0.08;
-        expect(body.data.signal.directionalAccuracy).toBeCloseTo(expectedDA, 2);
+        expect(body.data!.signal.directionalAccuracy).toBeCloseTo(expectedDA, 2);
       });
 
       it("calculates totalReturn correctly", async () => {
@@ -403,10 +403,10 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        const confidence = body.data.signal.confidence;
+        const confidence = body.data!.signal.confidence;
         // totalReturn = 30 + confidence * 0.3
         const expectedReturn = 30 + confidence * 0.3;
-        expect(body.data.signal.totalReturn).toBeCloseTo(expectedReturn, 2);
+        expect(body.data!.signal.totalReturn).toBeCloseTo(expectedReturn, 2);
       });
 
       it("calculates maxDrawdown correctly", async () => {
@@ -416,10 +416,10 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        const confidence = body.data.signal.confidence;
+        const confidence = body.data!.signal.confidence;
         // maxDrawdown = -12 - (100 - confidence) * 0.1
         const expectedDrawdown = -12 - (100 - confidence) * 0.1;
-        expect(body.data.backtestMetrics.maxDrawdown).toBeCloseTo(
+        expect(body.data!.backtestMetrics.maxDrawdown).toBeCloseTo(
           expectedDrawdown,
           2
         );
@@ -432,8 +432,8 @@ describe("GET /api/ensemble/[symbol]", () => {
         const response = await GET(request, { params });
         const body = await parseResponse<EnsembleResult>(response);
 
-        const date = new Date(body.data.signal.generatedAt);
-        expect(date.toISOString()).toBe(body.data.signal.generatedAt);
+        const date = new Date(body.data!.signal.generatedAt);
+        expect(date.toISOString()).toBe(body.data!.signal.generatedAt);
       });
 
       it("returns timestamp in response", async () => {
@@ -578,7 +578,7 @@ describe("GET /api/ensemble/[symbol]", () => {
       const body = await parseResponse<EnsembleResult>(response);
 
       expect(response.status).toBe(200);
-      expect(body.data.signal.assetId).toBe("bitcoin");
+      expect(body.data!.signal.assetId).toBe("bitcoin");
     });
 
     it("handles uppercase asset IDs by converting to lowercase", async () => {
@@ -589,7 +589,7 @@ describe("GET /api/ensemble/[symbol]", () => {
       const body = await parseResponse<EnsembleResult>(response);
 
       expect(response.status).toBe(200);
-      expect(body.data.signal.assetId).toBe("bitcoin");
+      expect(body.data!.signal.assetId).toBe("bitcoin");
     });
 
     it("handles empty method parameter (uses default)", async () => {
@@ -603,7 +603,7 @@ describe("GET /api/ensemble/[symbol]", () => {
       // Empty string is falsy in JS, so (searchParams.get("method") || "accuracy_weighted")
       // will use the default "accuracy_weighted"
       expect(response.status).toBe(200);
-      expect(body.data.method).toBe("accuracy_weighted");
+      expect(body.data!.method).toBe("accuracy_weighted");
     });
 
     it("prioritizes ticker symbol resolution over asset ID", async () => {
@@ -614,7 +614,7 @@ describe("GET /api/ensemble/[symbol]", () => {
       const response = await GET(request, { params });
       const body = await parseResponse<EnsembleResult>(response);
 
-      expect(body.data.signal.assetId).toBe("gold");
+      expect(body.data!.signal.assetId).toBe("gold");
     });
   });
 
@@ -633,11 +633,11 @@ describe("GET /api/ensemble/[symbol]", () => {
       const body2 = await parseResponse<EnsembleResult>(response2);
 
       // All static fields should match
-      expect(body1.data.method).toBe(body2.data.method);
-      expect(body1.data.signal.assetId).toBe(body2.data.signal.assetId);
-      expect(body1.data.signal.direction).toBe(body2.data.signal.direction);
-      expect(body1.data.signal.confidence).toBe(body2.data.signal.confidence);
-      expect(body1.data.modelWeights).toEqual(body2.data.modelWeights);
+      expect(body1.data!.method).toBe(body2.data!.method);
+      expect(body1.data!.signal.assetId).toBe(body2.data!.signal.assetId);
+      expect(body1.data!.signal.direction).toBe(body2.data!.signal.direction);
+      expect(body1.data!.signal.confidence).toBe(body2.data!.signal.confidence);
+      expect(body1.data!.modelWeights).toEqual(body2.data!.modelWeights);
     });
 
     it("signal sharpeRatio matches backtestMetrics sharpeRatio", async () => {
@@ -647,8 +647,8 @@ describe("GET /api/ensemble/[symbol]", () => {
       const response = await GET(request, { params });
       const body = await parseResponse<EnsembleResult>(response);
 
-      expect(body.data.signal.sharpeRatio).toBe(
-        body.data.backtestMetrics.sharpeRatio
+      expect(body.data!.signal.sharpeRatio).toBe(
+        body.data!.backtestMetrics.sharpeRatio
       );
     });
 
@@ -659,8 +659,8 @@ describe("GET /api/ensemble/[symbol]", () => {
       const response = await GET(request, { params });
       const body = await parseResponse<EnsembleResult>(response);
 
-      expect(body.data.signal.directionalAccuracy).toBe(
-        body.data.backtestMetrics.directionalAccuracy
+      expect(body.data!.signal.directionalAccuracy).toBe(
+        body.data!.backtestMetrics.directionalAccuracy
       );
     });
 
@@ -671,8 +671,8 @@ describe("GET /api/ensemble/[symbol]", () => {
       const response = await GET(request, { params });
       const body = await parseResponse<EnsembleResult>(response);
 
-      expect(body.data.signal.totalReturn).toBe(
-        body.data.backtestMetrics.totalReturn
+      expect(body.data!.signal.totalReturn).toBe(
+        body.data!.backtestMetrics.totalReturn
       );
     });
   });

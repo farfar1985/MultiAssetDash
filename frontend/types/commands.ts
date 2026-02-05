@@ -1,5 +1,4 @@
 import type { AssetId } from "./index";
-import type { EnsembleMethod } from "@/lib/api-client";
 
 export type CommandCategory =
   | "navigation"
