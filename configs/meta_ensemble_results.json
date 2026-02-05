@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-02-05T10:27:34.373251",
+  "method": "meta_ensemble_with_regime_adaptation",
+  "results": {
+    "sp500": {
+      "sharpe": 0.597,
+      "win_rate": 55.84,
+      "total_return": 2.69,
+      "n_periods": 119,
+      "best_method_per_regime": {
+        "TRENDING_UP": "pairwise_slopes",
+        "TRENDING_DOWN": "pairwise_slopes",
+        "MEAN_REVERTING": "pairwise_slopes",
+        "HIGH_VOLATILITY": "pairwise_slopes",
+        "LOW_VOLATILITY": "pairwise_slopes",
+        "NEUTRAL": "pairwise_slopes",
+        "UNKNOWN": "pairwise_slopes"
+      },
+      "regime_metrics": {
+        "LOW_VOLATILITY": {
+          "sharpe": 0.597,
+          "win_rate": 55.8,
+          "count": 119
+        }
+      }
+    },
+    "bitcoin": {
+      "sharpe": -1.852,
+      "win_rate": 51.79,
+      "total_return": -29.62,
+      "n_periods": 119,
+      "best_method_per_regime": {
+        "TRENDING_UP": "magnitude_weighted",
+        "TRENDING_DOWN": "pairwise_slopes",
+        "MEAN_REVERTING": "stacking",
+        "HIGH_VOLATILITY": "pairwise_slopes",
+        "LOW_VOLATILITY": "stacking",
+        "NEUTRAL": "pairwise_slopes",
+        "UNKNOWN": "pairwise_slopes"
+      },
+      "regime_metrics": {
+        "TRENDING_UP": {
+          "sharpe": -9.309,
+          "win_rate": 23.1,
+          "count": 13
+        },
+        "TRENDING_DOWN": {
+          "sharpe": 1.891,
+          "win_rate": 57.1,
+          "count": 7
+        },
+        "HIGH_VOLATILITY": {
+          "sharpe": -0.855,
+          "win_rate": 54.5,
+          "count": 68
+        },
+        "NEUTRAL": {
+          "sharpe": -2.824,
+          "win_rate": 52.2,
+          "count": 28
+        }
+      }
+    },
+    "crude_oil": {
+      "sharpe": -0.178,
+      "win_rate": 50.0,
+      "total_return": -2.05,
+      "n_periods": 119,
+      "best_method_per_regime": {
+        "TRENDING_UP": "pairwise_slopes",
+        "TRENDING_DOWN": "stacking",
+        "MEAN_REVERTING": "stacking",
+        "HIGH_VOLATILITY": "accuracy_weighted",
+        "LOW_VOLATILITY": "pairwise_slopes",
+        "NEUTRAL": "magnitude_weighted",
+        "UNKNOWN": "pairwise_slopes"
+      },
+      "regime_metrics": {
+        "TRENDING_UP": {
+          "sharpe": -12.729,
+          "win_rate": 25.0,
+          "count": 11
+        },
+        "TRENDING_DOWN": {
+          "sharpe": 3.619,
+          "win_rate": 60.0,
+          "count": 14
+        },
+        "MEAN_REVERTING": {
+          "sharpe": -0.769,
+          "win_rate": 46.2,
+          "count": 24
+        },
+        "LOW_VOLATILITY": {
+          "sharpe": 4.619,
+          "win_rate": 62.5,
+          "count": 10
+        },
+        "NEUTRAL": {
+          "sharpe": 0.992,
+          "win_rate": 51.4,
+          "count": 60
+        }
+      }
+    }
+  }
+}

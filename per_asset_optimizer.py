@@ -320,7 +320,7 @@ def run_all_assets():
     print(f"{'='*60}")
     print(f"\nSummary saved to: {summary_file}")
     
-    print("\n📊 RESULTS SUMMARY:")
+    print("\nRESULTS SUMMARY:")
     for name, cfg in all_results.items():
         m = cfg['best_config']['metrics']
         h = cfg['best_config']['horizons']

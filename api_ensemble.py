@@ -21,38 +21,48 @@ CORS(app)
 DATA_DIR = r"C:\Users\William Dennis\projects\nexus\data"
 RESULTS_DIR = r"C:\Users\William Dennis\projects\nexus\results"
 
-# Asset configuration
+# Asset configuration - updated with per-asset optimized ensembles (2026-02-05)
+CONFIGS_DIR = r"C:\Users\William Dennis\projects\nexus\configs"
+
+def load_optimal_config(asset_name: str) -> dict:
+    """Load optimal config from JSON if available."""
+    config_path = os.path.join(CONFIGS_DIR, f"optimal_{asset_name.lower()}.json")
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    return None
+
 ASSETS = {
     1866: {
         'name': 'Crude_Oil',
         'display_name': 'Crude Oil (WTI)',
         'category': 'Commodities',
         'horizons': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        'threshold': 0.50,
-        'best_ensemble': {'method': 'magnitude_weighted', 'horizons': [8, 9, 10]}
+        'threshold': 0.0,  # Updated from optimization
+        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [9, 10], 'aggregation': 'mean'}  # Sharpe 1.727, WR 68.5%
     },
     1625: {
         'name': 'SP500',
         'display_name': 'S&P 500',
         'category': 'Indices',
-        'horizons': [1, 3, 5, 8, 13, 21, 34, 55, 89],
-        'threshold': 10.0,
-        'best_ensemble': {'method': 'hierarchical', 'horizons': [5, 8, 13]}
+        'horizons': [1, 3, 5, 8, 9],
+        'threshold': 0.0,  # Updated from optimization
+        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [3, 8], 'aggregation': 'mean'}  # Sharpe 1.184, WR 57.4%
     },
     1860: {
         'name': 'Bitcoin',
         'display_name': 'Bitcoin (BTC)',
         'category': 'Crypto',
-        'horizons': [1, 3, 5, 8, 10, 13],
-        'threshold': 500.0,
-        'best_ensemble': {'method': 'magnitude_weighted', 'horizons': [5, 10]}
+        'horizons': [1, 3, 5, 8, 10],
+        'threshold': 0.0,  # Updated from optimization
+        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [3, 5], 'aggregation': 'median'}  # Sharpe 0.359, WR 55.6%
     },
     1861: {
         'name': 'Gold',
         'display_name': 'Gold',
         'category': 'Commodities',
         'horizons': [],
-        'threshold': 5.0,
+        'threshold': 0.0,
         'best_ensemble': {'method': 'pending', 'horizons': []}
     }
 }

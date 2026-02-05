@@ -1,305 +1,551 @@
 """
-Meta-Ensemble: Stack multiple ensemble methods
-==============================================
-Layer 1: Run multiple ensemble strategies
-Layer 2: Combine their outputs via majority vote / weighted average
+META-ENSEMBLE: Ensemble of Ensembles with Regime Adaptation
+============================================================
+Bill's insight: Use the BEST of the BEST, optimized per market regime.
+
+Architecture:
+- Level 1: Multiple ensemble methods per asset
+- Level 2: Meta-learner combines L1 outputs  
+- Level 3: Regime detector selects optimal strategy
+
+Created: 2026-02-05
+Author: AmiraB (Bill's direction)
 """
 
 import numpy as np
-import joblib
 import pandas as pd
+import joblib
+import json
 from pathlib import Path
 from datetime import datetime
+from sklearn.linear_model import Ridge, LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+import warnings
+warnings.filterwarnings('ignore')
 
-def load_horizons():
-    """Load D+5, D+7, D+10 data"""
-    data_dir = Path('data/1866_Crude_Oil/horizons_wide')
-    horizons = {}
-    for h in [5, 7, 10]:
-        f = data_dir / f'horizon_{h}.joblib'
-        data = joblib.load(f)
-        X = data['X'].values if hasattr(data['X'], 'values') else np.array(data['X'])
-        y = data['y'].values if hasattr(data['y'], 'values') else np.array(data['y'])
-        horizons[h] = {'X': X, 'y': y}
-        print(f'D+{h}: {X.shape}')
-    return horizons
+from master_ensemble import calculate_pairwise_slope_signal
 
-# =============================================================
-# LAYER 1: Individual Ensemble Methods
-# =============================================================
 
-def pairwise_slopes(horizons, threshold=0.4):
-    """Original winning method - compare horizon predictions"""
-    signals = []
-    for i in range(len(horizons[5]['y'])):
-        slopes = []
-        pairs = [(5,7), (5,10), (7,10)]
-        for h1, h2 in pairs:
-            p1 = horizons[h1]['X'][i].mean()
-            p2 = horizons[h2]['X'][i].mean()
-            slope = (p2 - p1) / (h2 - h1)
-            slopes.append(slope)
-        avg_slope = np.mean(slopes)
-        if avg_slope > threshold:
-            signals.append(1)
-        elif avg_slope < -threshold:
-            signals.append(-1)
-        else:
-            signals.append(0)
-    return np.array(signals)
-
-def top_k_mean(X, k_pct=0.1):
-    """Top K% models by lowest variance (most confident)"""
-    var = X.var(axis=0)
-    k = max(1, int(X.shape[1] * k_pct))
-    top_idx = np.argsort(var)[:k]
-    return X[:, top_idx].mean(axis=1)
-
-def inverse_variance_weighted(X):
-    """Weight models by inverse variance"""
-    var = X.var(axis=0) + 1e-8
-    weights = 1 / var
-    weights /= weights.sum()
-    return X @ weights
-
-def horizon_consensus(horizons, agreement_threshold=0.6):
-    """Signal when horizons agree on direction"""
-    signals = []
-    for i in range(len(horizons[5]['y'])):
-        base = horizons[5]['y'][i]
-        directions = []
-        for h in [5, 7, 10]:
-            pred = horizons[h]['X'][i].mean()
-            directions.append(1 if pred > base else -1)
+class RegimeDetector:
+    """
+    Detects market regime based on recent price action.
+    
+    Regimes:
+    - TRENDING_UP: Strong upward momentum
+    - TRENDING_DOWN: Strong downward momentum  
+    - MEAN_REVERTING: Choppy, oscillating
+    - HIGH_VOLATILITY: Large swings
+    - LOW_VOLATILITY: Calm, steady
+    """
+    
+    def __init__(self, lookback: int = 20):
+        self.lookback = lookback
+    
+    def detect(self, prices: np.ndarray, t: int) -> str:
+        """Detect regime at time t based on lookback window."""
+        if t < self.lookback:
+            return 'UNKNOWN'
         
-        agreement = abs(sum(directions)) / 3
-        if agreement >= agreement_threshold:
-            signals.append(np.sign(sum(directions)))
+        window = prices[t - self.lookback:t]
+        
+        # Calculate metrics
+        returns = np.diff(window) / window[:-1]
+        
+        # Trend: cumulative return over window
+        cum_return = (window[-1] - window[0]) / window[0]
+        
+        # Volatility: std of returns
+        volatility = returns.std()
+        
+        # Mean reversion: autocorrelation of returns
+        if len(returns) > 1:
+            autocorr = np.corrcoef(returns[:-1], returns[1:])[0, 1]
         else:
-            signals.append(0)
-    return np.array(signals)
-
-def magnitude_weighted(horizons):
-    """Weight predictions by their magnitude (conviction)"""
-    preds = []
-    mags = []
-    for h in [5, 7, 10]:
-        pred = horizons[h]['X'].mean(axis=1)
-        base = horizons[h]['y']
-        mag = np.abs(pred - base) + 1e-8
-        preds.append(pred)
-        mags.append(mag)
+            autocorr = 0
+        
+        # Classify regime
+        vol_threshold = 0.02  # 2% daily vol is high
+        trend_threshold = 0.05  # 5% cumulative is trending
+        
+        if volatility > vol_threshold:
+            return 'HIGH_VOLATILITY'
+        elif volatility < vol_threshold / 2:
+            return 'LOW_VOLATILITY'
+        elif cum_return > trend_threshold:
+            return 'TRENDING_UP'
+        elif cum_return < -trend_threshold:
+            return 'TRENDING_DOWN'
+        elif autocorr < -0.2:  # Negative autocorr = mean reverting
+            return 'MEAN_REVERTING'
+        else:
+            return 'NEUTRAL'
     
-    weighted = np.zeros(len(base))
-    total_mag = np.zeros(len(base))
-    for p, m in zip(preds, mags):
-        weighted += p * m
-        total_mag += m
-    return weighted / total_mag
+    def get_regime_features(self, prices: np.ndarray, t: int) -> dict:
+        """Extract regime features for ML model."""
+        if t < self.lookback:
+            return {'trend': 0, 'volatility': 0, 'autocorr': 0, 'momentum': 0}
+        
+        window = prices[t - self.lookback:t]
+        returns = np.diff(window) / window[:-1]
+        
+        cum_return = (window[-1] - window[0]) / window[0]
+        volatility = returns.std()
+        
+        if len(returns) > 1:
+            autocorr = np.corrcoef(returns[:-1], returns[1:])[0, 1]
+            if np.isnan(autocorr):
+                autocorr = 0
+        else:
+            autocorr = 0
+        
+        # Short-term momentum (last 5 days)
+        short_window = min(5, len(window))
+        momentum = (window[-1] - window[-short_window]) / window[-short_window] if short_window > 0 else 0
+        
+        return {
+            'trend': cum_return,
+            'volatility': volatility,
+            'autocorr': autocorr,
+            'momentum': momentum
+        }
 
-def to_signal(pred, threshold_pct=0.001):
-    """Convert price predictions to directional signals"""
-    pct_change = np.diff(pred) / (pred[:-1] + 1e-8)
-    signals = np.zeros(len(pct_change))
-    signals[pct_change > threshold_pct] = 1
-    signals[pct_change < -threshold_pct] = -1
-    return signals
 
-# =============================================================
-# LAYER 2: Meta-Ensemble Combiners
-# =============================================================
-
-def majority_vote(signals_list):
-    """Majority vote across ensemble methods"""
-    stacked = np.column_stack(signals_list)
-    return np.sign(stacked.sum(axis=1))
-
-def weighted_vote(signals_list, weights):
-    """Weighted combination of signals"""
-    stacked = np.column_stack(signals_list)
-    weighted = stacked @ np.array(weights)
-    return np.sign(weighted)
-
-def agreement_filter(signals_list, min_agree=3):
-    """Only trade when N methods agree"""
-    stacked = np.column_stack(signals_list)
-    agreement = np.abs(stacked.sum(axis=1))
-    signals = np.sign(stacked.sum(axis=1))
-    signals[agreement < min_agree] = 0
-    return signals
-
-def calc_metrics(signals, actual_returns):
-    """Calculate trading metrics"""
-    mask = signals != 0
-    n_trades = mask.sum()
+class EnsembleMethod:
+    """Base class for ensemble methods."""
     
-    if n_trades == 0:
-        return {'sharpe': 0, 'return': 0, 'win_rate': 0, 'trades': 0, 'da': 0}
+    def __init__(self, name: str):
+        self.name = name
     
-    returns = signals[mask] * actual_returns[mask]
-    sharpe = returns.mean() / (returns.std() + 1e-8) * np.sqrt(252)
-    total_ret = returns.sum()
-    win_rate = (returns > 0).mean()
+    def get_signal(self, horizons: dict, t: int, horizon_subset: list) -> dict:
+        raise NotImplementedError
+
+
+class PairwiseSlopesEnsemble(EnsembleMethod):
+    """Original pairwise slopes method."""
     
-    # Directional accuracy on trades
-    actual_dir = np.sign(actual_returns[mask])
-    da = (signals[mask] == actual_dir).mean()
+    def __init__(self):
+        super().__init__('pairwise_slopes')
+    
+    def get_signal(self, horizons: dict, t: int, horizon_subset: list) -> dict:
+        return calculate_pairwise_slope_signal(horizons, t, horizon_subset, 'mean')
+
+
+class AccuracyWeightedEnsemble(EnsembleMethod):
+    """Weight models by their rolling accuracy."""
+    
+    def __init__(self, accuracy_window: int = 20):
+        super().__init__('accuracy_weighted')
+        self.accuracy_window = accuracy_window
+        self.accuracy_cache = {}
+    
+    def get_signal(self, horizons: dict, t: int, horizon_subset: list) -> dict:
+        if t < self.accuracy_window + 1:
+            # Fall back to simple mean
+            return calculate_pairwise_slope_signal(horizons, t, horizon_subset, 'mean')
+        
+        weighted_pred = 0
+        total_weight = 0
+        
+        for h in horizon_subset:
+            if h not in horizons or t >= len(horizons[h]['X']):
+                continue
+            
+            X = horizons[h]['X']
+            y = horizons[h]['y']
+            
+            # Calculate rolling accuracy
+            correct = 0
+            total = 0
+            for i in range(t - self.accuracy_window, t):
+                if i < h or i >= len(y):
+                    continue
+                pred_dir = np.sign(X[i].mean() - y[i - h]) if i >= h else 0
+                actual_dir = np.sign(y[i] - y[i - h]) if i >= h else 0
+                if pred_dir == actual_dir:
+                    correct += 1
+                total += 1
+            
+            accuracy = correct / total if total > 0 else 0.5
+            weight = accuracy ** 2  # Square to emphasize good models
+            
+            pred = X[t].mean()
+            weighted_pred += pred * weight
+            total_weight += weight
+        
+        if total_weight == 0:
+            return {'signal': 0, 'net_prob': 0}
+        
+        avg_pred = weighted_pred / total_weight
+        
+        # Compare to shortest horizon's current price proxy
+        min_h = min(horizon_subset)
+        current_proxy = horizons[min_h]['y'][t - min_h] if t >= min_h else horizons[min_h]['y'][0]
+        
+        direction = np.sign(avg_pred - current_proxy)
+        confidence = abs(avg_pred - current_proxy) / (current_proxy + 1e-8)
+        
+        return {
+            'signal': int(direction),
+            'net_prob': direction * min(confidence * 10, 1.0),  # Scale to [-1, 1]
+            'method': self.name
+        }
+
+
+class MagnitudeWeightedEnsemble(EnsembleMethod):
+    """Weight by prediction magnitude (stronger predictions count more)."""
+    
+    def __init__(self):
+        super().__init__('magnitude_weighted')
+    
+    def get_signal(self, horizons: dict, t: int, horizon_subset: list) -> dict:
+        votes_up = 0
+        votes_down = 0
+        
+        for h in horizon_subset:
+            if h not in horizons or t >= len(horizons[h]['X']):
+                continue
+            
+            X = horizons[h]['X']
+            y = horizons[h]['y']
+            
+            pred = X[t].mean()
+            current = y[t - h] if t >= h else y[0]
+            
+            pct_change = (pred - current) / (current + 1e-8)
+            magnitude = abs(pct_change)
+            
+            if pct_change > 0:
+                votes_up += magnitude
+            else:
+                votes_down += magnitude
+        
+        total = votes_up + votes_down
+        if total == 0:
+            return {'signal': 0, 'net_prob': 0, 'method': self.name}
+        
+        net_prob = (votes_up - votes_down) / total
+        signal = 1 if net_prob > 0 else (-1 if net_prob < 0 else 0)
+        
+        return {
+            'signal': signal,
+            'net_prob': net_prob,
+            'method': self.name
+        }
+
+
+class StackingEnsemble(EnsembleMethod):
+    """Meta-learner that combines horizon predictions."""
+    
+    def __init__(self):
+        super().__init__('stacking')
+        self.model = Ridge(alpha=1.0)
+        self.is_trained = False
+        self.scaler = StandardScaler()
+    
+    def train(self, horizons: dict, horizon_subset: list, train_end: int):
+        """Train the meta-learner on historical data."""
+        X_train = []
+        y_train = []
+        
+        min_h = min(horizon_subset)
+        
+        for t in range(max(horizon_subset) + 10, train_end):
+            features = []
+            for h in horizon_subset:
+                if h in horizons and t < len(horizons[h]['X']):
+                    features.append(horizons[h]['X'][t].mean())
+                else:
+                    features.append(0)
+            
+            if len(features) == len(horizon_subset):
+                X_train.append(features)
+                # Target: actual return
+                if t < len(horizons[min_h]['y']) and t >= min_h:
+                    y_train.append(horizons[min_h]['y'][t] - horizons[min_h]['y'][t - min_h])
+        
+        if len(X_train) > 10:
+            X_train = np.array(X_train)
+            y_train = np.array(y_train)
+            X_train = self.scaler.fit_transform(X_train)
+            self.model.fit(X_train, y_train)
+            self.is_trained = True
+    
+    def get_signal(self, horizons: dict, t: int, horizon_subset: list) -> dict:
+        if not self.is_trained:
+            return calculate_pairwise_slope_signal(horizons, t, horizon_subset, 'mean')
+        
+        features = []
+        for h in horizon_subset:
+            if h in horizons and t < len(horizons[h]['X']):
+                features.append(horizons[h]['X'][t].mean())
+            else:
+                features.append(0)
+        
+        features = np.array(features).reshape(1, -1)
+        features = self.scaler.transform(features)
+        
+        pred = self.model.predict(features)[0]
+        signal = 1 if pred > 0 else (-1 if pred < 0 else 0)
+        confidence = min(abs(pred) / 5, 1.0)  # Normalize
+        
+        return {
+            'signal': signal,
+            'net_prob': signal * confidence,
+            'method': self.name
+        }
+
+
+class MetaEnsemble:
+    """
+    The SUPER ENSEMBLE that combines all ensemble methods.
+    Uses regime detection to select the best strategy.
+    """
+    
+    def __init__(self):
+        self.regime_detector = RegimeDetector()
+        self.ensemble_methods = [
+            PairwiseSlopesEnsemble(),
+            AccuracyWeightedEnsemble(),
+            MagnitudeWeightedEnsemble(),
+            StackingEnsemble()
+        ]
+        
+        # Track performance by regime
+        self.regime_performance = {
+            'TRENDING_UP': {m.name: [] for m in self.ensemble_methods},
+            'TRENDING_DOWN': {m.name: [] for m in self.ensemble_methods},
+            'MEAN_REVERTING': {m.name: [] for m in self.ensemble_methods},
+            'HIGH_VOLATILITY': {m.name: [] for m in self.ensemble_methods},
+            'LOW_VOLATILITY': {m.name: [] for m in self.ensemble_methods},
+            'NEUTRAL': {m.name: [] for m in self.ensemble_methods},
+            'UNKNOWN': {m.name: [] for m in self.ensemble_methods},
+        }
+        
+        # Meta-learner for regime-based selection
+        self.regime_selector = None
+        self.is_trained = False
+    
+    def train(self, horizons: dict, current_prices: np.ndarray, 
+              horizon_subset: list, train_end: int):
+        """
+        Train all ensemble methods and learn regime-based selection.
+        """
+        print("  Training stacking ensemble...")
+        # Train stacking method
+        for method in self.ensemble_methods:
+            if isinstance(method, StackingEnsemble):
+                method.train(horizons, horizon_subset, train_end)
+        
+        print("  Learning regime performance...")
+        # Learn which method works best in each regime
+        min_h = min(horizon_subset)
+        
+        for t in range(train_end // 2, train_end):
+            if t >= len(current_prices) or t + min_h >= len(horizons[min_h]['y']):
+                continue
+            
+            # Detect regime
+            regime = self.regime_detector.detect(current_prices, t)
+            
+            # Get actual return
+            actual_return = (horizons[min_h]['y'][t] - current_prices[t]) / current_prices[t]
+            
+            # Test each method
+            for method in self.ensemble_methods:
+                sig = method.get_signal(horizons, t, horizon_subset)
+                signal = sig.get('signal', 0)
+                
+                # Strategy return
+                strategy_return = signal * actual_return
+                self.regime_performance[regime][method.name].append(strategy_return)
+        
+        # Calculate best method per regime
+        self.best_method_per_regime = {}
+        for regime in self.regime_performance:
+            best_method = None
+            best_sharpe = -999
+            
+            for method_name, returns in self.regime_performance[regime].items():
+                if len(returns) > 5:
+                    returns = np.array(returns)
+                    sharpe = returns.mean() / (returns.std() + 1e-8)
+                    if sharpe > best_sharpe:
+                        best_sharpe = sharpe
+                        best_method = method_name
+            
+            self.best_method_per_regime[regime] = best_method or 'pairwise_slopes'
+            print(f"    {regime}: Best method = {self.best_method_per_regime[regime]}")
+        
+        self.is_trained = True
+    
+    def get_signal(self, horizons: dict, t: int, horizon_subset: list,
+                   current_prices: np.ndarray = None) -> dict:
+        """
+        Get signal using regime-adaptive method selection.
+        """
+        # Detect current regime
+        regime = 'NEUTRAL'
+        if current_prices is not None:
+            regime = self.regime_detector.detect(current_prices, t)
+        
+        # Get best method for this regime
+        best_method_name = self.best_method_per_regime.get(regime, 'pairwise_slopes')
+        
+        # Find and use that method
+        for method in self.ensemble_methods:
+            if method.name == best_method_name:
+                sig = method.get_signal(horizons, t, horizon_subset)
+                sig['regime'] = regime
+                sig['selected_method'] = best_method_name
+                return sig
+        
+        # Fallback
+        return calculate_pairwise_slope_signal(horizons, t, horizon_subset, 'mean')
+    
+    def get_all_signals(self, horizons: dict, t: int, horizon_subset: list) -> dict:
+        """Get signals from ALL methods for comparison."""
+        results = {}
+        for method in self.ensemble_methods:
+            results[method.name] = method.get_signal(horizons, t, horizon_subset)
+        return results
+
+
+def backtest_meta_ensemble(asset_dir: str, horizon_subset: list = None):
+    """
+    Backtest the meta-ensemble on an asset.
+    """
+    from per_asset_optimizer import load_asset_data
+    
+    horizons, prices = load_asset_data(asset_dir)
+    
+    if horizons is None:
+        print(f"ERROR: No data for {asset_dir}")
+        return None
+    
+    available = sorted(horizons.keys())
+    if horizon_subset is None:
+        horizon_subset = available
+    horizon_subset = [h for h in horizon_subset if h in available]
+    
+    print(f"  Horizons: {horizon_subset}")
+    print(f"  Data points: {len(horizons[horizon_subset[0]]['X'])}")
+    
+    min_len = min(horizons[h]['X'].shape[0] for h in horizon_subset)
+    train_end = int(min_len * 0.7)
+    
+    # Create and train meta-ensemble
+    meta = MetaEnsemble()
+    meta.train(horizons, prices, horizon_subset, train_end)
+    
+    # Backtest
+    min_h = min(horizon_subset)
+    y_future = horizons[min_h]['y']
+    
+    returns = []
+    regime_returns = {r: [] for r in meta.regime_performance.keys()}
+    
+    print("  Backtesting...")
+    for t in range(train_end, min_len - min_h):
+        sig = meta.get_signal(horizons, t, horizon_subset, prices)
+        signal = sig.get('signal', 0)
+        regime = sig.get('regime', 'UNKNOWN')
+        
+        if prices[t] != 0:
+            actual_return = (y_future[t] - prices[t]) / prices[t]
+        else:
+            actual_return = 0
+        
+        strategy_return = signal * actual_return
+        returns.append(strategy_return)
+        regime_returns[regime].append(strategy_return)
+    
+    returns = np.array(returns)
+    
+    # Metrics
+    periods_per_year = 252 / min_h
+    sharpe = returns.mean() / (returns.std() + 1e-8) * np.sqrt(periods_per_year)
+    
+    trades = returns[returns != 0]
+    win_rate = (trades > 0).mean() if len(trades) > 0 else 0
+    total_return = returns.sum()
+    
+    # Per-regime metrics
+    regime_metrics = {}
+    for regime, rets in regime_returns.items():
+        if len(rets) > 5:
+            rets = np.array(rets)
+            regime_metrics[regime] = {
+                'sharpe': round(rets.mean() / (rets.std() + 1e-8) * np.sqrt(periods_per_year), 3),
+                'win_rate': round((rets[rets != 0] > 0).mean() * 100, 1) if len(rets[rets != 0]) > 0 else 0,
+                'count': len(rets)
+            }
     
     return {
-        'sharpe': sharpe,
-        'return': total_ret,
-        'win_rate': win_rate,
-        'trades': n_trades,
-        'da': da
+        'sharpe': round(sharpe, 3),
+        'win_rate': round(win_rate * 100, 2),
+        'total_return': round(total_return * 100, 2),
+        'n_periods': len(returns),
+        'best_method_per_regime': meta.best_method_per_regime,
+        'regime_metrics': regime_metrics
     }
 
-def main():
-    print("=" * 70)
-    print("META-ENSEMBLE: Stacking Multiple Ensemble Methods")
-    print("=" * 70)
-    
-    # Load data
-    horizons = load_horizons()
-    y = horizons[5]['y']
-    actual_returns = np.diff(y)
-    n = len(y)
-    
-    print(f"\nTotal samples: {n}")
-    print(f"Actual return range: {actual_returns.min():.2f} to {actual_returns.max():.2f}")
-    
-    # =============================================================
-    # LAYER 1: Generate signals from each method
-    # =============================================================
-    print("\n" + "-" * 70)
-    print("LAYER 1: Individual Ensemble Methods")
-    print("-" * 70)
-    
-    methods = {}
-    
-    # Method 1: Pairwise Slopes (our winner)
-    sig_ps = pairwise_slopes(horizons, threshold=0.4)
-    methods['Pairwise_Slopes_0.4'] = sig_ps[:-1]
-    
-    # Method 2: Pairwise Slopes with different threshold
-    sig_ps_02 = pairwise_slopes(horizons, threshold=0.2)
-    methods['Pairwise_Slopes_0.2'] = sig_ps_02[:-1]
-    
-    # Method 3: Top 10% by variance
-    pred_top10 = (top_k_mean(horizons[5]['X'], 0.1) + 
-                  top_k_mean(horizons[7]['X'], 0.1) + 
-                  top_k_mean(horizons[10]['X'], 0.1)) / 3
-    methods['Top10_Average'] = to_signal(pred_top10)
-    
-    # Method 4: Inverse variance weighted
-    pred_iv = (inverse_variance_weighted(horizons[5]['X']) +
-               inverse_variance_weighted(horizons[7]['X']) +
-               inverse_variance_weighted(horizons[10]['X'])) / 3
-    methods['InvVariance'] = to_signal(pred_iv)
-    
-    # Method 5: Horizon consensus
-    sig_cons = horizon_consensus(horizons, 0.6)
-    methods['Horizon_Consensus'] = sig_cons[:-1]
-    
-    # Method 6: Magnitude weighted
-    pred_mag = magnitude_weighted(horizons)
-    methods['Magnitude_Weighted'] = to_signal(pred_mag)
-    
-    # Evaluate Layer 1
-    print("\nLayer 1 Results:")
-    layer1_results = []
-    for name, sig in methods.items():
-        m = calc_metrics(sig, actual_returns)
-        layer1_results.append({
-            'method': name,
-            'layer': 1,
-            **m
-        })
-        print(f"  {name:25s} | Sharpe: {m['sharpe']:6.2f} | Win: {m['win_rate']*100:5.1f}% | DA: {m['da']*100:5.1f}% | Trades: {m['trades']:3d}")
-    
-    # =============================================================
-    # LAYER 2: Meta-Ensemble Combinations
-    # =============================================================
-    print("\n" + "-" * 70)
-    print("LAYER 2: Meta-Ensemble Combinations")
-    print("-" * 70)
-    
-    # Get top 4 methods by Sharpe for meta-ensemble
-    layer1_sorted = sorted(layer1_results, key=lambda x: -x['sharpe'])
-    top_methods = [r['method'] for r in layer1_sorted[:4]]
-    print(f"\nTop 4 methods for meta-ensemble: {top_methods}")
-    
-    top_signals = [methods[m] for m in top_methods]
-    
-    meta_results = []
-    
-    # Meta 1: Simple majority vote
-    meta_maj = majority_vote(top_signals)
-    m = calc_metrics(meta_maj, actual_returns)
-    meta_results.append({'method': 'META_MajorityVote', 'layer': 2, **m})
-    print(f"\n  META_MajorityVote        | Sharpe: {m['sharpe']:6.2f} | Win: {m['win_rate']*100:5.1f}% | DA: {m['da']*100:5.1f}% | Trades: {m['trades']:3d}")
-    
-    # Meta 2: Weighted by Sharpe
-    sharpes = [r['sharpe'] for r in layer1_sorted[:4]]
-    weights = np.array(sharpes) / sum(sharpes)
-    meta_wt = weighted_vote(top_signals, weights)
-    m = calc_metrics(meta_wt, actual_returns)
-    meta_results.append({'method': 'META_SharpeWeighted', 'layer': 2, **m})
-    print(f"  META_SharpeWeighted      | Sharpe: {m['sharpe']:6.2f} | Win: {m['win_rate']*100:5.1f}% | DA: {m['da']*100:5.1f}% | Trades: {m['trades']:3d}")
-    
-    # Meta 3: Agreement filter (3/4 must agree)
-    meta_agree3 = agreement_filter(top_signals, min_agree=3)
-    m = calc_metrics(meta_agree3, actual_returns)
-    meta_results.append({'method': 'META_Agree3of4', 'layer': 2, **m})
-    print(f"  META_Agree3of4           | Sharpe: {m['sharpe']:6.2f} | Win: {m['win_rate']*100:5.1f}% | DA: {m['da']*100:5.1f}% | Trades: {m['trades']:3d}")
-    
-    # Meta 4: Agreement filter (4/4 must agree)
-    meta_agree4 = agreement_filter(top_signals, min_agree=4)
-    m = calc_metrics(meta_agree4, actual_returns)
-    meta_results.append({'method': 'META_Agree4of4', 'layer': 2, **m})
-    print(f"  META_Agree4of4           | Sharpe: {m['sharpe']:6.2f} | Win: {m['win_rate']*100:5.1f}% | DA: {m['da']*100:5.1f}% | Trades: {m['trades']:3d}")
-    
-    # Meta 5: Use ALL 6 methods
-    all_signals = list(methods.values())
-    meta_all = majority_vote(all_signals)
-    m = calc_metrics(meta_all, actual_returns)
-    meta_results.append({'method': 'META_All6_MajVote', 'layer': 2, **m})
-    print(f"  META_All6_MajVote        | Sharpe: {m['sharpe']:6.2f} | Win: {m['win_rate']*100:5.1f}% | DA: {m['da']*100:5.1f}% | Trades: {m['trades']:3d}")
-    
-    # Meta 6: All 6 with high agreement (5/6)
-    meta_all_agree = agreement_filter(all_signals, min_agree=5)
-    m = calc_metrics(meta_all_agree, actual_returns)
-    meta_results.append({'method': 'META_All6_Agree5', 'layer': 2, **m})
-    print(f"  META_All6_Agree5         | Sharpe: {m['sharpe']:6.2f} | Win: {m['win_rate']*100:5.1f}% | DA: {m['da']*100:5.1f}% | Trades: {m['trades']:3d}")
-    
-    # =============================================================
-    # FINAL RANKING
-    # =============================================================
-    print("\n" + "=" * 70)
-    print("FINAL RANKING (All Methods)")
-    print("=" * 70)
-    
-    all_results = layer1_results + meta_results
-    all_results_sorted = sorted(all_results, key=lambda x: -x['sharpe'])
-    
-    print(f"\n{'Rank':<5} {'Method':<28} {'Layer':<6} {'Sharpe':>8} {'Win%':>7} {'DA%':>7} {'Trades':>7}")
-    print("-" * 70)
-    
-    for i, r in enumerate(all_results_sorted, 1):
-        print(f"{i:<5} {r['method']:<28} {r['layer']:<6} {r['sharpe']:>8.2f} {r['win_rate']*100:>6.1f}% {r['da']*100:>6.1f}% {r['trades']:>7}")
-    
-    # Save to CSV
-    df = pd.DataFrame(all_results_sorted)
-    outfile = f"results/meta_ensemble_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-    df.to_csv(outfile, index=False)
-    print(f"\nResults saved to: {outfile}")
-    
-    # Best result
-    best = all_results_sorted[0]
-    print(f"\n*** BEST: {best['method']} (Layer {best['layer']}) ***")
-    print(f"    Sharpe: {best['sharpe']:.2f}")
-    print(f"    Win Rate: {best['win_rate']*100:.1f}%")
-    print(f"    DA: {best['da']*100:.1f}%")
-    print(f"    Trades: {best['trades']}")
 
-if __name__ == '__main__':
-    main()
+def run_all_meta_ensembles():
+    """Run meta-ensemble backtest on all assets."""
+    data_dir = Path("data")
+    
+    assets = []
+    for d in data_dir.iterdir():
+        if d.is_dir() and (d / "horizons_wide").exists():
+            horizon_files = list((d / "horizons_wide").glob("*.joblib"))
+            if horizon_files:
+                parts = d.name.split('_', 1)
+                name = parts[1].lower().replace(' ', '_') if len(parts) > 1 else d.name.lower()
+                assets.append((name, str(d)))
+    
+    print(f"Running meta-ensemble on {len(assets)} assets...")
+    print("=" * 60)
+    
+    all_results = {}
+    
+    for name, path in assets:
+        print(f"\n{name.upper()}")
+        print("-" * 40)
+        result = backtest_meta_ensemble(path)
+        
+        if result:
+            all_results[name] = result
+            print(f"\n  RESULTS:")
+            print(f"    Sharpe: {result['sharpe']}")
+            print(f"    Win Rate: {result['win_rate']}%")
+            print(f"    Total Return: {result['total_return']}%")
+            print(f"\n  BEST METHOD PER REGIME:")
+            for regime, method in result['best_method_per_regime'].items():
+                print(f"    {regime}: {method}")
+    
+    # Summary
+    print("\n" + "=" * 60)
+    print("META-ENSEMBLE SUMMARY")
+    print("=" * 60)
+    
+    for name, res in all_results.items():
+        print(f"\n{name.upper()}: Sharpe={res['sharpe']}, WR={res['win_rate']}%")
+    
+    # Save results
+    output = {
+        'generated_at': datetime.now().isoformat(),
+        'method': 'meta_ensemble_with_regime_adaptation',
+        'results': all_results
+    }
+    
+    with open('configs/meta_ensemble_results.json', 'w') as f:
+        json.dump(output, f, indent=2, default=str)
+    
+    print(f"\nResults saved to configs/meta_ensemble_results.json")
+    
+    return all_results
+
+
+if __name__ == "__main__":
+    results = run_all_meta_ensembles()

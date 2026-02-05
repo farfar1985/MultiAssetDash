@@ -2,43 +2,43 @@
   "predictions": [
     {
       "horizon_days": 1,
-      "predicted_price": 6969.43725,
-      "target_date": "2026-02-01"
+      "predicted_price": 6957.105136363635,
+      "target_date": "2026-02-03"
     },
     {
       "horizon_days": 3,
-      "predicted_price": 6978.92525,
-      "target_date": "2026-02-01"
+      "predicted_price": 6964.789999999999,
+      "target_date": "2026-02-03"
     },
     {
       "horizon_days": 5,
-      "predicted_price": 7006.346,
-      "target_date": "2026-02-01"
+      "predicted_price": 6970.2915,
+      "target_date": "2026-02-03"
     },
     {
       "horizon_days": 8,
-      "predicted_price": 6966.132,
-      "target_date": "2026-02-01"
+      "predicted_price": 7030.523999999999,
+      "target_date": "2026-02-02"
     },
     {
       "horizon_days": 13,
-      "predicted_price": 7018.0755,
-      "target_date": "2026-02-01"
+      "predicted_price": 7017.6531428571425,
+      "target_date": "2026-02-03"
     },
     {
       "horizon_days": 21,
-      "predicted_price": 7045.0005,
-      "target_date": "2026-02-01"
+      "predicted_price": 7028.94225,
+      "target_date": "2026-02-03"
     },
     {
       "horizon_days": 34,
-      "predicted_price": 7009.818333333334,
-      "target_date": "2026-02-01"
+      "predicted_price": 7071.0605000000005,
+      "target_date": "2026-02-02"
     },
     {
       "horizon_days": 55,
-      "predicted_price": 7091.810125,
-      "target_date": "2026-02-01"
+      "predicted_price": 7144.844999999999,
+      "target_date": "2026-02-02"
     }
   ]
 }

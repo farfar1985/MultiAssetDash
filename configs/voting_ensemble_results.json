@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-02-05T10:28:52.006818",
+  "method": "voting_consensus",
+  "results": {
+    "sp500": {
+      "overall": {
+        "sharpe": 0.69,
+        "win_rate": 55.65,
+        "total_return": 9.09,
+        "n_periods": 117
+      },
+      "high_confidence": {
+        "sharpe": 0.815,
+        "win_rate": 56.6,
+        "total_return": 10.04,
+        "n_periods": 108
+      }
+    },
+    "bitcoin": {
+      "overall": {
+        "sharpe": -1.451,
+        "win_rate": 46.15,
+        "total_return": -72.52,
+        "n_periods": 117
+      },
+      "high_confidence": {
+        "sharpe": -1.734,
+        "win_rate": 47.27,
+        "total_return": -39.6,
+        "n_periods": 55
+      }
+    },
+    "crude_oil": {
+      "overall": {
+        "sharpe": -0.77,
+        "win_rate": 49.55,
+        "total_return": -61.22,
+        "n_periods": 111
+      },
+      "high_confidence": {
+        "sharpe": 0.67,
+        "win_rate": 62.82,
+        "total_return": 35.36,
+        "n_periods": 78
+      }
+    }
+  }
+}

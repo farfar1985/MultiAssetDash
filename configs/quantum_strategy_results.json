@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-02-05T10:34:37.032323",
+  "method": "quantum_regime_detection",
+  "results": {
+    "sp500": {
+      "sharpe": 0.835,
+      "win_rate": 56.52,
+      "total_return": 10.98,
+      "regime_ensemble_map": {
+        "MOMENTUM": {
+          "method": "pairwise_slopes",
+          "train_sharpe": -999
+        },
+        "MEAN_REVERT": {
+          "method": "pairwise_slopes",
+          "train_sharpe": -0.109
+        },
+        "HIGH_VOL": {
+          "method": "pairwise_slopes",
+          "train_sharpe": 0.321
+        },
+        "LOW_VOL": {
+          "method": "pairwise_slopes",
+          "train_sharpe": -999
+        }
+      },
+      "regime_metrics": {
+        "HIGH_VOL": {
+          "sharpe": 0.835,
+          "win_rate": 56.5,
+          "n_periods": 117
+        }
+      }
+    },
+    "bitcoin": {
+      "sharpe": -1.451,
+      "win_rate": 46.15,
+      "total_return": -72.52,
+      "regime_ensemble_map": {
+        "MOMENTUM": {
+          "method": "pairwise_slopes",
+          "train_sharpe": -999
+        },
+        "MEAN_REVERT": {
+          "method": "pairwise_slopes",
+          "train_sharpe": -999
+        },
+        "HIGH_VOL": {
+          "method": "magnitude_weighted",
+          "train_sharpe": 0.264
+        },
+        "LOW_VOL": {
+          "method": "pairwise_slopes",
+          "train_sharpe": -999
+        }
+      },
+      "regime_metrics": {
+        "HIGH_VOL": {
+          "sharpe": -1.451,
+          "win_rate": 46.2,
+          "n_periods": 117
+        }
+      }
+    },
+    "crude_oil": {
+      "sharpe": -0.77,
+      "win_rate": 49.55,
+      "total_return": -61.22,
+      "regime_ensemble_map": {
+        "MOMENTUM": {
+          "method": "pairwise_slopes",
+          "train_sharpe": -999
+        },
+        "MEAN_REVERT": {
+          "method": "magnitude_weighted",
+          "train_sharpe": 0.711
+        },
+        "HIGH_VOL": {
+          "method": "magnitude_weighted",
+          "train_sharpe": 0.229
+        },
+        "LOW_VOL": {
+          "method": "pairwise_slopes",
+          "train_sharpe": -999
+        }
+      },
+      "regime_metrics": {
+        "HIGH_VOL": {
+          "sharpe": -0.77,
+          "win_rate": 49.5,
+          "n_periods": 111
+        }
+      }
+    }
+  }
+}
