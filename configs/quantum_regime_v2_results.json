@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-02-05T12:10:29.833636",
+  "version": "v2",
+  "improvements": [
+    "multi_scale_analysis",
+    "phase_transition_detection",
+    "adaptive_boundaries",
+    "transition_prediction"
+  ],
+  "results": {
+    "SP500": {
+      "regime_distribution": {
+        "LOW_VOL": 164,
+        "NORMAL": 104,
+        "ELEVATED": 56,
+        "CRISIS": 19
+      },
+      "phase_distribution": {
+        "MEAN_REVERTING": 337,
+        "TRENDING": 6
+      },
+      "transitions_flagged": "0",
+      "predictions_made": 0,
+      "prediction_accuracy": 0,
+      "avg_coherence": 0.079,
+      "avg_susceptibility": 0.011,
+      "avg_confidence": 0.879,
+      "learned_boundaries": [
+        0.0914,
+        0.1393,
+        0.3108
+      ]
+    },
+    "Bitcoin": {
+      "regime_distribution": {
+        "NORMAL": 122,
+        "ELEVATED": 92,
+        "LOW_VOL": 85,
+        "CRISIS": 44
+      },
+      "phase_distribution": {
+        "MEAN_REVERTING": 343
+      },
+      "transitions_flagged": "0",
+      "predictions_made": 0,
+      "prediction_accuracy": 0,
+      "avg_coherence": 0.307,
+      "avg_susceptibility": 0.014,
+      "avg_confidence": 0.856,
+      "learned_boundaries": [
+        0.2401,
+        0.3184,
+        0.4466
+      ]
+    },
+    "Crude_Oil": {
+      "regime_distribution": {
+        "NORMAL": 149,
+        "LOW_VOL": 97,
+        "ELEVATED": 68,
+        "CRISIS": 29
+      },
+      "phase_distribution": {
+        "MEAN_REVERTING": 319,
+        "TRENDING": 24
+      },
+      "transitions_flagged": "0",
+      "predictions_made": 0,
+      "prediction_accuracy": 0,
+      "avg_coherence": 0.215,
+      "avg_susceptibility": 0.011,
+      "avg_confidence": 0.885,
+      "learned_boundaries": [
+        0.1979,
+        0.2645,
+        0.3727
+      ]
+    }
+  }
+}
