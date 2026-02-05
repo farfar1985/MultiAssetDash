@@ -347,7 +347,7 @@ export function AlphaProDashboardV2() {
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
           {/* Hero Signal Panel */}
-          <HeroSignalPanel data={heroSignal} onTrade={() => console.log("Trade clicked")} />
+          <HeroSignalPanel data={heroSignal} onTrade={() => {}} />
 
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

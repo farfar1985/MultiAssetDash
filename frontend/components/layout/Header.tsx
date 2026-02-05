@@ -55,8 +55,12 @@ export function Header() {
           <span className="text-xs text-neutral-500">Live</span>
         </div>
 
-        {/* Quick Actions - Placeholder */}
-        <button className="px-3 py-1.5 text-sm bg-neutral-800 hover:bg-neutral-700 rounded-md text-neutral-300 transition-colors">
+        {/* Quick Actions */}
+        <button
+          className="px-3 py-1.5 text-sm bg-neutral-800 hover:bg-neutral-700 rounded-md text-neutral-300 transition-colors opacity-50 cursor-not-allowed"
+          title="Settings coming soon"
+          disabled
+        >
           Settings
         </button>
       </div>

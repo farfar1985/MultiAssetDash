@@ -832,7 +832,7 @@ export default function DashboardPage() {
   });
 
   const handleSignalClick = (signal: EnrichedSignal) => {
-    router.push(`/dashboard/assets/${signal.assetId}`);
+    router.push(`/dashboard/alphapro/${signal.assetId}`);
   };
 
   return (
@@ -855,7 +855,7 @@ export default function DashboardPage() {
             </h2>
             <ApiHealthIndicator />
           </div>
-          <span className="text-xs text-neutral-500 font-mono">Backend API @ localhost:5001</span>
+          <span className="text-xs text-neutral-500 font-mono">Real-time Ensemble Predictions</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <LiveSignalCard asset="Crude_Oil" displayName="Crude Oil" />
