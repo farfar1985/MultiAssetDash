@@ -1,0 +1,292 @@
+{
+  "generated_at": "2026-02-05T10:55:19.499335",
+  "method": "enhanced_quantum_volatility_detection",
+  "components": [
+    "QuantumVolatilityEncoder",
+    "QuantumRegimeTransitionDetector (Grover)",
+    "QuantumVolatilityVQE",
+    "QuantumCrossAssetEntanglement"
+  ],
+  "results": {
+    "sp500": {
+      "asset": "sp500",
+      "n_periods": 368,
+      "regime_distribution": {
+        "LOW_VOL": 310,
+        "ELEVATED": 51,
+        "CRISIS": 6,
+        "NORMAL": 1
+      },
+      "n_transitions": 11,
+      "transitions": [
+        {
+          "t": 93,
+          "prob": 1.0,
+          "from_regime": "LOW_VOL",
+          "to_regime": "ELEVATED"
+        },
+        {
+          "t": 99,
+          "prob": 1.0,
+          "from_regime": "NORMAL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 118,
+          "prob": 1.0,
+          "from_regime": "CRISIS",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 124,
+          "prob": 1.0,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 125,
+          "prob": 0.8147257089192241,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 213,
+          "prob": 1.0,
+          "from_regime": "LOW_VOL",
+          "to_regime": "ELEVATED"
+        },
+        {
+          "t": 216,
+          "prob": 0.6784115143286082,
+          "from_regime": "ELEVATED",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 283,
+          "prob": 1.0,
+          "from_regime": "LOW_VOL",
+          "to_regime": "ELEVATED"
+        },
+        {
+          "t": 302,
+          "prob": 1.0,
+          "from_regime": "ELEVATED",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 343,
+          "prob": 0.5328445820502616,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        }
+      ],
+      "avg_features_by_regime": {
+        "realized_vol": {
+          "CRISIS": 0.41541106440526937,
+          "ELEVATED": 0.11931014326173643,
+          "LOW_VOL": 0.11457540069297764,
+          "NORMAL": 0.2881184090786191
+        },
+        "vol_of_vol": {
+          "CRISIS": 0.014837194259998425,
+          "ELEVATED": 0.003541470487465761,
+          "LOW_VOL": 0.0027297065401955052,
+          "NORMAL": 0.010533392411066055
+        },
+        "downside_vol": {
+          "CRISIS": 0.2000209761125654,
+          "ELEVATED": 0.12221446181608195,
+          "LOW_VOL": 0.07322122123653407,
+          "NORMAL": 0.32834640065409665
+        },
+        "vol_skew": {
+          "CRISIS": 0.4297179110679929,
+          "ELEVATED": 2.311010517330537,
+          "LOW_VOL": 0.909486324104597,
+          "NORMAL": 3.0
+        }
+      }
+    },
+    "bitcoin": {
+      "asset": "bitcoin",
+      "n_periods": 368,
+      "regime_distribution": {
+        "LOW_VOL": 276,
+        "CRISIS": 73,
+        "NORMAL": 15,
+        "ELEVATED": 4
+      },
+      "n_transitions": 8,
+      "transitions": [
+        {
+          "t": 55,
+          "prob": 0.7314389459032078,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 61,
+          "prob": 1.0,
+          "from_regime": "NORMAL",
+          "to_regime": "CRISIS"
+        },
+        {
+          "t": 99,
+          "prob": 0.9957249572012172,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 226,
+          "prob": 0.5077009317445433,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 260,
+          "prob": 1.0,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 268,
+          "prob": 0.6182359539271451,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 283,
+          "prob": 0.8814735276463415,
+          "from_regime": "LOW_VOL",
+          "to_regime": "ELEVATED"
+        },
+        {
+          "t": 302,
+          "prob": 1.0,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        }
+      ],
+      "avg_features_by_regime": {
+        "realized_vol": {
+          "CRISIS": 0.3941658054409206,
+          "ELEVATED": 0.40158569597054267,
+          "LOW_VOL": 0.28434083813396305,
+          "NORMAL": 0.3513234777086318
+        },
+        "vol_of_vol": {
+          "CRISIS": 0.009407065174621705,
+          "ELEVATED": 0.008464293853853245,
+          "LOW_VOL": 0.006653345951928648,
+          "NORMAL": 0.004587291833161626
+        },
+        "downside_vol": {
+          "CRISIS": 0.21069158842856164,
+          "ELEVATED": 0.34819616320368196,
+          "LOW_VOL": 0.17470549688726944,
+          "NORMAL": 0.23792647856710125
+        },
+        "vol_skew": {
+          "CRISIS": 0.7337328030077626,
+          "ELEVATED": 1.9589152831799606,
+          "LOW_VOL": 0.9697657911194156,
+          "NORMAL": 2.2353258843113166
+        }
+      }
+    },
+    "crude_oil": {
+      "asset": "crude_oil",
+      "n_periods": 368,
+      "regime_distribution": {
+        "LOW_VOL": 296,
+        "ELEVATED": 55,
+        "CRISIS": 17
+      },
+      "n_transitions": 11,
+      "transitions": [
+        {
+          "t": 93,
+          "prob": 1.0,
+          "from_regime": "LOW_VOL",
+          "to_regime": "ELEVATED"
+        },
+        {
+          "t": 99,
+          "prob": 0.8116112675062057,
+          "from_regime": "ELEVATED",
+          "to_regime": "ELEVATED"
+        },
+        {
+          "t": 113,
+          "prob": 0.8337545707659204,
+          "from_regime": "ELEVATED",
+          "to_regime": "CRISIS"
+        },
+        {
+          "t": 174,
+          "prob": 1.0,
+          "from_regime": "CRISIS",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 183,
+          "prob": 1.0,
+          "from_regime": "LOW_VOL",
+          "to_regime": "ELEVATED"
+        },
+        {
+          "t": 194,
+          "prob": 1.0,
+          "from_regime": "CRISIS",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 286,
+          "prob": 0.8096754791227581,
+          "from_regime": "LOW_VOL",
+          "to_regime": "ELEVATED"
+        },
+        {
+          "t": 296,
+          "prob": 0.6861637338249917,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 316,
+          "prob": 0.8811259754718737,
+          "from_regime": "LOW_VOL",
+          "to_regime": "LOW_VOL"
+        },
+        {
+          "t": 356,
+          "prob": 1.0,
+          "from_regime": "ELEVATED",
+          "to_regime": "LOW_VOL"
+        }
+      ],
+      "avg_features_by_regime": {
+        "realized_vol": {
+          "CRISIS": 0.32631044704494916,
+          "ELEVATED": 0.30400163955561715,
+          "LOW_VOL": 0.22474747263294215
+        },
+        "vol_of_vol": {
+          "CRISIS": 0.008634052395553982,
+          "ELEVATED": 0.008445519753153132,
+          "LOW_VOL": 0.005199951101870891
+        },
+        "downside_vol": {
+          "CRISIS": 0.1236060594404024,
+          "ELEVATED": 0.3012359765781912,
+          "LOW_VOL": 0.1490849867816399
+        },
+        "vol_skew": {
+          "CRISIS": 0.5455473959258156,
+          "ELEVATED": 2.338416053971628,
+          "LOW_VOL": 1.0782950322385825
+        }
+      }
+    }
+  }
+}

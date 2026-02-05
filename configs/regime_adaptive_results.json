@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-02-05T10:57:00.388785",
+  "method": "quantum_regime_adaptive_strategy",
+  "results": {
+    "sp500": {
+      "asset": "sp500",
+      "adaptive": {
+        "sharpe": 0.14,
+        "win_rate": 55.0,
+        "max_drawdown": -5.39,
+        "total_return": 0.49
+      },
+      "static": {
+        "sharpe": 0.0,
+        "win_rate": 0,
+        "max_drawdown": 0.0,
+        "total_return": 0.0
+      },
+      "improvement": {
+        "sharpe": 0.14,
+        "win_rate": 55.0,
+        "drawdown_reduction": 5.39
+      },
+      "regime_distribution": {
+        "LOW_VOL": 85,
+        "ELEVATED": 34
+      },
+      "warnings": 3
+    },
+    "bitcoin": {
+      "asset": "bitcoin",
+      "adaptive": {
+        "sharpe": -1.838,
+        "win_rate": 53.0,
+        "max_drawdown": -19.63,
+        "total_return": -19.01
+      },
+      "static": {
+        "sharpe": -1.751,
+        "win_rate": 52.1,
+        "max_drawdown": -30.09,
+        "total_return": -28.82
+      },
+      "improvement": {
+        "sharpe": -0.087,
+        "win_rate": 0.9,
+        "drawdown_reduction": -10.46
+      },
+      "regime_distribution": {
+        "LOW_VOL": 85,
+        "CRISIS": 19,
+        "NORMAL": 11,
+        "ELEVATED": 4
+      },
+      "warnings": 1
+    },
+    "crude_oil": {
+      "asset": "crude_oil",
+      "adaptive": {
+        "sharpe": -0.139,
+        "win_rate": 46.1,
+        "max_drawdown": -9.48,
+        "total_return": -1.06
+      },
+      "static": {
+        "sharpe": -0.664,
+        "win_rate": 46.1,
+        "max_drawdown": -16.4,
+        "total_return": -7.65
+      },
+      "improvement": {
+        "sharpe": 0.525,
+        "win_rate": 0.0,
+        "drawdown_reduction": -6.92
+      },
+      "regime_distribution": {
+        "LOW_VOL": 99,
+        "ELEVATED": 20
+      },
+      "warnings": 0
+    }
+  }
+}
