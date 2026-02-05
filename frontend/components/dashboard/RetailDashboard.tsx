@@ -1,565 +1,356 @@
 "use client";
 
-import { useMemo } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useState, useMemo } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { LiveSignalCard } from "@/components/dashboard/LiveSignalCard";
-import { ApiHealthIndicator } from "@/components/dashboard/ApiHealthIndicator";
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
   Sparkles,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  ArrowBigUp,
-  ArrowBigDown,
-  Activity,
+  ChevronLeft,
+  ChevronRight,
+  CircleDot,
   ThumbsUp,
   ThumbsDown,
-  Hand,
-  CircleDollarSign,
-  Lightbulb,
+  HelpCircle,
+  DollarSign,
   Clock,
-  ShieldCheck,
-  Star,
-  CircleHelp,
+  Users,
+  Smile,
+  Meh,
+  Frown,
+  ArrowRight,
+  Shield,
+  Eye,
+  Zap,
+  Gift,
 } from "lucide-react";
 
 // ============================================================================
 // Types
 // ============================================================================
 
-type Recommendation = "buy" | "sell" | "hold";
+type FriendlySignal = "looks-good" | "heads-up" | "wait-and-see";
 
-interface RetailSignal {
+interface SimpleSignal {
   assetId: AssetId;
-  assetName: string;
-  symbol: string;
-  currentPrice: number;
-  signal: SignalData;
-  recommendation: Recommendation;
-  confidenceLevel: "high" | "medium" | "low";
-  plainEnglish: string;
-  whyThis: string;
-  rank: number;
+  name: string;
+  emoji: string;
+  price: number;
+  priceFormatted: string;
+  signal: FriendlySignal;
+  confidence: number;
+  headline: string;
+  explanation: string;
+  timeframe: string;
+  agreementPercent: number;
 }
 
 // ============================================================================
-// Helper Functions
+// Friendly Language Helpers
 // ============================================================================
 
-function getRecommendation(signal: SignalData): Recommendation {
-  if (signal.direction === "neutral" || signal.confidence < 60) return "hold";
-  if (signal.direction === "bullish") return "buy";
-  return "sell";
+const ASSET_EMOJIS: Record<string, string> = {
+  "crude-oil": "🛢️",
+  "natural-gas": "🔥",
+  "gold": "🥇",
+  "silver": "🥈",
+  "copper": "🔶",
+  "bitcoin": "₿",
+  "ethereum": "💎",
+  "sp500": "📈",
+};
+
+function getFriendlySignal(signal: SignalData): FriendlySignal {
+  if (signal.confidence < 55 || signal.direction === "neutral") return "wait-and-see";
+  if (signal.direction === "bullish") return "looks-good";
+  return "heads-up";
 }
 
-function getConfidenceLevel(confidence: number): "high" | "medium" | "low" {
-  if (confidence >= 75) return "high";
-  if (confidence >= 60) return "medium";
-  return "low";
-}
-
-function getPlainEnglish(recommendation: Recommendation, assetName: string, confidence: number): string {
-  const confidenceWord = confidence >= 75 ? "strong" : confidence >= 60 ? "moderate" : "weak";
-
-  switch (recommendation) {
-    case "buy":
-      return `Our AI thinks ${assetName} will go UP. This is a ${confidenceWord} signal to consider buying.`;
-    case "sell":
-      return `Our AI thinks ${assetName} will go DOWN. This is a ${confidenceWord} signal to consider selling.`;
+function getHeadline(signal: FriendlySignal, name: string): string {
+  switch (signal) {
+    case "looks-good":
+      return `${name} looks promising!`;
+    case "heads-up":
+      return `${name} might dip soon`;
     default:
-      return `${assetName} doesn't have a clear direction right now. It might be best to wait for a stronger signal.`;
+      return `${name} is uncertain`;
   }
 }
 
-function getWhyThis(signal: SignalData, recommendation: Recommendation): string {
-  const agreementPercent = Math.round((signal.modelsAgreeing / signal.modelsTotal) * 100);
-
-  if (recommendation === "hold") {
-    return `Only ${agreementPercent}% of our models agree, so we recommend waiting for more clarity.`;
+function getExplanation(signal: FriendlySignal, confidence: number, agreementPercent: number): string {
+  if (signal === "wait-and-see") {
+    return `Our AI isn't sure which way this will go. ${agreementPercent}% of models agree - we'd suggest waiting for a clearer picture.`;
   }
 
-  return `${agreementPercent}% of our ${signal.modelsTotal.toLocaleString()} AI models agree on this direction.`;
+  const strength = confidence >= 75 ? "pretty confident" : "somewhat confident";
+
+  if (signal === "looks-good") {
+    return `Our AI is ${strength} this could go up. ${agreementPercent}% of our models agree it's a good opportunity.`;
+  }
+
+  return `Our AI is ${strength} this might drop. ${agreementPercent}% of our models see potential downside.`;
 }
 
-function getRetailSignals(): RetailSignal[] {
-  const signals: RetailSignal[] = [];
+function getTimeframeText(horizon: Horizon): string {
+  switch (horizon) {
+    case "D+1": return "Tomorrow";
+    case "D+5": return "This Week";
+    case "D+10": return "Next 2 Weeks";
+    default: return "Soon";
+  }
+}
+
+function getSimpleSignals(): SimpleSignal[] {
+  const signals: SimpleSignal[] = [];
   const horizons: Horizon[] = ["D+1", "D+5", "D+10"];
 
   Object.entries(MOCK_ASSETS).forEach(([assetId, asset]) => {
-    // Find the best signal (highest confidence, non-neutral)
     let bestSignal: SignalData | null = null;
 
     for (const horizon of horizons) {
       const signal = MOCK_SIGNALS[assetId as AssetId]?.[horizon];
       if (signal) {
-        if (!bestSignal ||
-            (signal.direction !== "neutral" && signal.confidence > bestSignal.confidence)) {
+        if (!bestSignal || (signal.direction !== "neutral" && signal.confidence > bestSignal.confidence)) {
           bestSignal = signal;
         }
       }
     }
 
-    if (bestSignal && bestSignal.confidence >= 55) {
-      const recommendation = getRecommendation(bestSignal);
+    if (bestSignal) {
+      const friendlySignal = getFriendlySignal(bestSignal);
+      const agreementPercent = Math.round((bestSignal.modelsAgreeing / bestSignal.modelsTotal) * 100);
+
       signals.push({
         assetId: assetId as AssetId,
-        assetName: asset.name,
-        symbol: asset.symbol,
-        currentPrice: asset.currentPrice,
-        signal: bestSignal,
-        recommendation,
-        confidenceLevel: getConfidenceLevel(bestSignal.confidence),
-        plainEnglish: getPlainEnglish(recommendation, asset.name, bestSignal.confidence),
-        whyThis: getWhyThis(bestSignal, recommendation),
-        rank: 0,
+        name: asset.name,
+        emoji: ASSET_EMOJIS[assetId] || "📊",
+        price: asset.currentPrice,
+        priceFormatted: asset.currentPrice >= 1000
+          ? `$${(asset.currentPrice / 1000).toFixed(1)}k`
+          : `$${asset.currentPrice.toFixed(2)}`,
+        signal: friendlySignal,
+        confidence: bestSignal.confidence,
+        headline: getHeadline(friendlySignal, asset.name),
+        explanation: getExplanation(friendlySignal, bestSignal.confidence, agreementPercent),
+        timeframe: getTimeframeText(bestSignal.horizon),
+        agreementPercent,
       });
     }
   });
 
-  // Sort by confidence and assign ranks
-  return signals
-    .sort((a, b) => b.signal.confidence - a.signal.confidence)
-    .map((s, i) => ({ ...s, rank: i + 1 }));
+  return signals.sort((a, b) => b.confidence - a.confidence);
 }
 
 // ============================================================================
-// Header Component
+// Welcome Header - Mobile Friendly
 // ============================================================================
 
-function RetailHeader() {
+function WelcomeHeader() {
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
   return (
-    <div className="bg-gradient-to-r from-orange-900/30 via-amber-900/20 to-orange-900/30 border border-orange-500/20 rounded-xl p-6">
-      <div className="flex items-center gap-4 mb-4">
-        <div className="p-3 bg-orange-500/20 rounded-xl border border-orange-500/30">
-          <Sparkles className="w-8 h-8 text-orange-400" />
+    <div className="px-1">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="p-2.5 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/20">
+          <Sparkles className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-neutral-100">Your Trading Signals</h1>
-          <p className="text-sm text-neutral-400">
-            Simple, clear recommendations powered by AI
-          </p>
+          <h1 className="text-xl font-bold text-neutral-100">{greeting}!</h1>
+          <p className="text-sm text-neutral-400">Here&apos;s what&apos;s happening today</p>
         </div>
       </div>
-      <div className="flex flex-wrap gap-3">
-        <Badge className="bg-orange-500/10 border-orange-500/30 text-orange-300 px-3 py-1.5">
-          <ThumbsUp className="w-3.5 h-3.5 mr-1.5" />
-          Easy to Understand
-        </Badge>
-        <Badge className="bg-amber-500/10 border-amber-500/30 text-amber-300 px-3 py-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 mr-1.5" />
-          AI-Powered
-        </Badge>
-        <Badge className="bg-yellow-500/10 border-yellow-500/30 text-yellow-300 px-3 py-1.5">
-          <Lightbulb className="w-3.5 h-3.5 mr-1.5" />
-          Plain English
-        </Badge>
+    </div>
+  );
+}
+
+// ============================================================================
+// Quick Summary Cards - Swipeable Row
+// ============================================================================
+
+interface QuickSummaryProps {
+  signals: SimpleSignal[];
+}
+
+function QuickSummary({ signals }: QuickSummaryProps) {
+  const looksGood = signals.filter(s => s.signal === "looks-good").length;
+  const headsUp = signals.filter(s => s.signal === "heads-up").length;
+  const waitAndSee = signals.filter(s => s.signal === "wait-and-see").length;
+
+  const summaryCards = [
+    {
+      icon: Smile,
+      label: "Looks Good",
+      count: looksGood,
+      color: "from-green-500/20 to-emerald-500/20",
+      border: "border-green-500/30",
+      iconColor: "text-green-400",
+      textColor: "text-green-400",
+    },
+    {
+      icon: Frown,
+      label: "Heads Up",
+      count: headsUp,
+      color: "from-red-500/20 to-rose-500/20",
+      border: "border-red-500/30",
+      iconColor: "text-red-400",
+      textColor: "text-red-400",
+    },
+    {
+      icon: Meh,
+      label: "Wait & See",
+      count: waitAndSee,
+      color: "from-amber-500/20 to-yellow-500/20",
+      border: "border-amber-500/30",
+      iconColor: "text-amber-400",
+      textColor: "text-amber-400",
+    },
+  ];
+
+  return (
+    <div className="overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+      <div className="flex gap-3 min-w-max">
+        {summaryCards.map((card) => (
+          <div
+            key={card.label}
+            className={cn(
+              "flex items-center gap-3 px-4 py-3 rounded-xl border",
+              `bg-gradient-to-r ${card.color}`,
+              card.border
+            )}
+          >
+            <card.icon className={cn("w-8 h-8", card.iconColor)} />
+            <div>
+              <div className={cn("text-2xl font-bold font-mono", card.textColor)}>
+                {card.count}
+              </div>
+              <div className="text-xs text-neutral-400">{card.label}</div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
 // ============================================================================
-// Quick Summary Stats
+// Hero Signal Card - The Main Featured Signal
 // ============================================================================
 
-interface QuickStatsProps {
-  signals: RetailSignal[];
+interface HeroSignalProps {
+  signal: SimpleSignal;
 }
 
-function QuickStats({ signals }: QuickStatsProps) {
-  const stats = useMemo(() => {
-    const buySignals = signals.filter(s => s.recommendation === "buy").length;
-    const sellSignals = signals.filter(s => s.recommendation === "sell").length;
-    const holdSignals = signals.filter(s => s.recommendation === "hold").length;
-    const topPick = signals[0];
-    const avgConfidence = signals.reduce((acc, s) => acc + s.signal.confidence, 0) / signals.length;
-
-    return { buySignals, sellSignals, holdSignals, topPick, avgConfidence };
-  }, [signals]);
-
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* Buy Signals */}
-      <Card className="bg-neutral-900/50 border-neutral-800">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-neutral-500 mb-2">
-            <ThumbsUp className="w-4 h-4 text-green-400" />
-            <span className="text-xs uppercase tracking-wider">Buy Signals</span>
-          </div>
-          <div className="text-3xl font-bold font-mono text-green-400">
-            {stats.buySignals}
-          </div>
-          <div className="text-xs text-neutral-500 mt-1">
-            Assets looking good
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Sell Signals */}
-      <Card className="bg-neutral-900/50 border-neutral-800">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-neutral-500 mb-2">
-            <ThumbsDown className="w-4 h-4 text-red-400" />
-            <span className="text-xs uppercase tracking-wider">Sell Signals</span>
-          </div>
-          <div className="text-3xl font-bold font-mono text-red-400">
-            {stats.sellSignals}
-          </div>
-          <div className="text-xs text-neutral-500 mt-1">
-            Consider avoiding
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Hold/Wait Signals */}
-      <Card className="bg-neutral-900/50 border-neutral-800">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-neutral-500 mb-2">
-            <Hand className="w-4 h-4 text-amber-400" />
-            <span className="text-xs uppercase tracking-wider">Wait & See</span>
-          </div>
-          <div className="text-3xl font-bold font-mono text-amber-400">
-            {stats.holdSignals}
-          </div>
-          <div className="text-xs text-neutral-500 mt-1">
-            No clear signal yet
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Top Pick */}
-      <Card className="bg-neutral-900/50 border-neutral-800">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-neutral-500 mb-2">
-            <Star className="w-4 h-4 text-orange-400" />
-            <span className="text-xs uppercase tracking-wider">Top Pick</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold text-orange-400">
-              {stats.topPick?.assetName}
-            </span>
-          </div>
-          <div className="text-xs text-neutral-500 mt-1">
-            {stats.topPick?.signal.confidence}% confident
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-// ============================================================================
-// Confidence Gauge Component
-// ============================================================================
-
-interface ConfidenceGaugeProps {
-  confidence: number;
-  size?: "sm" | "md" | "lg";
-}
-
-function ConfidenceGauge({ confidence, size = "md" }: ConfidenceGaugeProps) {
-  const sizeConfig = {
-    sm: { width: 80, height: 50, fontSize: "text-sm", strokeWidth: 6 },
-    md: { width: 120, height: 70, fontSize: "text-xl", strokeWidth: 8 },
-    lg: { width: 160, height: 90, fontSize: "text-2xl", strokeWidth: 10 },
+function HeroSignalCard({ signal }: HeroSignalProps) {
+  const signalConfig = {
+    "looks-good": {
+      bg: "from-green-500/10 via-emerald-500/5 to-green-500/10",
+      border: "border-green-500/30",
+      badge: "bg-green-500/20 text-green-400 border-green-500/30",
+      badgeText: "Looks Good",
+      icon: ThumbsUp,
+      iconBg: "bg-green-500/20",
+      iconColor: "text-green-400",
+      barColor: "bg-green-500",
+    },
+    "heads-up": {
+      bg: "from-red-500/10 via-rose-500/5 to-red-500/10",
+      border: "border-red-500/30",
+      badge: "bg-red-500/20 text-red-400 border-red-500/30",
+      badgeText: "Heads Up",
+      icon: ThumbsDown,
+      iconBg: "bg-red-500/20",
+      iconColor: "text-red-400",
+      barColor: "bg-red-500",
+    },
+    "wait-and-see": {
+      bg: "from-amber-500/10 via-yellow-500/5 to-amber-500/10",
+      border: "border-amber-500/30",
+      badge: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+      badgeText: "Wait & See",
+      icon: HelpCircle,
+      iconBg: "bg-amber-500/20",
+      iconColor: "text-amber-400",
+      barColor: "bg-amber-500",
+    },
   };
 
-  const config = sizeConfig[size];
-  const radius = 40;
-  const circumference = Math.PI * radius;
-  const progress = (confidence / 100) * circumference;
-
-  const getColor = () => {
-    if (confidence >= 75) return { stroke: "#22c55e", text: "text-green-400", label: "Strong" };
-    if (confidence >= 60) return { stroke: "#f59e0b", text: "text-amber-400", label: "Moderate" };
-    return { stroke: "#ef4444", text: "text-red-400", label: "Weak" };
-  };
-
-  const { stroke, text, label } = getColor();
-
-  return (
-    <div className="flex flex-col items-center">
-      <svg width={config.width} height={config.height} className="overflow-visible">
-        {/* Background arc */}
-        <path
-          d={`M ${config.width / 2 - radius} ${config.height} A ${radius} ${radius} 0 0 1 ${config.width / 2 + radius} ${config.height}`}
-          fill="none"
-          stroke="#262626"
-          strokeWidth={config.strokeWidth}
-          strokeLinecap="round"
-        />
-        {/* Progress arc */}
-        <path
-          d={`M ${config.width / 2 - radius} ${config.height} A ${radius} ${radius} 0 0 1 ${config.width / 2 + radius} ${config.height}`}
-          fill="none"
-          stroke={stroke}
-          strokeWidth={config.strokeWidth}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={circumference - progress}
-          className="transition-all duration-500"
-        />
-        {/* Percentage text */}
-        <text
-          x={config.width / 2}
-          y={config.height - 15}
-          textAnchor="middle"
-          className={cn("font-mono font-bold fill-current", text, config.fontSize)}
-        >
-          {confidence}%
-        </text>
-      </svg>
-      <span className={cn("text-xs font-medium mt-1", text)}>{label}</span>
-    </div>
-  );
-}
-
-// ============================================================================
-// Big Direction Arrow Component
-// ============================================================================
-
-interface DirectionArrowProps {
-  recommendation: Recommendation;
-}
-
-function DirectionArrow({ recommendation }: DirectionArrowProps) {
-  if (recommendation === "hold") {
-    return (
-      <div className="flex flex-col items-center p-4 bg-amber-500/10 rounded-xl border border-amber-500/30">
-        <Minus className="w-16 h-16 text-amber-400" />
-        <span className="text-lg font-bold text-amber-400 mt-2">HOLD</span>
-        <span className="text-xs text-amber-300/70">Wait for clarity</span>
-      </div>
-    );
-  }
-
-  if (recommendation === "buy") {
-    return (
-      <div className="flex flex-col items-center p-4 bg-green-500/10 rounded-xl border border-green-500/30">
-        <ArrowBigUp className="w-16 h-16 text-green-400 animate-bounce" />
-        <span className="text-lg font-bold text-green-400 mt-2">BUY</span>
-        <span className="text-xs text-green-300/70">Going up</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center p-4 bg-red-500/10 rounded-xl border border-red-500/30">
-      <ArrowBigDown className="w-16 h-16 text-red-400 animate-bounce" />
-      <span className="text-lg font-bold text-red-400 mt-2">SELL</span>
-      <span className="text-xs text-red-300/70">Going down</span>
-    </div>
-  );
-}
-
-// ============================================================================
-// Retail Signal Card
-// ============================================================================
-
-interface RetailSignalCardProps {
-  signal: RetailSignal;
-}
-
-function RetailSignalCard({ signal }: RetailSignalCardProps) {
-  const isTopPick = signal.rank <= 3;
+  const config = signalConfig[signal.signal];
+  const Icon = config.icon;
 
   return (
     <Card className={cn(
-      "bg-neutral-900/50 border-neutral-800 hover:border-neutral-700 transition-all",
-      isTopPick && "ring-1 ring-orange-500/30"
+      "border-2 overflow-hidden",
+      `bg-gradient-to-br ${config.bg}`,
+      config.border
     )}>
       <CardContent className="p-5">
-        {/* Header */}
+        {/* Top Badge */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {isTopPick && (
-              <div className={cn(
-                "w-8 h-8 rounded-lg flex items-center justify-center",
-                signal.rank === 1 ? "bg-orange-500/20 text-orange-400 border border-orange-500/30" :
-                signal.rank === 2 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" :
-                "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-              )}>
-                <Star className="w-4 h-4" />
-              </div>
-            )}
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-lg text-neutral-100">{signal.assetName}</span>
-              </div>
-              <div className="flex items-center gap-2 mt-0.5">
-                <CircleDollarSign className="w-3 h-3 text-neutral-500" />
-                <span className="text-sm text-neutral-400">
-                  ${signal.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </span>
-              </div>
-            </div>
-          </div>
-          <Badge className={cn(
-            "text-xs px-2 py-1",
-            signal.confidenceLevel === "high"
-              ? "bg-green-500/10 border-green-500/30 text-green-400"
-              : signal.confidenceLevel === "medium"
-              ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
-              : "bg-neutral-500/10 border-neutral-500/30 text-neutral-400"
-          )}>
-            {signal.confidenceLevel === "high" ? "High Confidence" :
-             signal.confidenceLevel === "medium" ? "Moderate" : "Low Confidence"}
+          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 px-3 py-1">
+            <Gift className="w-3.5 h-3.5 mr-1.5" />
+            Top Pick Today
+          </Badge>
+          <Badge className={cn("px-3 py-1 border", config.badge)}>
+            {config.badgeText}
           </Badge>
         </div>
 
-        {/* Direction Arrow and Gauge */}
-        <div className="flex items-center justify-between mb-4 gap-4">
-          <DirectionArrow recommendation={signal.recommendation} />
-          <ConfidenceGauge confidence={signal.signal.confidence} size="md" />
-        </div>
-
-        {/* Plain English Explanation */}
-        <div className="p-3 bg-orange-500/5 border border-orange-500/20 rounded-lg mb-4">
-          <div className="flex items-start gap-2">
-            <Lightbulb className="w-4 h-4 text-orange-400 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-neutral-300">{signal.plainEnglish}</p>
-          </div>
-        </div>
-
-        {/* Why This Signal */}
-        <div className="flex items-center gap-2 text-xs text-neutral-500">
-          <CircleHelp className="w-3 h-3" />
-          <span>{signal.whyThis}</span>
-        </div>
-
-        {/* Time Horizon */}
-        <div className="mt-3 pt-3 border-t border-neutral-800 flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-neutral-500">
-            <Clock className="w-3 h-3" />
-            <span>Best for: {signal.signal.horizon === "D+1" ? "Tomorrow" :
-                           signal.signal.horizon === "D+5" ? "This week" : "Next 2 weeks"}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// ============================================================================
-// Simple Explanation Panel
-// ============================================================================
-
-function HowToReadPanel() {
-  return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardHeader className="p-4 pb-3">
-        <div className="flex items-center gap-2">
-          <CircleHelp className="w-5 h-5 text-orange-400" />
-          <span className="text-sm font-semibold text-neutral-100">How to Read Signals</span>
-        </div>
-      </CardHeader>
-      <CardContent className="p-4 pt-0 space-y-3">
-        <div className="flex items-center gap-3 p-2 bg-green-500/5 border border-green-500/20 rounded-lg">
-          <ArrowBigUp className="w-8 h-8 text-green-400" />
-          <div>
-            <div className="font-medium text-green-400">BUY Signal</div>
-            <div className="text-xs text-neutral-400">AI predicts price will go UP</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 p-2 bg-red-500/5 border border-red-500/20 rounded-lg">
-          <ArrowBigDown className="w-8 h-8 text-red-400" />
-          <div>
-            <div className="font-medium text-red-400">SELL Signal</div>
-            <div className="text-xs text-neutral-400">AI predicts price will go DOWN</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 p-2 bg-amber-500/5 border border-amber-500/20 rounded-lg">
-          <Minus className="w-8 h-8 text-amber-400" />
-          <div>
-            <div className="font-medium text-amber-400">HOLD Signal</div>
-            <div className="text-xs text-neutral-400">No clear direction - wait</div>
-          </div>
-        </div>
-
-        <Separator className="bg-neutral-800" />
-
-        <div className="text-xs text-neutral-500 space-y-1">
-          <p><strong className="text-neutral-400">High Confidence (75%+):</strong> Strong signal</p>
-          <p><strong className="text-neutral-400">Moderate (60-74%):</strong> Good signal</p>
-          <p><strong className="text-neutral-400">Low (&lt;60%):</strong> Weak signal</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// ============================================================================
-// Quick Action List
-// ============================================================================
-
-interface QuickActionsProps {
-  signals: RetailSignal[];
-}
-
-function QuickActionsList({ signals }: QuickActionsProps) {
-  const buySignals = signals.filter(s => s.recommendation === "buy" && s.confidenceLevel !== "low");
-  const sellSignals = signals.filter(s => s.recommendation === "sell" && s.confidenceLevel !== "low");
-
-  return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardHeader className="p-4 pb-3">
-        <div className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-orange-400" />
-          <span className="text-sm font-semibold text-neutral-100">Today&apos;s Top Picks</span>
-        </div>
-      </CardHeader>
-      <CardContent className="p-4 pt-0 space-y-4">
-        {/* Buy Recommendations */}
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <ThumbsUp className="w-4 h-4 text-green-400" />
-            <span className="text-sm font-medium text-green-400">Consider Buying</span>
-          </div>
-          {buySignals.length > 0 ? (
-            <div className="space-y-2">
-              {buySignals.slice(0, 3).map((s) => (
-                <div key={s.assetId} className="flex items-center justify-between p-2 bg-green-500/5 border border-green-500/20 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-green-400" />
-                    <span className="text-sm text-neutral-200">{s.assetName}</span>
-                  </div>
-                  <span className="text-xs font-mono text-green-400">{s.signal.confidence}%</span>
-                </div>
-              ))}
+        {/* Asset Info */}
+        <div className="flex items-center gap-4 mb-4">
+          <div className="text-4xl">{signal.emoji}</div>
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-neutral-100">{signal.name}</h2>
+            <div className="flex items-center gap-2 text-neutral-400">
+              <DollarSign className="w-4 h-4" />
+              <span className="text-lg">{signal.priceFormatted}</span>
             </div>
-          ) : (
-            <p className="text-xs text-neutral-500 p-2">No strong buy signals right now</p>
-          )}
+          </div>
+          <div className={cn("p-3 rounded-xl", config.iconBg)}>
+            <Icon className={cn("w-8 h-8", config.iconColor)} />
+          </div>
         </div>
 
-        {/* Sell Recommendations */}
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <ThumbsDown className="w-4 h-4 text-red-400" />
-            <span className="text-sm font-medium text-red-400">Consider Avoiding</span>
+        {/* Headline */}
+        <h3 className="text-xl font-semibold text-neutral-100 mb-2">
+          {signal.headline}
+        </h3>
+
+        {/* Explanation */}
+        <p className="text-neutral-300 mb-4 leading-relaxed">
+          {signal.explanation}
+        </p>
+
+        {/* Confidence Bar */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="text-neutral-400">How sure are we?</span>
+            <span className="font-mono font-bold text-neutral-200">{signal.confidence}%</span>
           </div>
-          {sellSignals.length > 0 ? (
-            <div className="space-y-2">
-              {sellSignals.slice(0, 3).map((s) => (
-                <div key={s.assetId} className="flex items-center justify-between p-2 bg-red-500/5 border border-red-500/20 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <TrendingDown className="w-4 h-4 text-red-400" />
-                    <span className="text-sm text-neutral-200">{s.assetName}</span>
-                  </div>
-                  <span className="text-xs font-mono text-red-400">{s.signal.confidence}%</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-neutral-500 p-2">No strong sell signals right now</p>
-          )}
+          <div className="h-3 bg-neutral-800 rounded-full overflow-hidden">
+            <div
+              className={cn("h-full rounded-full transition-all duration-500", config.barColor)}
+              style={{ width: `${signal.confidence}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-neutral-500 mt-1">
+            <span>Not Sure</span>
+            <span>Very Sure</span>
+          </div>
+        </div>
+
+        {/* Footer Info */}
+        <div className="flex items-center justify-between pt-3 border-t border-neutral-700/50">
+          <div className="flex items-center gap-2 text-sm text-neutral-400">
+            <Clock className="w-4 h-4" />
+            <span>Best for: {signal.timeframe}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-neutral-400">
+            <Users className="w-4 h-4" />
+            <span>{signal.agreementPercent}% agree</span>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -567,79 +358,475 @@ function QuickActionsList({ signals }: QuickActionsProps) {
 }
 
 // ============================================================================
-// Main Retail Dashboard Component
+// Swipeable Signal Cards Carousel
 // ============================================================================
 
-export function RetailDashboard() {
-  const retailSignals = useMemo(() => getRetailSignals(), []);
-  const topSignals = retailSignals.slice(0, 6);
+interface SignalCarouselProps {
+  signals: SimpleSignal[];
+}
+
+function SignalCarousel({ signals }: SignalCarouselProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const visibleSignals = signals.slice(1); // Skip first (hero)
+
+  const goNext = () => setCurrentIndex((i) => Math.min(i + 1, visibleSignals.length - 1));
+  const goPrev = () => setCurrentIndex((i) => Math.max(i - 1, 0));
+
+  if (visibleSignals.length === 0) return null;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <RetailHeader />
-
-      {/* Quick Stats */}
-      <QuickStats signals={retailSignals} />
-
-      <Separator className="bg-neutral-800" />
-
-      {/* Live Signals - Popular Assets */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-neutral-200 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-orange-400" />
-              Live Prices
-            </h2>
-            <ApiHealthIndicator />
-          </div>
-          <span className="text-xs text-neutral-500">Popular assets</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <LiveSignalCard asset="Bitcoin" displayName="Bitcoin" />
-          <LiveSignalCard asset="GOLD" displayName="Gold" />
-          <LiveSignalCard asset="Crude_Oil" displayName="Crude Oil" />
-          <LiveSignalCard asset="SP500" displayName="S&P 500" />
-        </div>
-      </section>
-
-      <Separator className="bg-neutral-800" />
-
-      {/* Two-Column Layout: Signals + Help */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Top Signal Cards */}
-        <div className="xl:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-neutral-200 flex items-center gap-2">
-              <Star className="w-5 h-5 text-orange-400" />
-              Your Best Opportunities
-            </h2>
-            <Badge className="bg-orange-500/10 border-orange-500/30 text-orange-300 px-2 py-1 text-xs">
-              AI-Picked
-            </Badge>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {topSignals.map((signal) => (
-              <RetailSignalCard key={signal.assetId} signal={signal} />
-            ))}
-          </div>
-        </div>
-
-        {/* Sidebar - Help + Quick Actions */}
-        <div className="xl:col-span-1 space-y-4">
-          <QuickActionsList signals={retailSignals} />
-          <HowToReadPanel />
+    <div className="space-y-4">
+      {/* Section Header */}
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-lg font-semibold text-neutral-200 flex items-center gap-2">
+          <Eye className="w-5 h-5 text-orange-400" />
+          More Opportunities
+        </h2>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={goPrev}
+            disabled={currentIndex === 0}
+            className={cn(
+              "p-2 rounded-lg border transition-all",
+              currentIndex === 0
+                ? "border-neutral-800 text-neutral-600"
+                : "border-neutral-700 text-neutral-300 hover:bg-neutral-800 active:scale-95"
+            )}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={goNext}
+            disabled={currentIndex === visibleSignals.length - 1}
+            className={cn(
+              "p-2 rounded-lg border transition-all",
+              currentIndex === visibleSignals.length - 1
+                ? "border-neutral-800 text-neutral-600"
+                : "border-neutral-700 text-neutral-300 hover:bg-neutral-800 active:scale-95"
+            )}
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className="p-4 bg-neutral-900/30 border border-neutral-800 rounded-lg flex items-start gap-3">
-        <ShieldCheck className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
-        <div className="text-xs text-neutral-500">
-          <strong className="text-neutral-400">Remember:</strong> These are AI predictions, not
-          financial advice. Markets can be unpredictable. Only invest what you can afford to lose,
-          and consider talking to a financial advisor before making big decisions.
+      {/* Carousel */}
+      <div className="overflow-hidden">
+        <div
+          className="flex transition-transform duration-300 ease-out gap-4"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {visibleSignals.map((signal) => (
+            <div key={signal.assetId} className="flex-shrink-0 w-full">
+              <SimpleSignalCard signal={signal} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Dots Indicator */}
+      <div className="flex justify-center gap-2">
+        {visibleSignals.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={cn(
+              "transition-all duration-200",
+              index === currentIndex
+                ? "w-6 h-2 bg-orange-500 rounded-full"
+                : "w-2 h-2 bg-neutral-700 rounded-full hover:bg-neutral-600"
+            )}
+          />
+        ))}
+      </div>
+
+      {/* Swipe Hint */}
+      <p className="text-center text-xs text-neutral-500 flex items-center justify-center gap-1">
+        <ChevronLeft className="w-3 h-3" />
+        Swipe or tap arrows to see more
+        <ChevronRight className="w-3 h-3" />
+      </p>
+    </div>
+  );
+}
+
+// ============================================================================
+// Simple Signal Card - Compact Version
+// ============================================================================
+
+interface SimpleSignalCardProps {
+  signal: SimpleSignal;
+}
+
+function SimpleSignalCard({ signal }: SimpleSignalCardProps) {
+  const signalConfig = {
+    "looks-good": {
+      bg: "bg-green-500/5",
+      border: "border-green-500/20 hover:border-green-500/40",
+      badge: "bg-green-500/20 text-green-400",
+      badgeText: "Looks Good",
+      icon: ThumbsUp,
+      iconColor: "text-green-400",
+      barColor: "bg-green-500",
+    },
+    "heads-up": {
+      bg: "bg-red-500/5",
+      border: "border-red-500/20 hover:border-red-500/40",
+      badge: "bg-red-500/20 text-red-400",
+      badgeText: "Heads Up",
+      icon: ThumbsDown,
+      iconColor: "text-red-400",
+      barColor: "bg-red-500",
+    },
+    "wait-and-see": {
+      bg: "bg-amber-500/5",
+      border: "border-amber-500/20 hover:border-amber-500/40",
+      badge: "bg-amber-500/20 text-amber-400",
+      badgeText: "Wait & See",
+      icon: HelpCircle,
+      iconColor: "text-amber-400",
+      barColor: "bg-amber-500",
+    },
+  };
+
+  const config = signalConfig[signal.signal];
+  const Icon = config.icon;
+
+  return (
+    <Card className={cn(
+      "border transition-all cursor-pointer active:scale-[0.98]",
+      config.bg,
+      config.border
+    )}>
+      <CardContent className="p-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">{signal.emoji}</span>
+            <div>
+              <h3 className="font-semibold text-neutral-100">{signal.name}</h3>
+              <span className="text-sm text-neutral-400">{signal.priceFormatted}</span>
+            </div>
+          </div>
+          <div className={cn("p-2 rounded-lg", config.badge.split(" ")[0])}>
+            <Icon className={cn("w-5 h-5", config.iconColor)} />
+          </div>
+        </div>
+
+        {/* Status Badge */}
+        <Badge className={cn("mb-3", config.badge)}>
+          {config.badgeText}
+        </Badge>
+
+        {/* Headline */}
+        <p className="text-sm text-neutral-300 mb-3">{signal.headline}</p>
+
+        {/* Mini Confidence Bar */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-2 bg-neutral-800 rounded-full overflow-hidden">
+            <div
+              className={cn("h-full rounded-full", config.barColor)}
+              style={{ width: `${signal.confidence}%` }}
+            />
+          </div>
+          <span className="text-sm font-mono text-neutral-400">{signal.confidence}%</span>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-800">
+          <span className="text-xs text-neutral-500 flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {signal.timeframe}
+          </span>
+          <span className="text-xs text-orange-400 flex items-center gap-1">
+            See details
+            <ArrowRight className="w-3 h-3" />
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// Quick List View - All Signals at a Glance
+// ============================================================================
+
+interface QuickListProps {
+  signals: SimpleSignal[];
+}
+
+function QuickListView({ signals }: QuickListProps) {
+  const [showAll, setShowAll] = useState(false);
+  const displaySignals = showAll ? signals : signals.slice(0, 5);
+
+  return (
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-lg font-semibold text-neutral-200 flex items-center gap-2">
+          <Zap className="w-5 h-5 text-orange-400" />
+          Quick View
+        </h2>
+        <span className="text-xs text-neutral-500">{signals.length} assets</span>
+      </div>
+
+      {/* List */}
+      <div className="space-y-2">
+        {displaySignals.map((signal) => (
+          <QuickListItem key={signal.assetId} signal={signal} />
+        ))}
+      </div>
+
+      {/* Show More Button */}
+      {signals.length > 5 && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="w-full py-3 text-sm text-orange-400 hover:text-orange-300
+                     bg-neutral-900/50 border border-neutral-800 rounded-xl
+                     hover:bg-neutral-800/50 transition-all active:scale-[0.99]"
+        >
+          {showAll ? "Show Less" : `Show All ${signals.length} Assets`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function QuickListItem({ signal }: { signal: SimpleSignal }) {
+  const signalConfig = {
+    "looks-good": {
+      icon: ThumbsUp,
+      color: "text-green-400",
+      bg: "bg-green-500/10",
+      label: "Good",
+    },
+    "heads-up": {
+      icon: ThumbsDown,
+      color: "text-red-400",
+      bg: "bg-red-500/10",
+      label: "Caution",
+    },
+    "wait-and-see": {
+      icon: HelpCircle,
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+      label: "Wait",
+    },
+  };
+
+  const config = signalConfig[signal.signal];
+  const Icon = config.icon;
+
+  return (
+    <div className="flex items-center gap-3 p-3 bg-neutral-900/50 border border-neutral-800
+                    rounded-xl hover:bg-neutral-800/50 transition-all cursor-pointer active:scale-[0.99]">
+      {/* Emoji */}
+      <span className="text-xl">{signal.emoji}</span>
+
+      {/* Name & Price */}
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-neutral-100 truncate">{signal.name}</div>
+        <div className="text-xs text-neutral-500">{signal.priceFormatted}</div>
+      </div>
+
+      {/* Confidence */}
+      <div className="text-right mr-2">
+        <div className="text-sm font-mono text-neutral-300">{signal.confidence}%</div>
+        <div className="text-xs text-neutral-500">sure</div>
+      </div>
+
+      {/* Signal Icon */}
+      <div className={cn("p-2 rounded-lg", config.bg)}>
+        <Icon className={cn("w-4 h-4", config.color)} />
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Beginner Tips Card
+// ============================================================================
+
+function BeginnerTips() {
+  const tips = [
+    { icon: ThumbsUp, text: "\"Looks Good\" = Our AI thinks it will go UP", color: "text-green-400" },
+    { icon: ThumbsDown, text: "\"Heads Up\" = Our AI thinks it might go DOWN", color: "text-red-400" },
+    { icon: HelpCircle, text: "\"Wait & See\" = No clear signal yet", color: "text-amber-400" },
+  ];
+
+  return (
+    <Card className="bg-gradient-to-br from-orange-500/5 via-amber-500/5 to-orange-500/5 border-orange-500/20">
+      <CardContent className="p-4">
+        <h3 className="font-semibold text-neutral-100 mb-3 flex items-center gap-2">
+          <HelpCircle className="w-5 h-5 text-orange-400" />
+          What do these mean?
+        </h3>
+        <div className="space-y-2">
+          {tips.map((tip, i) => (
+            <div key={i} className="flex items-center gap-3 p-2 bg-neutral-900/30 rounded-lg">
+              <tip.icon className={cn("w-5 h-5 flex-shrink-0", tip.color)} />
+              <span className="text-sm text-neutral-300">{tip.text}</span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// Safety Disclaimer - Friendly Version
+// ============================================================================
+
+function FriendlyDisclaimer() {
+  return (
+    <div className="p-4 bg-neutral-900/30 border border-neutral-800 rounded-xl">
+      <div className="flex items-start gap-3">
+        <Shield className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+        <div className="text-sm text-neutral-400">
+          <strong className="text-neutral-300">A friendly reminder:</strong> These are AI predictions to help you learn, not financial advice. Markets are unpredictable! Only invest money you&apos;re okay with losing, and chat with a financial advisor if you&apos;re unsure.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Page Navigation Dots
+// ============================================================================
+
+interface PageDotsProps {
+  current: number;
+  total: number;
+  onChange: (index: number) => void;
+}
+
+function PageDots({ current, total, onChange }: PageDotsProps) {
+  return (
+    <div className="flex justify-center gap-2 py-4">
+      {Array.from({ length: total }, (_, i) => (
+        <button
+          key={i}
+          onClick={() => onChange(i)}
+          className={cn(
+            "rounded-full transition-all",
+            i === current
+              ? "w-8 h-2 bg-orange-500"
+              : "w-2 h-2 bg-neutral-700 hover:bg-neutral-600"
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// Main Retail Dashboard - Mobile First Single Screen
+// ============================================================================
+
+export function RetailDashboard() {
+  const signals = useMemo(() => getSimpleSignals(), []);
+  const topSignal = signals[0];
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const pages = [
+    { id: "home", label: "Home" },
+    { id: "list", label: "All" },
+    { id: "tips", label: "Help" },
+  ];
+
+  return (
+    <div className="max-w-lg mx-auto space-y-6 pb-8">
+      {/* Welcome Header */}
+      <WelcomeHeader />
+
+      {/* Quick Summary - Horizontal Scroll */}
+      <QuickSummary signals={signals} />
+
+      {/* Page Navigation */}
+      <PageDots current={currentPage} total={pages.length} onChange={setCurrentPage} />
+
+      {/* Page Content */}
+      {currentPage === 0 && (
+        <div className="space-y-6">
+          {/* Hero Signal Card */}
+          {topSignal && <HeroSignalCard signal={topSignal} />}
+
+          {/* More Signals Carousel */}
+          <SignalCarousel signals={signals} />
+
+          {/* Disclaimer */}
+          <FriendlyDisclaimer />
+        </div>
+      )}
+
+      {currentPage === 1 && (
+        <div className="space-y-6">
+          {/* Quick List View */}
+          <QuickListView signals={signals} />
+
+          {/* Disclaimer */}
+          <FriendlyDisclaimer />
+        </div>
+      )}
+
+      {currentPage === 2 && (
+        <div className="space-y-6">
+          {/* Beginner Tips */}
+          <BeginnerTips />
+
+          {/* More Help */}
+          <Card className="bg-neutral-900/50 border-neutral-800">
+            <CardContent className="p-4 space-y-4">
+              <h3 className="font-semibold text-neutral-100">How to use this dashboard</h3>
+
+              <div className="space-y-3 text-sm text-neutral-400">
+                <div className="flex items-start gap-3">
+                  <CircleDot className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                  <span>The <strong className="text-neutral-200">Top Pick</strong> is what our AI is most confident about today</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CircleDot className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                  <span>The <strong className="text-neutral-200">percentage</strong> shows how sure our AI is (higher = more confident)</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CircleDot className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                  <span>Swipe left and right to see more opportunities</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CircleDot className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                  <span>Tap the dots at the top to switch between views</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Disclaimer */}
+          <FriendlyDisclaimer />
+        </div>
+      )}
+
+      {/* Bottom Navigation Bar - Mobile Style */}
+      <div className="fixed bottom-0 left-0 right-0 bg-neutral-950/95 backdrop-blur-lg border-t border-neutral-800 p-2 md:hidden">
+        <div className="flex justify-around max-w-lg mx-auto">
+          {pages.map((page, index) => (
+            <button
+              key={page.id}
+              onClick={() => setCurrentPage(index)}
+              className={cn(
+                "flex flex-col items-center gap-1 px-6 py-2 rounded-lg transition-all",
+                currentPage === index
+                  ? "text-orange-400"
+                  : "text-neutral-500 hover:text-neutral-300"
+              )}
+            >
+              {index === 0 && <Sparkles className="w-5 h-5" />}
+              {index === 1 && <Eye className="w-5 h-5" />}
+              {index === 2 && <HelpCircle className="w-5 h-5" />}
+              <span className="text-xs">{page.label}</span>
+            </button>
+          ))}
         </div>
       </div>
     </div>
