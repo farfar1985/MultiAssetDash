@@ -8,6 +8,9 @@ import { HedgingDashboard } from "@/components/dashboard/HedgingDashboard";
 import { QuantDashboard } from "@/components/dashboard/QuantDashboard";
 import { RetailDashboard } from "@/components/dashboard/RetailDashboard";
 import { ExecutiveDashboard } from "@/components/dashboard/ExecutiveDashboard";
+import { ProRetailDashboard } from "@/components/dashboard/ProRetailDashboard";
+import { ProcurementDashboard } from "@/components/dashboard/ProcurementDashboard";
+import { HedgeFundDashboard } from "@/components/dashboard/HedgeFundDashboard";
 
 interface PersonaDashboardProps {
   params: {
@@ -52,6 +55,21 @@ export default function PersonaDashboardPage({ params }: PersonaDashboardProps) 
   // Specialized dashboard for Executive persona
   if (personaId === "executive") {
     return <ExecutiveDashboard />;
+  }
+
+  // Specialized dashboard for Pro Retail persona
+  if (personaId === "proretail") {
+    return <ProRetailDashboard />;
+  }
+
+  // Specialized dashboard for Procurement persona
+  if (personaId === "procurement") {
+    return <ProcurementDashboard />;
+  }
+
+  // Specialized dashboard for Hedge Fund persona
+  if (personaId === "hedgefund") {
+    return <HedgeFundDashboard />;
   }
 
   const allAssetIds = Object.keys(ASSETS) as (keyof typeof ASSETS)[];
