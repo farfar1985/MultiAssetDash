@@ -384,14 +384,20 @@ def backtest_enhanced_detector():
         print(f"    Avg Vol Premium: {np.mean(vol_premiums)*100:.1f}%")
         print(f"    Crowded Positioning: {sum(crowded)} periods ({sum(crowded)/len(crowded)*100:.1f}%)")
         print(f"    Stress Periods: {sum(stress)} ({sum(stress)/len(stress)*100:.1f}%)")
-        print(f"    Avg Total Entropy: {np.mean([r['total_entropy'] for r in results]):.3f}")
+        # Use price_entropy (subsystem entropy) which shows entanglement
+        # total_entropy is ~0 for pure states, but subsystem entropy reveals correlations
+        avg_price_entropy = np.mean([r['price_entropy'] for r in results])
+        avg_external_entropy = np.mean([r['external_entropy'] for r in results])
+        print(f"    Avg Price Entropy: {avg_price_entropy:.3f}")
+        print(f"    Avg External Entropy: {avg_external_entropy:.3f}")
         
         all_results[asset_name] = {
             'regime_distribution': regime_dist.to_dict(),
             'avg_vol_premium': round(np.mean(vol_premiums), 4),
             'crowded_pct': round(sum(crowded)/len(crowded)*100, 1),
             'stress_pct': round(sum(stress)/len(stress)*100, 1),
-            'avg_entropy': round(np.mean([r['total_entropy'] for r in results]), 3),
+            'avg_price_entropy': round(avg_price_entropy, 3),
+            'avg_external_entropy': round(avg_external_entropy, 3),
             'avg_enhanced_confidence': round(np.mean([r['enhanced_confidence'] for r in results]), 3)
         }
     
