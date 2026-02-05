@@ -4,6 +4,9 @@ import { SignalCard } from "@/components/dashboard/SignalCard";
 import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
 import { Separator } from "@/components/ui/separator";
 import { AlphaProDashboard } from "@/components/dashboard/AlphaProDashboard";
+import { HedgingDashboard } from "@/components/dashboard/HedgingDashboard";
+import { QuantDashboard } from "@/components/dashboard/QuantDashboard";
+import { RetailDashboard } from "@/components/dashboard/RetailDashboard";
 
 interface PersonaDashboardProps {
   params: {
@@ -28,6 +31,21 @@ export default function PersonaDashboardPage({ params }: PersonaDashboardProps) 
   // Specialized dashboard for Alpha Gen Pro persona
   if (personaId === "alphapro") {
     return <AlphaProDashboard />;
+  }
+
+  // Specialized dashboard for Hedging Team persona
+  if (personaId === "hedging") {
+    return <HedgingDashboard />;
+  }
+
+  // Specialized dashboard for Quant persona
+  if (personaId === "quant") {
+    return <QuantDashboard />;
+  }
+
+  // Specialized dashboard for Retail persona
+  if (personaId === "retail") {
+    return <RetailDashboard />;
   }
 
   const allAssetIds = Object.keys(ASSETS) as (keyof typeof ASSETS)[];

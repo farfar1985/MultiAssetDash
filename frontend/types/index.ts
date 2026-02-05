@@ -54,9 +54,9 @@ export const PERSONAS: Record<PersonaId, Persona> = {
   },
   retail: {
     id: "retail",
-    name: "Retail",
-    description: "Simplified trading signals and market overview",
-    icon: "user",
+    name: "Retail Trader",
+    description: "Simple buy/sell/hold signals in plain English",
+    icon: "sparkles",
   },
 };
 
