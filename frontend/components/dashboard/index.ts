@@ -16,3 +16,4 @@ export { MarketStatusBar } from "./MarketStatusBar";
 export { CorrelationMatrix } from "./CorrelationMatrix";
 export { SignalAlertFeed } from "./SignalAlertFeed";
 export { VolatilitySurface } from "./VolatilitySurface";
+export { HedgingDashboard } from "./HedgingDashboard";
