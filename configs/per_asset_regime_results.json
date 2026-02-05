@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-02-05T17:53:17.715575",
+  "version": "per_asset_v1",
+  "n_assets": 3,
+  "results": {
+    "1625_SP500": {
+      "n_samples": 333,
+      "regime_distribution": {
+        "LOW_VOL": 158,
+        "NORMAL": 100,
+        "ELEVATED": 56,
+        "CRISIS": 19
+      },
+      "avg_price_entropy": 0.974,
+      "avg_external_entropy": 0.974,
+      "avg_confidence": 0.821,
+      "avg_vol_premium": 0.0557,
+      "crowded_pct": 0.0,
+      "crisis_pct": 5.7,
+      "low_vol_pct": 47.4
+    },
+    "1860_Bitcoin": {
+      "n_samples": 333,
+      "regime_distribution": {
+        "NORMAL": 114,
+        "ELEVATED": 92,
+        "LOW_VOL": 83,
+        "CRISIS": 44
+      },
+      "avg_price_entropy": 0.666,
+      "avg_external_entropy": 0.666,
+      "avg_confidence": 0.802,
+      "avg_vol_premium": 0.046,
+      "crowded_pct": 3.6,
+      "crisis_pct": 13.2,
+      "low_vol_pct": 24.9
+    },
+    "1866_Crude_Oil": {
+      "n_samples": 333,
+      "regime_distribution": {
+        "NORMAL": 143,
+        "LOW_VOL": 93,
+        "ELEVATED": 68,
+        "CRISIS": 29
+      },
+      "avg_price_entropy": 0.824,
+      "avg_external_entropy": 0.824,
+      "avg_confidence": 0.826,
+      "avg_vol_premium": 0.0512,
+      "crowded_pct": 2.4,
+      "crisis_pct": 8.7,
+      "low_vol_pct": 27.9
+    }
+  }
+}
