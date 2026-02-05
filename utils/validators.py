@@ -9,7 +9,7 @@ Security: Prevents injection attacks, path traversal, and DoS via malformed inpu
 
 import re
 from datetime import datetime
-from typing import Optional, Tuple, List
+from typing import Any, Optional, Tuple
 
 
 class ValidationError(Exception):
@@ -365,7 +365,7 @@ class InputValidator:
         return value
     
     @staticmethod
-    def sanitize_for_logging(value: str, max_length: int = 100) -> str:
+    def sanitize_for_logging(value: Optional[str], max_length: int = 100) -> str:
         """
         Sanitize a value for safe logging (prevent log injection).
         

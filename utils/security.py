@@ -9,8 +9,7 @@ Date: 2026-02-03
 import hashlib
 import secrets
 import hmac
-import os
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 from functools import wraps
 from flask import request, jsonify
 
@@ -186,7 +185,7 @@ class RateLimitExceeded(Exception):
     pass
 
 
-def check_rate_limit(user_id: str, limit: int, redis_client) -> Tuple[bool, int]:
+def check_rate_limit(user_id: str, limit: int, redis_client: Any) -> Tuple[bool, int]:
     """
     Check if user has exceeded their rate limit.
     
