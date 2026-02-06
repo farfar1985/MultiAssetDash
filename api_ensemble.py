@@ -458,6 +458,154 @@ def get_quantum_dashboard():
     return jsonify(dashboard)
 
 
+# ============ HMM REGIME DETECTION ENDPOINTS ============
+
+# Lazy-load HMM detectors (avoid startup overhead)
+_hmm_detectors = {}
+
+def get_hmm_detector(asset_id: int):
+    """Get or create HMM detector for an asset."""
+    if asset_id not in _hmm_detectors:
+        try:
+            from hmm_regime_detector import HMMRegimeDetector
+            detector = HMMRegimeDetector(n_regimes=3)
+
+            # Try to load pre-trained model
+            asset = ASSETS.get(asset_id)
+            if asset:
+                config_path = os.path.join(CONFIGS_DIR, f"hmm_{asset['name'].lower()}.json")
+                if os.path.exists(config_path):
+                    detector.load(config_path)
+                else:
+                    # Train on the fly if no saved model
+                    prices = get_asset_prices(asset_id)
+                    if prices is not None and len(prices) > 100:
+                        detector.fit(prices)
+                        detector.save(config_path)
+
+            _hmm_detectors[asset_id] = detector
+        except ImportError:
+            return None
+    return _hmm_detectors.get(asset_id)
+
+
+def get_hmm_mock_data(asset_id: int):
+    """Return mock regime data when model not available."""
+    asset = ASSETS.get(asset_id, {})
+    return {
+        'asset_id': asset_id,
+        'asset_name': asset.get('name', 'Unknown'),
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'regime': 'sideways',
+        'confidence': 0.5,
+        'probabilities': {
+            'bull': 0.33,
+            'bear': 0.33,
+            'sideways': 0.34
+        },
+        'daysInRegime': 1,
+        'volatility': 20.0,
+        'trendStrength': 0.0,
+        'historicalAccuracy': 50.0,
+        'method': 'mock',
+        'nRegimes': 3
+    }
+
+
+@app.route('/api/v1/hmm/regime/<int:asset_id>', methods=['GET'])
+def get_hmm_regime(asset_id):
+    """
+    Get current HMM-detected market regime for an asset.
+
+    Returns regime data compatible with frontend RegimeData interface:
+    - regime: bull | bear | sideways | high-volatility | low-volatility
+    - confidence: 0-1 probability of current regime
+    - probabilities: { bull, bear, sideways }
+    - daysInRegime: days in current regime
+    - volatility: annualized %
+    - trendStrength: -1 to 1
+    - historicalAccuracy: model accuracy in this regime
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    detector = get_hmm_detector(asset_id)
+
+    # Fallback to mock data if detector not available or not trained
+    if not detector or not detector.trained:
+        return jsonify(get_hmm_mock_data(asset_id))
+
+    # Get price data for prediction
+    prices = get_asset_prices(asset_id)
+    if prices is None or len(prices) < 50:
+        return jsonify(get_hmm_mock_data(asset_id))
+
+    # Get prediction from HMM
+    result = detector.predict(prices)
+
+    asset = ASSETS[asset_id]
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'regime': result['regime'],
+        'confidence': result['confidence'],
+        'probabilities': result['probabilities'],
+        'daysInRegime': result['daysInRegime'],
+        'volatility': result['volatility'],
+        'trendStrength': result['trendStrength'],
+        'historicalAccuracy': result.get('historicalAccuracy', 65.0),
+        'method': result.get('method', 'GaussianHMM'),
+        'nRegimes': result.get('nRegimes', 3),
+        'transitionMatrix': result.get('transitionMatrix'),
+        'stateMeans': result.get('stateMeans')
+    })
+
+
+@app.route('/api/v1/hmm/regimes', methods=['GET'])
+def get_all_hmm_regimes():
+    """
+    Get HMM regime data for all assets.
+    Useful for dashboard overview.
+    """
+    regimes = {}
+
+    for asset_id, asset in ASSETS.items():
+        detector = get_hmm_detector(asset_id)
+
+        if not detector or not detector.trained:
+            regimes[asset['name']] = {
+                'regime': 'sideways',
+                'confidence': 0.5,
+                'method': 'mock'
+            }
+            continue
+
+        prices = get_asset_prices(asset_id)
+        if prices is None or len(prices) < 50:
+            regimes[asset['name']] = {
+                'regime': 'sideways',
+                'confidence': 0.5,
+                'method': 'mock'
+            }
+            continue
+
+        result = detector.predict(prices)
+        regimes[asset['name']] = {
+            'regime': result['regime'],
+            'confidence': result['confidence'],
+            'daysInRegime': result['daysInRegime'],
+            'volatility': result['volatility'],
+            'method': result.get('method', 'GaussianHMM')
+        }
+
+    return jsonify({
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'regimes': regimes
+    })
+
+
 if __name__ == '__main__':
     print("=" * 50)
     print("  Nexus Ensemble API Server")

@@ -14,6 +14,9 @@ import type {
   PersonaId,
   AssetId,
 } from "@/types";
+import type { RegimeData, MarketRegime } from "@/components/ensemble/RegimeIndicator";
+
+export type { RegimeData, MarketRegime };
 
 // ============================================================================
 // Configuration
@@ -522,6 +525,142 @@ export async function getSignals(assetId: AssetId): Promise<AssetSignals> {
     throw new Error(`Failed to fetch signals for ${assetId}: ${response.status}`);
   }
   return response.json();
+}
+
+// ============================================================================
+// HMM Regime Detection API
+// ============================================================================
+
+/**
+ * Mock HMM regime data for fallback
+ */
+const MOCK_HMM_REGIME: Record<AssetId, RegimeData> = {
+  "crude-oil": {
+    regime: "bull",
+    confidence: 0.78,
+    probabilities: { bull: 0.78, bear: 0.12, sideways: 0.10 },
+    daysInRegime: 8,
+    volatility: 24.5,
+    trendStrength: 0.42,
+    historicalAccuracy: 68.5,
+  },
+  "gold": {
+    regime: "sideways",
+    confidence: 0.65,
+    probabilities: { bull: 0.25, bear: 0.15, sideways: 0.60 },
+    daysInRegime: 12,
+    volatility: 14.2,
+    trendStrength: 0.08,
+    historicalAccuracy: 62.0,
+  },
+  "bitcoin": {
+    regime: "high-volatility",
+    confidence: 0.72,
+    probabilities: { bull: 0.35, bear: 0.30, sideways: 0.35 },
+    daysInRegime: 5,
+    volatility: 52.8,
+    trendStrength: -0.15,
+    historicalAccuracy: 55.6,
+  },
+  "sp500": {
+    regime: "bull",
+    confidence: 0.82,
+    probabilities: { bull: 0.82, bear: 0.08, sideways: 0.10 },
+    daysInRegime: 15,
+    volatility: 16.3,
+    trendStrength: 0.55,
+    historicalAccuracy: 57.4,
+  },
+};
+
+/**
+ * Map backend asset IDs to frontend AssetId strings
+ */
+const ASSET_ID_MAP: Record<string, number> = {
+  "crude-oil": 1866,
+  "sp500": 1625,
+  "bitcoin": 1860,
+  "gold": 1861,
+};
+
+/**
+ * Get HMM-detected market regime for an asset
+ *
+ * @param assetId - The asset identifier (e.g., "crude-oil", "gold")
+ * @returns Promise<RegimeData> - Regime classification matching RegimeIndicator interface
+ *
+ * Real endpoint: GET /api/v1/hmm/regime/{asset_id}
+ */
+export async function getHMMRegime(assetId: AssetId): Promise<RegimeData> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const regime = MOCK_HMM_REGIME[assetId];
+    if (!regime) {
+      // Return default mock for unknown assets
+      return {
+        regime: "sideways",
+        confidence: 0.5,
+        probabilities: { bull: 0.33, bear: 0.33, sideways: 0.34 },
+        daysInRegime: 1,
+        volatility: 20.0,
+        trendStrength: 0.0,
+        historicalAccuracy: 50.0,
+      };
+    }
+    return regime;
+  }
+
+  // Real API call - map frontend assetId to backend numeric ID
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/hmm/regime/${backendId}`));
+  if (!response.ok) {
+    // Fallback to mock on error
+    console.warn(`HMM regime fetch failed for ${assetId}, using mock data`);
+    return MOCK_HMM_REGIME[assetId] || {
+      regime: "sideways",
+      confidence: 0.5,
+      probabilities: { bull: 0.33, bear: 0.33, sideways: 0.34 },
+      daysInRegime: 1,
+      volatility: 20.0,
+      trendStrength: 0.0,
+    };
+  }
+
+  const data = await response.json();
+
+  // Transform backend response to RegimeData interface
+  return {
+    regime: data.regime as MarketRegime,
+    confidence: data.confidence,
+    probabilities: data.probabilities,
+    daysInRegime: data.daysInRegime,
+    volatility: data.volatility,
+    trendStrength: data.trendStrength,
+    historicalAccuracy: data.historicalAccuracy,
+  };
+}
+
+/**
+ * Get HMM regime data for all configured assets
+ */
+export async function getAllHMMRegimes(): Promise<Partial<Record<AssetId, RegimeData>>> {
+  const assetIds = Object.keys(ASSET_ID_MAP) as AssetId[];
+  const results = await Promise.all(
+    assetIds.map(async (id) => {
+      try {
+        const regime = await getHMMRegime(id);
+        return [id, regime] as const;
+      } catch {
+        return [id, null] as const;
+      }
+    })
+  );
+  return Object.fromEntries(results.filter(([, v]) => v !== null)) as Partial<Record<AssetId, RegimeData>>;
 }
 
 // ============================================================================
