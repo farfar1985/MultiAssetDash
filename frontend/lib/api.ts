@@ -1324,3 +1324,207 @@ class ApiClient {
 
 export const apiClient = new ApiClient();
 export default apiClient;
+
+// ============================================================================
+// Walk-Forward Validation API
+// ============================================================================
+
+import type {
+  WalkForwardMethod,
+  WalkForwardResponse,
+  FoldResult,
+  SummaryMetrics,
+  EquityPoint,
+  CostComparison,
+} from "@/types/backtest";
+
+/**
+ * Generate mock walk-forward validation results
+ * In production, this would call the backend API
+ */
+export async function getWalkForwardResults(
+  assetId: AssetId,
+  methods: WalkForwardMethod[],
+  nFolds: number = 5
+): Promise<WalkForwardResponse> {
+  // Simulate API delay
+  await new Promise((r) => setTimeout(r, 800));
+
+  const methodResults: Record<string, FoldResult[]> = {};
+  const summaryMetrics: Record<string, SummaryMetrics> = {};
+  const equityCurves: Record<string, EquityPoint[]> = {};
+
+  const baseDate = new Date("2024-01-01");
+
+  methods.forEach((method) => {
+    const folds: FoldResult[] = [];
+    const tierMultiplier = method.startsWith("tier3")
+      ? 1.15
+      : method.startsWith("tier2")
+        ? 1.08
+        : 1.0;
+
+    for (let i = 0; i < nFolds; i++) {
+      const baseAccuracy = 52 + Math.random() * 12 * tierMultiplier;
+      const baseSharpe = 0.8 + Math.random() * 1.2 * tierMultiplier;
+      const baseReturn = 5 + Math.random() * 15 * tierMultiplier;
+
+      const trainStart = new Date(baseDate);
+      trainStart.setDate(trainStart.getDate() + i * 60);
+      const trainEnd = new Date(trainStart);
+      trainEnd.setDate(trainEnd.getDate() + 42);
+      const testStart = new Date(trainEnd);
+      testStart.setDate(testStart.getDate() + 1);
+      const testEnd = new Date(testStart);
+      testEnd.setDate(testEnd.getDate() + 18);
+
+      const totalCosts = 50 + Math.random() * 100;
+      const costDrag = (totalCosts / 10000) * 100;
+
+      folds.push({
+        fold_id: i + 1,
+        train_start: trainStart.toISOString().split("T")[0],
+        train_end: trainEnd.toISOString().split("T")[0],
+        test_start: testStart.toISOString().split("T")[0],
+        test_end: testEnd.toISOString().split("T")[0],
+        n_train: 42,
+        n_test: 18,
+        accuracy: baseAccuracy + (Math.random() - 0.5) * 8,
+        sharpe_ratio: baseSharpe + (Math.random() - 0.5) * 0.4,
+        sortino_ratio: baseSharpe * 1.2 + (Math.random() - 0.5) * 0.3,
+        max_drawdown: -(8 + Math.random() * 12),
+        win_rate: 48 + Math.random() * 15,
+        total_return: baseReturn + (Math.random() - 0.5) * 6,
+        n_trades: 15 + Math.floor(Math.random() * 20),
+        avg_trade_return: 0.3 + Math.random() * 0.8,
+        avg_holding_days: 3 + Math.random() * 4,
+        n_bullish: 8 + Math.floor(Math.random() * 8),
+        n_bearish: 6 + Math.floor(Math.random() * 6),
+        n_neutral: 2 + Math.floor(Math.random() * 4),
+        total_costs: totalCosts,
+        avg_cost_per_trade: totalCosts / (15 + Math.random() * 10),
+        avg_cost_bps: 4 + Math.random() * 3,
+        cost_drag_pct: costDrag,
+        regime_performance: {
+          bull: {
+            regime: "bull",
+            n_samples: 8 + Math.floor(Math.random() * 5),
+            accuracy: baseAccuracy + 5 + Math.random() * 5,
+            sharpe_ratio: baseSharpe + 0.3,
+            total_return: baseReturn * 1.3,
+            win_rate: 55 + Math.random() * 10,
+          },
+          bear: {
+            regime: "bear",
+            n_samples: 5 + Math.floor(Math.random() * 4),
+            accuracy: baseAccuracy - 3 + Math.random() * 4,
+            sharpe_ratio: baseSharpe - 0.2,
+            total_return: baseReturn * 0.7,
+            win_rate: 45 + Math.random() * 10,
+          },
+          sideways: {
+            regime: "sideways",
+            n_samples: 4 + Math.floor(Math.random() * 3),
+            accuracy: baseAccuracy + Math.random() * 3,
+            sharpe_ratio: baseSharpe * 0.9,
+            total_return: baseReturn * 0.5,
+            win_rate: 50 + Math.random() * 8,
+          },
+        },
+        returns: Array.from({ length: 18 }, () => (Math.random() - 0.48) * 2),
+      });
+    }
+
+    methodResults[method] = folds;
+
+    // Calculate summary metrics
+    const avgAcc = folds.reduce((s, f) => s + f.accuracy, 0) / nFolds;
+    const avgSharpe = folds.reduce((s, f) => s + f.sharpe_ratio, 0) / nFolds;
+    const avgReturn = folds.reduce((s, f) => s + f.total_return, 0) / nFolds;
+    const avgDrawdown = folds.reduce((s, f) => s + f.max_drawdown, 0) / nFolds;
+    const avgWinRate = folds.reduce((s, f) => s + f.win_rate, 0) / nFolds;
+    const avgCostDrag = folds.reduce((s, f) => s + f.cost_drag_pct, 0) / nFolds;
+    const totalCosts = folds.reduce((s, f) => s + f.total_costs, 0);
+
+    summaryMetrics[method] = {
+      mean_accuracy: avgAcc,
+      mean_sharpe: avgSharpe,
+      mean_sortino: avgSharpe * 1.15,
+      mean_max_drawdown: avgDrawdown,
+      mean_win_rate: avgWinRate,
+      mean_total_return: avgReturn,
+      std_accuracy: 3 + Math.random() * 2,
+      std_sharpe: 0.2 + Math.random() * 0.15,
+      std_total_return: 2 + Math.random() * 2,
+      mean_cost_drag_pct: avgCostDrag,
+      total_costs: totalCosts,
+      raw_total_return: avgReturn + avgCostDrag,
+      cost_adjusted_return: avgReturn,
+    };
+
+    // Generate equity curve
+    const curve: EquityPoint[] = [];
+    let equity = 100000;
+    let peak = equity;
+    const days = 250;
+
+    for (let d = 0; d < days; d++) {
+      const date = new Date(baseDate);
+      date.setDate(date.getDate() + d);
+      const dailyReturn = (avgReturn / 252 + (Math.random() - 0.5) * 0.02) / 100;
+      equity *= 1 + dailyReturn;
+      if (equity > peak) peak = equity;
+      const drawdown = (equity - peak) / peak;
+
+      curve.push({
+        date: date.toISOString().split("T")[0],
+        equity: Math.round(equity),
+        drawdown,
+        benchmark: 100000 * (1 + (d / 252) * 0.08),
+        returns: dailyReturn * 100,
+      });
+    }
+    equityCurves[method] = curve;
+  });
+
+  // Generate rankings
+  const rankings: Record<string, number> = {};
+  const sortedMethods = [...methods].sort(
+    (a, b) =>
+      (summaryMetrics[b]?.mean_sharpe ?? 0) - (summaryMetrics[a]?.mean_sharpe ?? 0)
+  );
+  sortedMethods.forEach((m, i) => {
+    rankings[m] = i + 1;
+  });
+
+  return {
+    success: true,
+    data: {
+      asset_id: assetId,
+      asset_name: assetId.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      n_folds: nFolds,
+      timestamp: new Date().toISOString(),
+      method_results: methodResults as Record<WalkForwardMethod, FoldResult[]>,
+      summary_metrics: summaryMetrics as Record<WalkForwardMethod, SummaryMetrics>,
+      significance_tests: {},
+      rankings: rankings as Record<WalkForwardMethod, number>,
+    },
+    equity_curves: equityCurves as Record<WalkForwardMethod, EquityPoint[]>,
+  };
+}
+
+/**
+ * Get cost comparison data for methods
+ */
+export function getCostComparison(
+  summaryMetrics: Record<WalkForwardMethod, SummaryMetrics>
+): CostComparison[] {
+  return Object.entries(summaryMetrics).map(([method, metrics]) => ({
+    method: method as WalkForwardMethod,
+    raw_return: metrics.raw_total_return,
+    cost_adjusted_return: metrics.cost_adjusted_return,
+    cost_impact: metrics.raw_total_return - metrics.cost_adjusted_return,
+    raw_sharpe: metrics.mean_sharpe + 0.1,
+    cost_adjusted_sharpe: metrics.mean_sharpe,
+  }));
+}

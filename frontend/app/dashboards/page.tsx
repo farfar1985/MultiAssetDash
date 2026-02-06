@@ -17,6 +17,7 @@ import {
   Target,
   Activity,
   Globe,
+  BarChart3,
 } from "lucide-react";
 
 interface DashboardCard {
@@ -129,6 +130,18 @@ const DASHBOARDS: DashboardCard[] = [
     audience: "All Users",
     features: ["13 Assets", "HMM Detection", "Category Filters"],
   },
+  {
+    id: "backtest",
+    name: "Walk-Forward Backtest",
+    description: "Compare ensemble methods with walk-forward validation and cost analysis",
+    href: "/dashboards/backtest",
+    icon: BarChart3,
+    color: "text-green-400",
+    bgColor: "bg-green-500/10",
+    borderColor: "border-green-500/30 hover:border-green-500/50",
+    audience: "Quant Analysts",
+    features: ["Walk-Forward", "Regime Analysis", "Cost Modeling"],
+  },
 ];
 
 export default function DashboardsIndexPage() {
@@ -156,7 +169,7 @@ export default function DashboardsIndexPage() {
               <Users className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-neutral-100">8</div>
+              <div className="text-2xl font-bold text-neutral-100">9</div>
               <div className="text-sm text-neutral-500">Persona Dashboards</div>
             </div>
           </CardContent>

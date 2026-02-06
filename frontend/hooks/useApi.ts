@@ -745,3 +745,56 @@ export function useAllTiers(
     ...options,
   });
 }
+
+// ============================================================================
+// Walk-Forward Validation Hooks
+// ============================================================================
+
+import { getWalkForwardResults, getCostComparison } from "@/lib/api";
+import type {
+  WalkForwardMethod,
+  WalkForwardResponse,
+  CostComparison,
+} from "@/types/backtest";
+
+// Add walk-forward keys to queryKeys
+export const walkForwardKeys = {
+  all: [...queryKeys.all, "walkForward"] as const,
+  results: (assetId: string, methods: string[], nFolds: number) =>
+    [...walkForwardKeys.all, "results", assetId, methods.join(","), nFolds] as const,
+  costComparison: (assetId: string, methods: string[]) =>
+    [...walkForwardKeys.all, "costs", assetId, methods.join(",")] as const,
+};
+
+/**
+ * Fetch walk-forward validation results
+ * @param assetId - Asset to backtest
+ * @param methods - Ensemble methods to compare
+ * @param nFolds - Number of walk-forward folds
+ */
+export function useWalkForwardResults(
+  assetId: AssetId,
+  methods: WalkForwardMethod[],
+  nFolds: number = 5,
+  options?: Omit<UseQueryOptions<WalkForwardResponse, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: walkForwardKeys.results(assetId, methods, nFolds),
+    queryFn: () => getWalkForwardResults(assetId, methods, nFolds),
+    enabled: !!assetId && methods.length > 0,
+    staleTime: 60000, // Results don't change often
+    ...options,
+  });
+}
+
+/**
+ * Get cost comparison data derived from walk-forward results
+ */
+export function useCostComparison(
+  walkForwardData: WalkForwardResponse | undefined
+): CostComparison[] {
+  if (!walkForwardData?.data?.summary_metrics) {
+    return [];
+  }
+  return getCostComparison(walkForwardData.data.summary_metrics);
+}
