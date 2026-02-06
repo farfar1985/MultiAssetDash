@@ -750,20 +750,31 @@ export function useAllTiers(
 // Walk-Forward Validation Hooks
 // ============================================================================
 
-import { getWalkForwardResults, getCostComparison } from "@/lib/api";
+import {
+  getWalkForwardResults,
+  getEquityCurve,
+  getRegimePerformance,
+  getBacktestMethods,
+  getCostComparison,
+} from "@/lib/api";
 import type {
   WalkForwardMethod,
   WalkForwardResponse,
   CostComparison,
+  EquityPoint,
 } from "@/types/backtest";
+import type { RegimePerformanceApiResponse, BacktestMethodsApiResponse } from "@/lib/api-client";
 
 // Add walk-forward keys to queryKeys
 export const walkForwardKeys = {
   all: [...queryKeys.all, "walkForward"] as const,
   results: (assetId: string, methods: string[], nFolds: number) =>
     [...walkForwardKeys.all, "results", assetId, methods.join(","), nFolds] as const,
-  costComparison: (assetId: string, methods: string[]) =>
-    [...walkForwardKeys.all, "costs", assetId, methods.join(",")] as const,
+  equityCurve: (assetId: string, method: string, days: number) =>
+    [...walkForwardKeys.all, "equity", assetId, method, days] as const,
+  regimePerformance: (assetId: string, methods: string[]) =>
+    [...walkForwardKeys.all, "regime", assetId, methods.join(",")] as const,
+  methods: () => [...walkForwardKeys.all, "methods"] as const,
 };
 
 /**
@@ -783,6 +794,65 @@ export function useWalkForwardResults(
     queryFn: () => getWalkForwardResults(assetId, methods, nFolds),
     enabled: !!assetId && methods.length > 0,
     staleTime: 60000, // Results don't change often
+    retry: 2,
+    retryDelay: 1000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch equity curve for a specific method
+ * @param assetId - Asset ID
+ * @param method - Ensemble method
+ * @param days - Number of days
+ */
+export function useEquityCurve(
+  assetId: AssetId,
+  method: WalkForwardMethod,
+  days: number = 250,
+  options?: Omit<UseQueryOptions<EquityPoint[], Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: walkForwardKeys.equityCurve(assetId, method, days),
+    queryFn: () => getEquityCurve(assetId, method, days),
+    enabled: !!assetId && !!method,
+    staleTime: 60000,
+    retry: 2,
+    ...options,
+  });
+}
+
+/**
+ * Fetch regime-conditional performance
+ * @param assetId - Asset ID
+ * @param methods - Ensemble methods to compare
+ */
+export function useRegimePerformance(
+  assetId: AssetId,
+  methods: WalkForwardMethod[],
+  options?: Omit<UseQueryOptions<RegimePerformanceApiResponse, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: walkForwardKeys.regimePerformance(assetId, methods),
+    queryFn: () => getRegimePerformance(assetId, methods),
+    enabled: !!assetId && methods.length > 0,
+    staleTime: 60000,
+    retry: 2,
+    ...options,
+  });
+}
+
+/**
+ * Fetch available backtest methods
+ */
+export function useBacktestMethods(
+  options?: Omit<UseQueryOptions<BacktestMethodsApiResponse, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: walkForwardKeys.methods(),
+    queryFn: () => getBacktestMethods(),
+    staleTime: 300000, // Methods don't change often
+    retry: 1,
     ...options,
   });
 }

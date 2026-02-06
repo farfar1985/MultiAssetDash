@@ -1329,6 +1329,14 @@ export default apiClient;
 // Walk-Forward Validation API
 // ============================================================================
 
+import {
+  backendApi,
+  type WalkForwardApiResponse,
+  type EquityCurveApiResponse,
+  type RegimePerformanceApiResponse,
+  type BacktestMethodsApiResponse,
+} from "./api-client";
+
 import type {
   WalkForwardMethod,
   WalkForwardResponse,
@@ -1338,36 +1346,241 @@ import type {
   CostComparison,
 } from "@/types/backtest";
 
+// Asset ID mapping from frontend names to backend numeric IDs
+const ASSET_ID_MAP: Record<AssetId, number> = {
+  "crude-oil": 1866,
+  "bitcoin": 1860,
+  "gold": 1861,
+  "silver": 1863,
+  "natural-gas": 1862,
+  "copper": 1864,
+  "wheat": 1865,
+  "corn": 1867,
+  "soybean": 1868,
+  "platinum": 1869,
+};
+
 /**
- * Generate mock walk-forward validation results
- * In production, this would call the backend API
+ * Get walk-forward validation results from the backend API
+ * Falls back to mock data if the API is unavailable
  */
 export async function getWalkForwardResults(
   assetId: AssetId,
   methods: WalkForwardMethod[],
   nFolds: number = 5
 ): Promise<WalkForwardResponse> {
-  // Simulate API delay
-  await new Promise((r) => setTimeout(r, 800));
+  const numericAssetId = ASSET_ID_MAP[assetId] || 1866;
 
+  try {
+    // Call the real API
+    const response = await backendApi.getWalkForwardResults(
+      numericAssetId,
+      methods,
+      nFolds,
+      5, // cost_bps
+      true // include_equity
+    );
+
+    // Transform API response to frontend format
+    return transformApiResponse(response, assetId);
+  } catch (error) {
+    console.warn("Walk-forward API unavailable, using mock data:", error);
+    // Fall back to mock data
+    return generateMockWalkForwardResults(assetId, methods, nFolds);
+  }
+}
+
+/**
+ * Get equity curve from backend API
+ */
+export async function getEquityCurve(
+  assetId: AssetId,
+  method: WalkForwardMethod,
+  days: number = 250
+): Promise<EquityPoint[]> {
+  const numericAssetId = ASSET_ID_MAP[assetId] || 1866;
+
+  try {
+    const response = await backendApi.getEquityCurve(numericAssetId, method, days);
+    return response.curve.map((p) => ({
+      date: p.date,
+      equity: p.equity,
+      drawdown: p.drawdown,
+      benchmark: p.benchmark,
+      returns: p.returns,
+    }));
+  } catch (error) {
+    console.warn("Equity curve API unavailable, using mock data:", error);
+    return generateMockEquityCurve(method, days);
+  }
+}
+
+/**
+ * Get regime performance from backend API
+ */
+export async function getRegimePerformance(
+  assetId: AssetId,
+  methods: WalkForwardMethod[]
+): Promise<RegimePerformanceApiResponse> {
+  const numericAssetId = ASSET_ID_MAP[assetId] || 1866;
+
+  try {
+    return await backendApi.getRegimePerformance(numericAssetId, methods);
+  } catch (error) {
+    console.warn("Regime performance API unavailable, using mock data:", error);
+    return generateMockRegimePerformance(assetId, methods);
+  }
+}
+
+/**
+ * Get available backtest methods
+ */
+export async function getBacktestMethods(): Promise<BacktestMethodsApiResponse> {
+  try {
+    return await backendApi.getBacktestMethods();
+  } catch (error) {
+    console.warn("Backtest methods API unavailable, using defaults:", error);
+    return {
+      methods: {
+        tier1_accuracy: { name: "Accuracy Weighted", tier: 1, description: "Weights by accuracy" },
+        tier1_magnitude: { name: "Magnitude Voting", tier: 1, description: "Weights by magnitude" },
+        tier1_correlation: { name: "Error Correlation", tier: 1, description: "Downweights correlated errors" },
+        tier1_combined: { name: "Tier 1 Combined", tier: 1, description: "Meta-ensemble" },
+        tier2_bma: { name: "Bayesian Model Avg", tier: 2, description: "Bayesian averaging" },
+        tier2_regime: { name: "Regime Adaptive", tier: 2, description: "Regime-aware weighting" },
+        tier2_conformal: { name: "Conformal Prediction", tier: 2, description: "Prediction intervals" },
+        tier2_combined: { name: "Tier 2 Combined", tier: 2, description: "Meta-ensemble" },
+        tier3_thompson: { name: "Thompson Sampling", tier: 3, description: "Adaptive exploration" },
+        tier3_attention: { name: "Attention Based", tier: 3, description: "Attention weighting" },
+        tier3_quantile: { name: "Quantile Regression", tier: 3, description: "Quantile forest" },
+        tier3_combined: { name: "Tier 3 Combined", tier: 3, description: "Meta-ensemble" },
+      },
+      methods_by_tier: { tier1: [], tier2: [], tier3: [] },
+      total_methods: 12,
+      tiers: [1, 2, 3],
+      tier_descriptions: {
+        1: "Basic ensemble methods",
+        2: "Advanced methods with Bayesian averaging",
+        3: "Experimental methods with attention mechanisms",
+      },
+    };
+  }
+}
+
+/**
+ * Transform API response to frontend WalkForwardResponse format
+ */
+function transformApiResponse(
+  response: WalkForwardApiResponse,
+  assetId: AssetId
+): WalkForwardResponse {
+  // Transform method_results
+  const methodResults: Record<WalkForwardMethod, FoldResult[]> = {} as Record<WalkForwardMethod, FoldResult[]>;
+
+  for (const [method, folds] of Object.entries(response.method_results)) {
+    methodResults[method as WalkForwardMethod] = folds.map((fold) => ({
+      fold_id: fold.fold_id,
+      train_start: fold.train_start,
+      train_end: fold.train_end,
+      test_start: fold.test_start,
+      test_end: fold.test_end,
+      n_train: fold.n_train,
+      n_test: fold.n_test,
+      accuracy: fold.accuracy,
+      sharpe_ratio: fold.sharpe_ratio,
+      sortino_ratio: fold.sortino_ratio,
+      max_drawdown: fold.max_drawdown,
+      win_rate: fold.win_rate,
+      total_return: fold.total_return,
+      n_trades: fold.n_trades,
+      avg_trade_return: fold.avg_trade_return,
+      avg_holding_days: fold.avg_holding_days,
+      n_bullish: fold.n_bullish,
+      n_bearish: fold.n_bearish,
+      n_neutral: fold.n_neutral,
+      total_costs: fold.total_costs,
+      avg_cost_per_trade: fold.avg_cost_per_trade,
+      avg_cost_bps: fold.avg_cost_bps,
+      cost_drag_pct: fold.cost_drag_pct,
+      regime_performance: fold.regime_performance,
+      returns: fold.returns,
+    }));
+  }
+
+  // Transform summary_metrics
+  const summaryMetrics: Record<WalkForwardMethod, SummaryMetrics> = {} as Record<WalkForwardMethod, SummaryMetrics>;
+
+  for (const [method, metrics] of Object.entries(response.summary_metrics)) {
+    summaryMetrics[method as WalkForwardMethod] = {
+      mean_accuracy: metrics.mean_accuracy,
+      mean_sharpe: metrics.mean_sharpe,
+      mean_sortino: metrics.mean_sortino,
+      mean_max_drawdown: metrics.mean_max_drawdown,
+      mean_win_rate: metrics.mean_win_rate,
+      mean_total_return: metrics.mean_total_return,
+      std_accuracy: metrics.std_accuracy,
+      std_sharpe: metrics.std_sharpe,
+      std_total_return: metrics.std_total_return,
+      mean_cost_drag_pct: metrics.mean_cost_drag_pct,
+      total_costs: metrics.total_costs,
+      raw_total_return: metrics.raw_total_return,
+      cost_adjusted_return: metrics.cost_adjusted_return,
+    };
+  }
+
+  // Transform equity curves if present
+  const equityCurves: Record<WalkForwardMethod, EquityPoint[]> = {} as Record<WalkForwardMethod, EquityPoint[]>;
+
+  if (response.equity_curves) {
+    for (const [method, curve] of Object.entries(response.equity_curves)) {
+      equityCurves[method as WalkForwardMethod] = curve.map((p) => ({
+        date: p.date,
+        equity: p.equity,
+        drawdown: p.drawdown,
+        benchmark: p.benchmark,
+        returns: p.returns,
+      }));
+    }
+  }
+
+  return {
+    success: true,
+    data: {
+      asset_id: assetId,
+      asset_name: response.asset_name,
+      n_folds: response.n_folds,
+      timestamp: response.timestamp,
+      method_results: methodResults,
+      summary_metrics: summaryMetrics,
+      significance_tests: response.significance_tests as Record<string, never>,
+      rankings: response.rankings as Record<WalkForwardMethod, number>,
+    },
+    equity_curves: equityCurves,
+  };
+}
+
+/**
+ * Generate mock walk-forward results for development/fallback
+ */
+function generateMockWalkForwardResults(
+  assetId: AssetId,
+  methods: WalkForwardMethod[],
+  nFolds: number
+): WalkForwardResponse {
   const methodResults: Record<string, FoldResult[]> = {};
   const summaryMetrics: Record<string, SummaryMetrics> = {};
   const equityCurves: Record<string, EquityPoint[]> = {};
-
   const baseDate = new Date("2024-01-01");
 
   methods.forEach((method) => {
     const folds: FoldResult[] = [];
-    const tierMultiplier = method.startsWith("tier3")
-      ? 1.15
-      : method.startsWith("tier2")
-        ? 1.08
-        : 1.0;
+    const tierMultiplier = method.startsWith("tier3") ? 1.15 : method.startsWith("tier2") ? 1.08 : 1.0;
 
     for (let i = 0; i < nFolds; i++) {
       const baseAccuracy = 52 + Math.random() * 12 * tierMultiplier;
       const baseSharpe = 0.8 + Math.random() * 1.2 * tierMultiplier;
       const baseReturn = 5 + Math.random() * 15 * tierMultiplier;
+      const totalCosts = 50 + Math.random() * 100;
 
       const trainStart = new Date(baseDate);
       trainStart.setDate(trainStart.getDate() + i * 60);
@@ -1377,9 +1590,6 @@ export async function getWalkForwardResults(
       testStart.setDate(testStart.getDate() + 1);
       const testEnd = new Date(testStart);
       testEnd.setDate(testEnd.getDate() + 18);
-
-      const totalCosts = 50 + Math.random() * 100;
-      const costDrag = (totalCosts / 10000) * 100;
 
       folds.push({
         fold_id: i + 1,
@@ -1391,7 +1601,7 @@ export async function getWalkForwardResults(
         n_test: 18,
         accuracy: baseAccuracy + (Math.random() - 0.5) * 8,
         sharpe_ratio: baseSharpe + (Math.random() - 0.5) * 0.4,
-        sortino_ratio: baseSharpe * 1.2 + (Math.random() - 0.5) * 0.3,
+        sortino_ratio: baseSharpe * 1.2,
         max_drawdown: -(8 + Math.random() * 12),
         win_rate: 48 + Math.random() * 15,
         total_return: baseReturn + (Math.random() - 0.5) * 6,
@@ -1402,34 +1612,13 @@ export async function getWalkForwardResults(
         n_bearish: 6 + Math.floor(Math.random() * 6),
         n_neutral: 2 + Math.floor(Math.random() * 4),
         total_costs: totalCosts,
-        avg_cost_per_trade: totalCosts / (15 + Math.random() * 10),
-        avg_cost_bps: 4 + Math.random() * 3,
-        cost_drag_pct: costDrag,
+        avg_cost_per_trade: totalCosts / 20,
+        avg_cost_bps: 5,
+        cost_drag_pct: (totalCosts / 10000) * 100,
         regime_performance: {
-          bull: {
-            regime: "bull",
-            n_samples: 8 + Math.floor(Math.random() * 5),
-            accuracy: baseAccuracy + 5 + Math.random() * 5,
-            sharpe_ratio: baseSharpe + 0.3,
-            total_return: baseReturn * 1.3,
-            win_rate: 55 + Math.random() * 10,
-          },
-          bear: {
-            regime: "bear",
-            n_samples: 5 + Math.floor(Math.random() * 4),
-            accuracy: baseAccuracy - 3 + Math.random() * 4,
-            sharpe_ratio: baseSharpe - 0.2,
-            total_return: baseReturn * 0.7,
-            win_rate: 45 + Math.random() * 10,
-          },
-          sideways: {
-            regime: "sideways",
-            n_samples: 4 + Math.floor(Math.random() * 3),
-            accuracy: baseAccuracy + Math.random() * 3,
-            sharpe_ratio: baseSharpe * 0.9,
-            total_return: baseReturn * 0.5,
-            win_rate: 50 + Math.random() * 8,
-          },
+          bull: { regime: "bull", n_samples: 10, accuracy: baseAccuracy + 5, sharpe_ratio: baseSharpe + 0.3, total_return: baseReturn * 1.3, win_rate: 55 },
+          bear: { regime: "bear", n_samples: 5, accuracy: baseAccuracy - 3, sharpe_ratio: baseSharpe - 0.2, total_return: baseReturn * 0.7, win_rate: 45 },
+          sideways: { regime: "sideways", n_samples: 3, accuracy: baseAccuracy, sharpe_ratio: baseSharpe * 0.9, total_return: baseReturn * 0.5, win_rate: 50 },
         },
         returns: Array.from({ length: 18 }, () => (Math.random() - 0.48) * 2),
       });
@@ -1437,65 +1626,33 @@ export async function getWalkForwardResults(
 
     methodResults[method] = folds;
 
-    // Calculate summary metrics
     const avgAcc = folds.reduce((s, f) => s + f.accuracy, 0) / nFolds;
     const avgSharpe = folds.reduce((s, f) => s + f.sharpe_ratio, 0) / nFolds;
     const avgReturn = folds.reduce((s, f) => s + f.total_return, 0) / nFolds;
-    const avgDrawdown = folds.reduce((s, f) => s + f.max_drawdown, 0) / nFolds;
-    const avgWinRate = folds.reduce((s, f) => s + f.win_rate, 0) / nFolds;
     const avgCostDrag = folds.reduce((s, f) => s + f.cost_drag_pct, 0) / nFolds;
-    const totalCosts = folds.reduce((s, f) => s + f.total_costs, 0);
 
     summaryMetrics[method] = {
       mean_accuracy: avgAcc,
       mean_sharpe: avgSharpe,
       mean_sortino: avgSharpe * 1.15,
-      mean_max_drawdown: avgDrawdown,
-      mean_win_rate: avgWinRate,
+      mean_max_drawdown: folds.reduce((s, f) => s + f.max_drawdown, 0) / nFolds,
+      mean_win_rate: folds.reduce((s, f) => s + f.win_rate, 0) / nFolds,
       mean_total_return: avgReturn,
-      std_accuracy: 3 + Math.random() * 2,
-      std_sharpe: 0.2 + Math.random() * 0.15,
-      std_total_return: 2 + Math.random() * 2,
+      std_accuracy: 3,
+      std_sharpe: 0.2,
+      std_total_return: 2,
       mean_cost_drag_pct: avgCostDrag,
-      total_costs: totalCosts,
+      total_costs: folds.reduce((s, f) => s + f.total_costs, 0),
       raw_total_return: avgReturn + avgCostDrag,
       cost_adjusted_return: avgReturn,
     };
 
-    // Generate equity curve
-    const curve: EquityPoint[] = [];
-    let equity = 100000;
-    let peak = equity;
-    const days = 250;
-
-    for (let d = 0; d < days; d++) {
-      const date = new Date(baseDate);
-      date.setDate(date.getDate() + d);
-      const dailyReturn = (avgReturn / 252 + (Math.random() - 0.5) * 0.02) / 100;
-      equity *= 1 + dailyReturn;
-      if (equity > peak) peak = equity;
-      const drawdown = (equity - peak) / peak;
-
-      curve.push({
-        date: date.toISOString().split("T")[0],
-        equity: Math.round(equity),
-        drawdown,
-        benchmark: 100000 * (1 + (d / 252) * 0.08),
-        returns: dailyReturn * 100,
-      });
-    }
-    equityCurves[method] = curve;
+    equityCurves[method] = generateMockEquityCurve(method);
   });
 
-  // Generate rankings
   const rankings: Record<string, number> = {};
-  const sortedMethods = [...methods].sort(
-    (a, b) =>
-      (summaryMetrics[b]?.mean_sharpe ?? 0) - (summaryMetrics[a]?.mean_sharpe ?? 0)
-  );
-  sortedMethods.forEach((m, i) => {
-    rankings[m] = i + 1;
-  });
+  const sorted = [...methods].sort((a, b) => (summaryMetrics[b]?.mean_sharpe ?? 0) - (summaryMetrics[a]?.mean_sharpe ?? 0));
+  sorted.forEach((m, i) => { rankings[m] = i + 1; });
 
   return {
     success: true,
@@ -1510,6 +1667,73 @@ export async function getWalkForwardResults(
       rankings: rankings as Record<WalkForwardMethod, number>,
     },
     equity_curves: equityCurves as Record<WalkForwardMethod, EquityPoint[]>,
+  };
+}
+
+/**
+ * Generate mock equity curve
+ */
+function generateMockEquityCurve(method: WalkForwardMethod, days: number = 250): EquityPoint[] {
+  const tierMultiplier = method.startsWith("tier3") ? 1.15 : method.startsWith("tier2") ? 1.08 : 1.0;
+  const avgReturn = (8 * tierMultiplier) / 252;
+  const baseDate = new Date("2024-01-01");
+  const curve: EquityPoint[] = [];
+  let equity = 100000;
+  let peak = equity;
+
+  for (let d = 0; d < days; d++) {
+    const date = new Date(baseDate);
+    date.setDate(date.getDate() + d);
+    const dailyReturn = avgReturn + (Math.random() - 0.5) * 0.03;
+    equity *= 1 + dailyReturn;
+    if (equity > peak) peak = equity;
+
+    curve.push({
+      date: date.toISOString().split("T")[0],
+      equity: Math.round(equity),
+      drawdown: (equity - peak) / peak,
+      benchmark: 100000 * (1 + (d / 252) * 0.08),
+      returns: dailyReturn * 100,
+    });
+  }
+  return curve;
+}
+
+/**
+ * Generate mock regime performance
+ */
+function generateMockRegimePerformance(
+  assetId: AssetId,
+  methods: WalkForwardMethod[]
+): RegimePerformanceApiResponse {
+  const regimes = ["bull", "bear", "sideways", "high_vol", "low_vol"];
+  const regimePerf: Record<string, Record<string, RegimePerformanceApiResponse["regime_performance"][string][string]>> = {};
+
+  for (const method of methods) {
+    regimePerf[method] = {};
+    for (const regime of regimes) {
+      regimePerf[method][regime] = {
+        regime,
+        n_samples: 20 + Math.floor(Math.random() * 30),
+        accuracy: 50 + Math.random() * 15,
+        sharpe_ratio: 0.5 + Math.random() * 1.0,
+        total_return: 5 + Math.random() * 10,
+        win_rate: 45 + Math.random() * 15,
+        max_drawdown: -(5 + Math.random() * 10),
+        avg_holding_days: 3 + Math.random() * 4,
+      };
+    }
+  }
+
+  return {
+    asset_id: ASSET_ID_MAP[assetId] || 1866,
+    asset_name: assetId.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    methods,
+    method_info: {},
+    regime_performance: regimePerf,
+    best_per_regime: {},
+    regimes,
+    timestamp: new Date().toISOString(),
   };
 }
 

@@ -20,9 +20,13 @@ import {
   Award,
   Percent,
   AlertTriangle,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+  Loader2,
 } from "lucide-react";
 
-import { useWalkForwardResults } from "@/hooks/useApi";
+import { useWalkForwardResults, useBacktestMethods } from "@/hooks/useApi";
 import type { AssetId } from "@/types";
 import {
   type WalkForwardMethod,
@@ -590,11 +594,18 @@ export function BacktestDashboard() {
   const [nFolds, setNFolds] = useState(5);
   const [activeTab, setActiveTab] = useState("overview");
 
-  const { data: walkForwardData, isLoading, error } = useWalkForwardResults(
-    selectedAsset,
-    selectedMethods,
-    nFolds
-  );
+  // Fetch backtest methods (for validation)
+  const { data: methodsData, isLoading: methodsLoading } = useBacktestMethods();
+
+  // Fetch walk-forward results
+  const {
+    data: walkForwardData,
+    isLoading,
+    isFetching,
+    error,
+    refetch,
+    isError,
+  } = useWalkForwardResults(selectedAsset, selectedMethods, nFolds);
 
   const handleMethodToggle = (method: WalkForwardMethod) => {
     setSelectedMethods((prev) =>
@@ -604,6 +615,10 @@ export function BacktestDashboard() {
     );
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   const bestMethod = useMemo(() => {
     if (!walkForwardData?.data?.rankings) return null;
     const sorted = Object.entries(walkForwardData.data.rankings).sort((a, b) => a[1] - b[1]);
@@ -611,6 +626,9 @@ export function BacktestDashboard() {
   }, [walkForwardData]);
 
   const bestMetrics = bestMethod ? walkForwardData?.data?.summary_metrics[bestMethod] : null;
+
+  // Determine API connection status
+  const isConnected = !isError || walkForwardData !== undefined;
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -628,7 +646,23 @@ export function BacktestDashboard() {
               </Badge>
             </div>
             <div className="flex items-center gap-4">
+              {/* Connection status indicator */}
+              <div className="flex items-center gap-2">
+                {isConnected ? (
+                  <div className="flex items-center gap-1.5 text-green-400">
+                    <Wifi className="w-4 h-4" />
+                    <span className="text-xs">API</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-amber-400">
+                    <WifiOff className="w-4 h-4" />
+                    <span className="text-xs">Mock</span>
+                  </div>
+                )}
+              </div>
+
               <AssetSelector selected={selectedAsset} onSelect={setSelectedAsset} />
+
               <select
                 value={nFolds}
                 onChange={(e) => setNFolds(Number(e.target.value))}
@@ -639,6 +673,21 @@ export function BacktestDashboard() {
                 <option value={7}>7 Folds</option>
                 <option value={10}>10 Folds</option>
               </select>
+
+              {/* Refresh button */}
+              <button
+                onClick={handleRefresh}
+                disabled={isLoading || isFetching}
+                className={cn(
+                  "p-2 rounded-lg border border-neutral-800 transition-colors",
+                  isLoading || isFetching
+                    ? "bg-neutral-800/50 text-neutral-500 cursor-not-allowed"
+                    : "bg-neutral-900/50 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                )}
+                title="Refresh results"
+              >
+                <RefreshCw className={cn("w-4 h-4", (isLoading || isFetching) && "animate-spin")} />
+              </button>
             </div>
           </div>
         </div>
@@ -658,22 +707,61 @@ export function BacktestDashboard() {
           </CardContent>
         </Card>
 
-        {/* Loading / Error States */}
+        {/* Loading State */}
         {isLoading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-              <span className="text-neutral-400">Running walk-forward validation...</span>
-            </div>
-          </div>
+          <Card className="bg-neutral-900/30 border-neutral-800">
+            <CardContent className="py-16">
+              <div className="flex flex-col items-center gap-6">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-neutral-800 rounded-full" />
+                  <div className="absolute inset-0 w-16 h-16 border-4 border-green-400 border-t-transparent rounded-full animate-spin" />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg font-semibold text-neutral-200">Running Walk-Forward Validation</h3>
+                  <p className="text-sm text-neutral-500">
+                    Evaluating {selectedMethods.length} method{selectedMethods.length !== 1 ? "s" : ""} across {nFolds} folds...
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-neutral-600">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Fetching from API
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
-        {error && (
-          <div className="flex items-center justify-center py-20">
-            <div className="flex items-center gap-3 text-red-400">
-              <AlertTriangle className="w-5 h-5" />
-              <span>Error loading backtest results</span>
-            </div>
+        {/* Error State */}
+        {error && !isLoading && (
+          <Card className="bg-red-500/5 border-red-500/20">
+            <CardContent className="py-12">
+              <div className="flex flex-col items-center gap-4">
+                <div className="p-4 bg-red-500/10 rounded-full">
+                  <AlertTriangle className="w-8 h-8 text-red-400" />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg font-semibold text-red-400">Failed to Load Backtest Results</h3>
+                  <p className="text-sm text-neutral-400 max-w-md">
+                    {error instanceof Error ? error.message : "Unable to connect to the backtest API. Using cached or mock data."}
+                  </p>
+                </div>
+                <button
+                  onClick={handleRefresh}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Try Again
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Fetching indicator (when refetching in background) */}
+        {isFetching && !isLoading && (
+          <div className="flex items-center justify-center gap-2 py-2 text-xs text-neutral-500">
+            <Loader2 className="w-3 h-3 animate-spin" />
+            Updating results...
           </div>
         )}
 

@@ -481,7 +481,215 @@ export const backendApi = {
    */
   getQuantumDashboard: (): Promise<QuantumDashboard> =>
     fetchApi<QuantumDashboard>(getApiUrl("/quantum/dashboard")),
+
+  // ==========================================================================
+  // Backtest API Endpoints
+  // ==========================================================================
+
+  /**
+   * Get walk-forward validation results for an asset
+   * @param assetId - Numeric asset ID (e.g., 1866 for Crude Oil)
+   * @param methods - Array of ensemble methods to compare
+   * @param nFolds - Number of walk-forward folds (default: 5)
+   * @param costBps - Transaction cost in basis points (default: 5)
+   * @param includeEquity - Include equity curves in response
+   */
+  getWalkForwardResults: async (
+    assetId: number,
+    methods: string[] = ["tier1_combined", "tier2_combined", "tier3_combined"],
+    nFolds: number = 5,
+    costBps: number = 5,
+    includeEquity: boolean = true
+  ): Promise<WalkForwardApiResponse> => {
+    const params = new URLSearchParams();
+    params.set("methods", methods.join(","));
+    params.set("n_folds", nFolds.toString());
+    params.set("cost_bps", costBps.toString());
+    if (includeEquity) params.set("include_equity", "true");
+    return fetchApi<WalkForwardApiResponse>(
+      getApiUrl(`/backtest/walk-forward/${assetId}?${params.toString()}`)
+    );
+  },
+
+  /**
+   * Get equity curve for a specific method
+   * @param assetId - Numeric asset ID
+   * @param method - Ensemble method
+   * @param days - Number of days for equity curve
+   */
+  getEquityCurve: async (
+    assetId: number,
+    method: string = "tier1_combined",
+    days: number = 250
+  ): Promise<EquityCurveApiResponse> => {
+    const params = new URLSearchParams();
+    params.set("method", method);
+    params.set("days", days.toString());
+    return fetchApi<EquityCurveApiResponse>(
+      getApiUrl(`/backtest/equity-curve/${assetId}?${params.toString()}`)
+    );
+  },
+
+  /**
+   * Get regime-conditional performance for an asset
+   * @param assetId - Numeric asset ID
+   * @param methods - Array of ensemble methods
+   */
+  getRegimePerformance: async (
+    assetId: number,
+    methods: string[] = ["tier1_combined", "tier2_combined", "tier3_combined"]
+  ): Promise<RegimePerformanceApiResponse> => {
+    const params = new URLSearchParams();
+    params.set("methods", methods.join(","));
+    return fetchApi<RegimePerformanceApiResponse>(
+      getApiUrl(`/backtest/regime-performance/${assetId}?${params.toString()}`)
+    );
+  },
+
+  /**
+   * Get available backtest methods
+   */
+  getBacktestMethods: (): Promise<BacktestMethodsApiResponse> =>
+    fetchApi<BacktestMethodsApiResponse>(getApiUrl("/backtest/methods")),
 };
+
+// =============================================================================
+// Backtest API Response Types
+// =============================================================================
+
+export interface WalkForwardFoldResult {
+  fold_id: number;
+  train_start: string;
+  train_end: string;
+  test_start: string;
+  test_end: string;
+  n_train: number;
+  n_test: number;
+  accuracy: number;
+  sharpe_ratio: number;
+  sortino_ratio: number;
+  max_drawdown: number;
+  win_rate: number;
+  total_return: number;
+  n_trades: number;
+  avg_trade_return: number;
+  avg_holding_days: number;
+  n_bullish: number;
+  n_bearish: number;
+  n_neutral: number;
+  total_costs: number;
+  avg_cost_per_trade: number;
+  avg_cost_bps: number;
+  cost_drag_pct: number;
+  regime_performance: Record<string, {
+    regime: string;
+    n_samples: number;
+    accuracy: number;
+    sharpe_ratio: number;
+    total_return: number;
+    win_rate: number;
+  }>;
+  returns: number[];
+}
+
+export interface WalkForwardSummaryMetrics {
+  mean_accuracy: number;
+  mean_sharpe: number;
+  mean_sortino: number;
+  mean_max_drawdown: number;
+  mean_win_rate: number;
+  mean_total_return: number;
+  std_accuracy: number;
+  std_sharpe: number;
+  std_total_return: number;
+  mean_cost_drag_pct: number;
+  total_costs: number;
+  raw_total_return: number;
+  cost_adjusted_return: number;
+}
+
+export interface EquityCurvePoint {
+  date: string;
+  equity: number;
+  drawdown: number;
+  benchmark: number;
+  returns: number;
+}
+
+export interface WalkForwardApiResponse {
+  asset_id: number;
+  asset_name: string;
+  n_folds: number;
+  timestamp: string;
+  method_results: Record<string, WalkForwardFoldResult[]>;
+  summary_metrics: Record<string, WalkForwardSummaryMetrics>;
+  rankings: Record<string, number>;
+  significance_tests: Record<string, unknown>;
+  equity_curves?: Record<string, EquityCurvePoint[]>;
+}
+
+export interface EquityCurveApiResponse {
+  asset_id: number;
+  asset_name: string;
+  method: string;
+  method_info: {
+    name: string;
+    tier: number;
+    description: string;
+  };
+  days: number;
+  curve: EquityCurvePoint[];
+  metrics: {
+    total_return: number;
+    sharpe_ratio: number;
+    max_drawdown: number;
+    alpha: number;
+    start_equity: number;
+    end_equity: number;
+  };
+  timestamp: string;
+}
+
+export interface RegimePerformanceData {
+  regime: string;
+  n_samples: number;
+  accuracy: number;
+  sharpe_ratio: number;
+  total_return: number;
+  win_rate: number;
+  max_drawdown: number;
+  avg_holding_days: number;
+}
+
+export interface RegimePerformanceApiResponse {
+  asset_id: number;
+  asset_name: string;
+  methods: string[];
+  method_info: Record<string, { name: string; tier: number; description: string }>;
+  regime_performance: Record<string, Record<string, RegimePerformanceData>>;
+  best_per_regime: Record<string, { method: string; sharpe_ratio: number }>;
+  regimes: string[];
+  timestamp: string;
+}
+
+export interface BacktestMethodInfo {
+  name: string;
+  tier: number;
+  description: string;
+}
+
+export interface BacktestMethodsApiResponse {
+  methods: Record<string, BacktestMethodInfo>;
+  methods_by_tier: Record<string, Array<{
+    id: string;
+    name: string;
+    description: string;
+    tier: number;
+  }>>;
+  total_methods: number;
+  tiers: number[];
+  tier_descriptions: Record<number, string>;
+}
 
 // ============================================================================
 // API Client (Legacy mock endpoints for backward compatibility)
