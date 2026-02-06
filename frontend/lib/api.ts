@@ -28,7 +28,7 @@ const API_VERSION = "/api/v1";
 /**
  * Toggle this to switch between mock data and real API calls
  */
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = false;
 
 /**
  * Build full API URL for an endpoint
