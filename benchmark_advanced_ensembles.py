@@ -1,10 +1,12 @@
 """
 Benchmark Advanced Ensemble Methods on Crude Oil D+5 Data
 =========================================================
-Tests: QuantumAnnealingEnsemble, WassersteinEnsemble, 
+Tests: QuantumAnnealingEnsemble, WassersteinEnsemble,
        AdaptiveConformalEnsemble, AttentionEnsemble
 
 Baseline: Simple Mean DA ~35%, Pairwise Slopes Sharpe = 1.757
+
+NOTE: Uses standardized Sharpe calculation from utils.metrics
 """
 
 import numpy as np
@@ -15,6 +17,9 @@ import sys
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Use standardized metrics
+from utils.metrics import calculate_sharpe_ratio_daily
 
 from quantum_ensemble import (
     QuantumAnnealingEnsemble,
@@ -37,41 +42,41 @@ def compute_directional_accuracy(predictions, actuals):
 
 
 def compute_sharpe(predictions, actuals, annualize=True):
-    """Compute Sharpe ratio of trading strategy."""
+    """
+    Compute Sharpe ratio of trading strategy using standardized calculation.
+
+    FIXED: Now uses percentage returns instead of dollar returns.
+    This prevents inflated Sharpe ratios for high-priced assets.
+    """
     pred_dir = np.sign(np.diff(predictions))
-    actual_changes = np.diff(actuals)
-    returns = pred_dir * actual_changes
-    
+    # FIX: Use percentage returns, not dollar changes
+    pct_returns = np.diff(actuals) / actuals[:-1]
+    strategy_returns = pred_dir * pct_returns
+
     # Filter out NaN/Inf
-    valid = np.isfinite(returns)
+    valid = np.isfinite(strategy_returns)
     if valid.sum() < 10:
         return 0.0
-    returns = returns[valid]
-    
-    mean_ret = returns.mean()
-    std_ret = returns.std()
-    
-    if std_ret < 1e-10:
-        return 0.0
-    
-    sharpe = mean_ret / std_ret
-    if annualize:
-        sharpe *= np.sqrt(252)
-    
-    return sharpe
+    strategy_returns = strategy_returns[valid]
+
+    # Use standardized Sharpe calculation
+    return calculate_sharpe_ratio_daily(strategy_returns)
 
 
 def compute_total_return(predictions, actuals):
-    """Compute total return percentage of strategy."""
+    """Compute total return percentage of strategy using percentage returns."""
     pred_dir = np.sign(np.diff(predictions))
-    actual_changes = np.diff(actuals)
-    returns = pred_dir * actual_changes
-    
-    # Simple cumulative return
-    total = returns.sum()
-    # As percentage of initial price
-    return_pct = (total / abs(actuals[0])) * 100
-    
+    # Use percentage returns for consistency
+    pct_returns = np.diff(actuals) / actuals[:-1]
+    strategy_returns = pred_dir * pct_returns
+
+    # Filter out NaN/Inf
+    valid = np.isfinite(strategy_returns)
+    strategy_returns = strategy_returns[valid]
+
+    # Sum of percentage returns (simple, not compounded)
+    return_pct = strategy_returns.sum() * 100
+
     return return_pct
 
 

@@ -7,6 +7,9 @@ import numpy as np
 from typing import Dict, List, Tuple
 import os
 
+# Use standardized metrics
+from utils.metrics import calculate_sharpe_ratio_daily
+
 
 class WeightedPairwiseSlopes:
     """
@@ -260,8 +263,9 @@ class WeightedPairwiseSlopes:
         
         if len(strategy_returns) < 2 or strategy_returns.std() == 0:
             return {'sharpe': 0, 'total_return': 0, 'win_rate': 0}
-        
-        sharpe = (strategy_returns.mean() / strategy_returns.std(ddof=1)) * np.sqrt(252)
+
+        # Use standardized Sharpe calculation
+        sharpe = calculate_sharpe_ratio_daily(strategy_returns.values)
         total_return = strategy_returns.sum() * 100
         win_rate = (strategy_returns > 0).mean() * 100
         

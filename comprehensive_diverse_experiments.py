@@ -12,6 +12,8 @@ THIS ANALYSIS TESTS:
 2. Different weighting methods (equal, inverse_spread, normalized_drift, spread, sqrt_spread, magnitude)
 3. Different thresholds (0.1, 0.15, 0.2, 0.25, 0.3)
 4. AVERAGE PROFIT PER TRADE IN DOLLARS (critical for hedging)
+
+NOTE: Uses standardized Sharpe calculation from utils.metrics
 """
 
 import pandas as pd
@@ -20,6 +22,9 @@ import json
 import os
 from itertools import combinations
 from datetime import datetime
+
+# Use standardized metrics
+from utils.metrics import calculate_sharpe_ratio
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(SCRIPT_DIR, 'data')
@@ -444,10 +449,12 @@ def calculate_metrics(trades, prices):
     avg_win_pct = np.mean([t['pnl_pct'] for t in wins]) if wins else 0
     avg_loss_pct = np.mean([abs(t['pnl_pct']) for t in losses]) if losses else 0
 
-    # Sharpe ratio
-    avg_hold_days = np.mean(holding_days) if holding_days else 1
-    trades_per_year = 252 / avg_hold_days if avg_hold_days > 0 else 50
-    sharpe = (avg_return_pct / std_return) * np.sqrt(trades_per_year) if std_return > 0 else 0
+    # Sharpe ratio - use standardized calculation
+    sharpe = calculate_sharpe_ratio(
+        pnls_pct,
+        holding_days=holding_days if holding_days else None,
+        annualize=True
+    )
 
     # Max drawdown
     cumulative = np.cumsum(pnls_pct)
