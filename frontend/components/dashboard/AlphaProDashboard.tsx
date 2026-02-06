@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { LiveSignalCard } from "@/components/dashboard/LiveSignalCard";
 import { ApiHealthIndicator } from "@/components/dashboard/ApiHealthIndicator";
+import { APITierComparisonCard } from "@/components/ensemble";
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
@@ -23,6 +24,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   AlertCircle,
+  Layers,
 } from "lucide-react";
 
 // ============================================================================
@@ -447,6 +449,22 @@ export function AlphaProDashboard() {
           <LiveSignalCard asset="SP500" displayName="S&P 500" />
           <LiveSignalCard asset="GOLD" displayName="Gold" />
         </div>
+      </section>
+
+      <Separator className="bg-neutral-800" />
+
+      {/* Tier Comparison */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-neutral-200 flex items-center gap-2">
+            <Layers className="w-5 h-5 text-purple-400" />
+            Ensemble Tier Analysis
+          </h2>
+          <Badge className="bg-purple-500/10 border-purple-500/30 text-purple-300 px-2 py-1 text-xs">
+            3-Tier Ensemble
+          </Badge>
+        </div>
+        <APITierComparisonCard assetId="crude-oil" />
       </section>
 
       <Separator className="bg-neutral-800" />

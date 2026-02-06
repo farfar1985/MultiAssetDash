@@ -32,11 +32,13 @@ import {
   getPairwiseVoting,
   getConfidenceInterval,
   getEnsembleDashboard,
+  getTierComparison,
   type RegimeData,
   type EnsembleConfidenceData,
   type PairwiseVotingData,
   type ConfidenceInterval,
   type EnsembleDashboardData,
+  type TierComparisonData,
 } from "@/lib/api";
 import type { AssetId } from "@/types";
 
@@ -101,6 +103,7 @@ export const queryKeys = {
   pairwiseVoting: (assetId: string) => [...queryKeys.backend(), "ensemble", "pairwise", assetId] as const,
   confidenceInterval: (assetId: string, horizon: number) => [...queryKeys.backend(), "ensemble", "interval", assetId, horizon] as const,
   ensembleDashboard: (assetId: string) => [...queryKeys.backend(), "ensemble", "dashboard", assetId] as const,
+  tierComparison: (assetId: string) => [...queryKeys.backend(), "ensemble", "tiers", assetId] as const,
 };
 
 // ============================================================================
@@ -619,6 +622,23 @@ export function useEnsembleDashboard(
   return useQuery({
     queryKey: queryKeys.ensembleDashboard(assetId),
     queryFn: () => getEnsembleDashboard(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch tier comparison data for all three ensemble tiers
+ */
+export function useTierComparison(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<TierComparisonData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.tierComparison(assetId),
+    queryFn: () => getTierComparison(assetId),
     enabled: !!assetId,
     staleTime: 30000,
     refetchInterval: 60000,

@@ -899,6 +899,108 @@ export async function getEnsembleDashboard(assetId: AssetId): Promise<EnsembleDa
 }
 
 // ============================================================================
+// Tier Comparison API
+// ============================================================================
+
+export interface TierPrediction {
+  signal: "BULLISH" | "BEARISH" | "NEUTRAL";
+  confidence: number;
+  netProbability?: number;
+  weights?: Record<string, number>;
+  metadata?: Record<string, unknown>;
+  // Tier 2 specific
+  uncertainty?: number;
+  interval?: { lower: number; upper: number };
+  regime?: string;
+  // Tier 3 specific
+  quantiles?: Record<string, number>;
+  attentionWeights?: Record<string, number>;
+  explorationBonus?: number;
+}
+
+export interface TierConsensus {
+  signal: "BULLISH" | "BEARISH" | "NEUTRAL";
+  agreement: number;
+  tiersAgreeing: number;
+  totalTiers: number;
+}
+
+export interface TierComparisonData {
+  asset_id: number;
+  asset_name: string;
+  timestamp: string;
+  tier1: TierPrediction;
+  tier2: TierPrediction;
+  tier3: TierPrediction;
+  consensus: TierConsensus;
+}
+
+/**
+ * Mock tier comparison data
+ */
+const MOCK_TIER_COMPARISON: TierComparisonData = {
+  asset_id: 1866,
+  asset_name: "Crude_Oil",
+  timestamp: new Date().toISOString(),
+  tier1: {
+    signal: "BULLISH",
+    confidence: 0.72,
+    netProbability: 0.45,
+    weights: {
+      accuracy_weighted: 0.35,
+      magnitude_weighted: 0.30,
+      correlation_weighted: 0.35,
+    },
+    metadata: { modelsUsed: 45, topHorizons: [9, 10] },
+  },
+  tier2: {
+    signal: "BULLISH",
+    confidence: 0.68,
+    netProbability: 0.38,
+    uncertainty: 0.15,
+    interval: { lower: -0.85, upper: 3.35 },
+    regime: "bull",
+  },
+  tier3: {
+    signal: "NEUTRAL",
+    confidence: 0.55,
+    netProbability: 0.12,
+    quantiles: { "0.1": -1.2, "0.25": -0.4, "0.5": 0.8, "0.75": 2.1, "0.9": 3.5 },
+    attentionWeights: { "h9_h10": 0.42, "h8_h9": 0.28, "h7_h8": 0.18, "h5_h7": 0.12 },
+    explorationBonus: 0.08,
+  },
+  consensus: {
+    signal: "BULLISH",
+    agreement: 0.67,
+    tiersAgreeing: 2,
+    totalTiers: 3,
+  },
+};
+
+/**
+ * Get tier comparison data for an asset
+ */
+export async function getTierComparison(assetId: AssetId): Promise<TierComparisonData> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return { ...MOCK_TIER_COMPARISON };
+  }
+
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/ensemble/tiers/${backendId}`));
+  if (!response.ok) {
+    console.warn(`Tier comparison fetch failed for ${assetId}, using mock data`);
+    return { ...MOCK_TIER_COMPARISON };
+  }
+
+  return response.json();
+}
+
+// ============================================================================
 // Batch/Convenience Functions
 // ============================================================================
 

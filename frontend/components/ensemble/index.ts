@@ -48,3 +48,10 @@ export type {
   MultiAssetRegimeResponse,
   AssetRegimeData,
 } from "./MultiAssetRegimeOverview";
+
+// Tier comparison
+export { TierComparisonCard } from "./TierComparisonCard";
+export type { TierComparisonCardProps, TierComparisonData } from "./TierComparisonCard";
+
+export { APITierComparisonCard } from "./APITierComparisonCard";
+export type { APITierComparisonCardProps } from "./APITierComparisonCard";
