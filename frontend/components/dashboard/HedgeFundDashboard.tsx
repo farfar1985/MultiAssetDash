@@ -9,14 +9,11 @@ import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import { CorrelationMatrix } from "@/components/dashboard/CorrelationMatrix";
 import {
-  EnsembleConfidenceCard,
-  PairwiseVotingChart,
   HMMRegimeIndicator,
-  ConfidenceIntervalBar,
   MultiAssetRegimeOverview,
-  type EnsembleConfidenceData,
-  type PairwiseVotingData,
-  type ConfidenceInterval,
+  APIEnsembleConfidenceCard,
+  APIPairwiseVotingChart,
+  APIConfidenceIntervalBar,
 } from "@/components/ensemble";
 import {
   TrendingUp,
@@ -925,11 +922,11 @@ export function HedgeFundDashboard() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="mt-4 space-y-4">
-          {/* Ensemble Intelligence Row */}
+          {/* Ensemble Intelligence Row - API Connected */}
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-3">
-              <EnsembleConfidenceCard
-                data={ensembleConfidence}
+              <APIEnsembleConfidenceCard
+                assetId="crude-oil"
                 showBreakdown={false}
                 compact={false}
               />
@@ -943,15 +940,15 @@ export function HedgeFundDashboard() {
               />
             </div>
             <div className="col-span-3">
-              <PairwiseVotingChart
-                data={pairwiseVoting}
+              <APIPairwiseVotingChart
+                assetId="crude-oil"
                 showGrid={false}
                 compact={false}
               />
             </div>
             <div className="col-span-3">
-              <ConfidenceIntervalBar
-                data={confidenceInterval}
+              <APIConfidenceIntervalBar
+                assetId="crude-oil"
                 assetName="Portfolio"
                 horizon="D+5"
                 showDetails={false}

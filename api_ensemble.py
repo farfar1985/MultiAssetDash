@@ -1175,6 +1175,20 @@ def get_confidence_interval(asset_id):
     })
 
 
+# Alias endpoint for voting (same as pairwise)
+@app.route('/api/v1/ensemble/voting/<int:asset_id>', methods=['GET'])
+def get_voting(asset_id):
+    """Alias for pairwise voting endpoint."""
+    return get_pairwise_voting(asset_id)
+
+
+# Alias endpoint for intervals (plural)
+@app.route('/api/v1/ensemble/intervals/<int:asset_id>', methods=['GET'])
+def get_intervals(asset_id):
+    """Alias for confidence interval endpoint."""
+    return get_confidence_interval(asset_id)
+
+
 # ============ COMBINED ENSEMBLE DASHBOARD ENDPOINT ============
 
 @app.route('/api/v1/ensemble/dashboard/<int:asset_id>', methods=['GET'])
