@@ -1001,6 +1001,181 @@ export async function getTierComparison(assetId: AssetId): Promise<TierCompariso
 }
 
 // ============================================================================
+// Individual Tier Ensemble API
+// ============================================================================
+
+export type Tier1Method = "combined" | "accuracy" | "magnitude" | "correlation";
+export type Tier2Method = "combined" | "bma" | "regime" | "conformal";
+export type Tier3Method = "combined" | "thompson" | "attention" | "quantile";
+
+export interface Tier1Result {
+  signal: "BULLISH" | "BEARISH" | "NEUTRAL";
+  confidence: number;
+  netProbability: number;
+  weights: Record<string, number>;
+  method: Tier1Method;
+  metadata: {
+    modelsUsed: number;
+    topHorizons: number[];
+    timestamp: string;
+  };
+}
+
+export interface Tier2Result {
+  signal: "BULLISH" | "BEARISH" | "NEUTRAL";
+  confidence: number;
+  netProbability: number;
+  uncertainty: number;
+  interval: { lower: number; upper: number };
+  regime: string;
+  method: Tier2Method;
+  metadata: {
+    modelsUsed: number;
+    timestamp: string;
+  };
+}
+
+export interface Tier3Result {
+  signal: "BULLISH" | "BEARISH" | "NEUTRAL";
+  confidence: number;
+  netProbability: number;
+  quantiles: Record<string, number>;
+  attentionWeights?: Record<string, number>;
+  explorationBonus: number;
+  method: Tier3Method;
+  metadata: {
+    modelsUsed: number;
+    timestamp: string;
+  };
+}
+
+/**
+ * Mock data for individual tiers
+ */
+const MOCK_TIER1: Tier1Result = {
+  signal: "BULLISH",
+  confidence: 0.72,
+  netProbability: 0.45,
+  weights: {
+    accuracy_weighted: 0.35,
+    magnitude_weighted: 0.30,
+    correlation_weighted: 0.35,
+  },
+  method: "combined",
+  metadata: { modelsUsed: 45, topHorizons: [9, 10], timestamp: new Date().toISOString() },
+};
+
+const MOCK_TIER2: Tier2Result = {
+  signal: "BULLISH",
+  confidence: 0.68,
+  netProbability: 0.38,
+  uncertainty: 0.15,
+  interval: { lower: -0.85, upper: 3.35 },
+  regime: "bull",
+  method: "combined",
+  metadata: { modelsUsed: 45, timestamp: new Date().toISOString() },
+};
+
+const MOCK_TIER3: Tier3Result = {
+  signal: "NEUTRAL",
+  confidence: 0.55,
+  netProbability: 0.12,
+  quantiles: { "0.1": -1.2, "0.25": -0.4, "0.5": 0.8, "0.75": 2.1, "0.9": 3.5 },
+  attentionWeights: { "h9_h10": 0.42, "h8_h9": 0.28, "h7_h8": 0.18, "h5_h7": 0.12 },
+  explorationBonus: 0.08,
+  method: "combined",
+  metadata: { modelsUsed: 45, timestamp: new Date().toISOString() },
+};
+
+/**
+ * Get Tier 1 ensemble prediction for an asset
+ * Tier 1 methods: accuracy-weighted, magnitude-weighted, error correlation
+ */
+export async function getTier1Ensemble(
+  assetId: AssetId,
+  method: Tier1Method = "combined"
+): Promise<Tier1Result> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 80));
+    return { ...MOCK_TIER1, method };
+  }
+
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/ensemble/tier1/${backendId}?method=${method}`));
+  if (!response.ok) {
+    console.warn(`Tier 1 ensemble fetch failed for ${assetId}, using mock data`);
+    return { ...MOCK_TIER1, method };
+  }
+
+  return response.json();
+}
+
+/**
+ * Get Tier 2 ensemble prediction for an asset
+ * Tier 2 methods: Bayesian model averaging, regime-adaptive, conformal prediction
+ */
+export async function getTier2Ensemble(
+  assetId: AssetId,
+  method: Tier2Method = "combined"
+): Promise<Tier2Result> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return { ...MOCK_TIER2, method };
+  }
+
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/ensemble/tier2/${backendId}?method=${method}`));
+  if (!response.ok) {
+    console.warn(`Tier 2 ensemble fetch failed for ${assetId}, using mock data`);
+    return { ...MOCK_TIER2, method };
+  }
+
+  return response.json();
+}
+
+/**
+ * Get Tier 3 ensemble prediction for an asset
+ * Tier 3 methods: Thompson sampling, attention-based, quantile regression forest
+ */
+export async function getTier3Ensemble(
+  assetId: AssetId,
+  method: Tier3Method = "combined"
+): Promise<Tier3Result> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 150));
+    return { ...MOCK_TIER3, method };
+  }
+
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/ensemble/tier3/${backendId}?method=${method}`));
+  if (!response.ok) {
+    console.warn(`Tier 3 ensemble fetch failed for ${assetId}, using mock data`);
+    return { ...MOCK_TIER3, method };
+  }
+
+  return response.json();
+}
+
+/**
+ * Get all tier predictions for an asset (alias for getTierComparison for naming consistency)
+ */
+export async function getAllTiers(assetId: AssetId): Promise<TierComparisonData> {
+  return getTierComparison(assetId);
+}
+
+// ============================================================================
 // Batch/Convenience Functions
 // ============================================================================
 

@@ -33,12 +33,22 @@ import {
   getConfidenceInterval,
   getEnsembleDashboard,
   getTierComparison,
+  getTier1Ensemble,
+  getTier2Ensemble,
+  getTier3Ensemble,
+  getAllTiers,
   type RegimeData,
   type EnsembleConfidenceData,
   type PairwiseVotingData,
   type ConfidenceInterval,
   type EnsembleDashboardData,
   type TierComparisonData,
+  type Tier1Result,
+  type Tier2Result,
+  type Tier3Result,
+  type Tier1Method,
+  type Tier2Method,
+  type Tier3Method,
 } from "@/lib/api";
 import type { AssetId } from "@/types";
 
@@ -104,6 +114,11 @@ export const queryKeys = {
   confidenceInterval: (assetId: string, horizon: number) => [...queryKeys.backend(), "ensemble", "interval", assetId, horizon] as const,
   ensembleDashboard: (assetId: string) => [...queryKeys.backend(), "ensemble", "dashboard", assetId] as const,
   tierComparison: (assetId: string) => [...queryKeys.backend(), "ensemble", "tiers", assetId] as const,
+  // Individual tier ensemble keys
+  tier1Ensemble: (assetId: string, method: string) => [...queryKeys.backend(), "ensemble", "tier1", assetId, method] as const,
+  tier2Ensemble: (assetId: string, method: string) => [...queryKeys.backend(), "ensemble", "tier2", assetId, method] as const,
+  tier3Ensemble: (assetId: string, method: string) => [...queryKeys.backend(), "ensemble", "tier3", assetId, method] as const,
+  allTiers: (assetId: string) => [...queryKeys.backend(), "ensemble", "allTiers", assetId] as const,
 };
 
 // ============================================================================
@@ -639,6 +654,91 @@ export function useTierComparison(
   return useQuery({
     queryKey: queryKeys.tierComparison(assetId),
     queryFn: () => getTierComparison(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+// ============================================================================
+// Individual Tier Ensemble Hooks
+// ============================================================================
+
+/**
+ * Fetch Tier 1 ensemble prediction for an asset
+ * Tier 1 methods: accuracy-weighted, magnitude-weighted, error correlation
+ * @param assetId - Asset identifier
+ * @param method - Ensemble method (default: "combined")
+ */
+export function useTier1Ensemble(
+  assetId: AssetId,
+  method: Tier1Method = "combined",
+  options?: Omit<UseQueryOptions<Tier1Result, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.tier1Ensemble(assetId, method),
+    queryFn: () => getTier1Ensemble(assetId, method),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch Tier 2 ensemble prediction for an asset
+ * Tier 2 methods: Bayesian model averaging, regime-adaptive, conformal prediction
+ * @param assetId - Asset identifier
+ * @param method - Ensemble method (default: "combined")
+ */
+export function useTier2Ensemble(
+  assetId: AssetId,
+  method: Tier2Method = "combined",
+  options?: Omit<UseQueryOptions<Tier2Result, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.tier2Ensemble(assetId, method),
+    queryFn: () => getTier2Ensemble(assetId, method),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch Tier 3 ensemble prediction for an asset
+ * Tier 3 methods: Thompson sampling, attention-based, quantile regression forest
+ * @param assetId - Asset identifier
+ * @param method - Ensemble method (default: "combined")
+ */
+export function useTier3Ensemble(
+  assetId: AssetId,
+  method: Tier3Method = "combined",
+  options?: Omit<UseQueryOptions<Tier3Result, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.tier3Ensemble(assetId, method),
+    queryFn: () => getTier3Ensemble(assetId, method),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch all tier predictions for an asset (convenience alias)
+ * @param assetId - Asset identifier
+ */
+export function useAllTiers(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<TierComparisonData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.allTiers(assetId),
+    queryFn: () => getAllTiers(assetId),
     enabled: !!assetId,
     staleTime: 30000,
     refetchInterval: 60000,
