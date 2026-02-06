@@ -30,17 +30,15 @@ import { QuantumStatusWidget as SystemQuantumStatus } from "./QuantumStatusWidge
 import { QuantumStatusWidget as AssetQuantumStatus } from "@/components/quantum";
 import type { AssetId } from "@/types";
 
-// Ensemble Visualization Components
+// Ensemble Visualization Components (API-connected)
 import {
-  EnsembleConfidenceCard,
-  PairwiseVotingChart,
   HMMRegimeIndicator,
-  ConfidenceIntervalBar,
   MultiAssetRegimeOverview,
-  type EnsembleConfidenceData,
-  type PairwiseVotingData,
-  type ConfidenceInterval,
+  APIEnsembleConfidenceCard,
+  APIPairwiseVotingChart,
+  APIConfidenceIntervalBar,
 } from "@/components/ensemble";
+import type { AssetId } from "@/types";
 
 // API Hooks
 import {
@@ -240,91 +238,6 @@ import {
   Globe,
 } from "lucide-react";
 
-// ============================================================================
-// Mock Data Generators for Ensemble Components
-// ============================================================================
-
-function generateMockEnsembleConfidence(
-  direction: "bullish" | "bearish" | "neutral",
-  confidence: number
-): EnsembleConfidenceData {
-  const methods = [
-    { method: "Accuracy-Weighted", weight: 0.28, contribution: 0.25, accuracy: 68.2 },
-    { method: "Magnitude-Weighted", weight: 0.22, contribution: 0.18, accuracy: 64.5 },
-    { method: "Stacking Meta-Learner", weight: 0.25, contribution: 0.28, accuracy: 71.3 },
-    { method: "Error Correlation", weight: 0.15, contribution: 0.16, accuracy: 62.8 },
-    { method: "Regime-Adaptive", weight: 0.10, contribution: 0.13, accuracy: 69.1 },
-  ];
-
-  const agreementRatio = confidence / 100;
-  const modelsTotal = 10179;
-  const modelsAgreeing = Math.round(modelsTotal * agreementRatio * (0.9 + Math.random() * 0.2));
-
-  return {
-    confidence,
-    direction,
-    weights: methods,
-    modelsAgreeing: Math.min(modelsAgreeing, modelsTotal),
-    modelsTotal,
-    ensembleMethod: "stacking",
-  };
-}
-
-function generateMockPairwiseVoting(
-  direction: "bullish" | "bearish" | "neutral"
-): PairwiseVotingData {
-  const horizons = ["D+1", "D+2", "D+5", "D+10", "D+20", "D+50", "D+100"];
-  const votes: PairwiseVotingData["votes"] = [];
-
-  // Generate all pairwise combinations
-  for (let i = 0; i < horizons.length; i++) {
-    for (let j = i + 1; j < horizons.length; j++) {
-      // Bias votes toward the direction
-      const baseBias = direction === "bullish" ? 0.65 : direction === "bearish" ? 0.35 : 0.5;
-      const rand = Math.random();
-      const isBullish = rand < baseBias;
-      const magnitude = (Math.random() * 3 - 0.5) * (isBullish ? 1 : -1);
-
-      votes.push({
-        h1: horizons[i],
-        h2: horizons[j],
-        vote: Math.abs(magnitude) < 0.2 ? "neutral" : magnitude > 0 ? "bullish" : "bearish",
-        magnitude,
-        weight: 1 / ((j - i) * 0.5 + 1),
-      });
-    }
-  }
-
-  const bullishCount = votes.filter((v) => v.vote === "bullish").length;
-  const bearishCount = votes.filter((v) => v.vote === "bearish").length;
-  const neutralCount = votes.filter((v) => v.vote === "neutral").length;
-  const total = bullishCount + bearishCount + neutralCount;
-
-  return {
-    votes,
-    bullishCount,
-    bearishCount,
-    neutralCount,
-    netProbability: (bullishCount - bearishCount) / total,
-    signal: direction,
-  };
-}
-
-
-function generateMockConfidenceInterval(
-  direction: "bullish" | "bearish" | "neutral"
-): ConfidenceInterval {
-  const baseBias = direction === "bullish" ? 1.2 : direction === "bearish" ? -1.2 : 0;
-  const point = baseBias + (Math.random() * 1.5 - 0.75);
-  const spread = 1.5 + Math.random() * 2;
-
-  return {
-    lower: point - spread,
-    point,
-    upper: point + spread,
-    coverage: 0.90,
-  };
-}
 
 // ============================================================================
 // Asset Selector Tabs
@@ -664,20 +577,6 @@ export function AlphaProDashboardV2() {
     heroSignal.confidence >= 75 ? "strong" : heroSignal.confidence >= 55 ? "moderate" : "weak"
   ), [heroSignal.signalDirection, heroSignal.confidence]);
 
-  // Ensemble visualization mock data
-  const ensembleConfidenceData = useMemo(
-    () => generateMockEnsembleConfidence(heroSignal.signalDirection, heroSignal.confidence),
-    [heroSignal.signalDirection, heroSignal.confidence]
-  );
-  const pairwiseVotingData = useMemo(
-    () => generateMockPairwiseVoting(heroSignal.signalDirection),
-    [heroSignal.signalDirection]
-  );
-  const confidenceIntervalData = useMemo(
-    () => generateMockConfidenceInterval(heroSignal.signalDirection),
-    [heroSignal.signalDirection]
-  );
-
   // Loading state
   const isLoading = metricsLoading || forecastLoading || signalLoading || ohlcvLoading;
 
@@ -798,23 +697,23 @@ export function AlphaProDashboardV2() {
               </Badge>
             </div>
 
-            {/* Ensemble Components Grid */}
+            {/* Ensemble Components Grid - API Connected */}
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-              {/* Ensemble Confidence Card */}
-              <EnsembleConfidenceCard
-                data={ensembleConfidenceData}
+              {/* Ensemble Confidence Card - API */}
+              <APIEnsembleConfidenceCard
+                assetId={selectedAsset}
                 showBreakdown={false}
                 compact={false}
               />
 
-              {/* Pairwise Voting Chart */}
-              <PairwiseVotingChart
-                data={pairwiseVotingData}
+              {/* Pairwise Voting Chart - API */}
+              <APIPairwiseVotingChart
+                assetId={selectedAsset}
                 showGrid={false}
                 compact={false}
               />
 
-              {/* Regime Indicator */}
+              {/* Regime Indicator - API */}
               <HMMRegimeIndicator
                 assetId={selectedAsset}
                 showProbabilities={true}
@@ -822,9 +721,9 @@ export function AlphaProDashboardV2() {
                 size="md"
               />
 
-              {/* Confidence Interval Bar */}
-              <ConfidenceIntervalBar
-                data={confidenceIntervalData}
+              {/* Confidence Interval Bar - API */}
+              <APIConfidenceIntervalBar
+                assetId={selectedAsset}
                 assetName={assetInfo.name}
                 horizon="D+5"
                 showDetails={false}
@@ -1094,23 +993,23 @@ export function AlphaProDashboardV2() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Full Ensemble Confidence with Breakdown */}
-              <EnsembleConfidenceCard
-                data={ensembleConfidenceData}
+              {/* Full Ensemble Confidence with Breakdown - API */}
+              <APIEnsembleConfidenceCard
+                assetId={selectedAsset}
                 showBreakdown={true}
                 compact={false}
               />
 
-              {/* Full Pairwise Voting with Grid */}
-              <PairwiseVotingChart
-                data={pairwiseVotingData}
+              {/* Full Pairwise Voting with Grid - API */}
+              <APIPairwiseVotingChart
+                assetId={selectedAsset}
                 showGrid={true}
                 compact={false}
               />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Full Regime Indicator */}
+              {/* Full Regime Indicator - API */}
               <HMMRegimeIndicator
                 assetId={selectedAsset}
                 showProbabilities={true}
@@ -1118,9 +1017,9 @@ export function AlphaProDashboardV2() {
                 size="lg"
               />
 
-              {/* Full Confidence Interval Bar */}
-              <ConfidenceIntervalBar
-                data={confidenceIntervalData}
+              {/* Full Confidence Interval Bar - API */}
+              <APIConfidenceIntervalBar
+                assetId={selectedAsset}
                 assetName={assetInfo.name}
                 horizon="D+5"
                 showDetails={true}

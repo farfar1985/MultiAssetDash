@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils";
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
-  EnsembleConfidenceCard,
   HMMRegimeIndicator,
-  type EnsembleConfidenceData,
+  APIEnsembleConfidenceCard,
   type RegimeData,
 } from "@/components/ensemble";
+import { useEnsembleConfidence } from "@/hooks/useApi";
 import { useHMMRegime } from "@/hooks";
 import {
   GraduationCap,
@@ -205,24 +205,6 @@ function getEnhancedSignals(): EnhancedSignal[] {
   return signals.sort((a, b) => b.confidence - a.confidence);
 }
 
-// ============================================================================
-// Simplified Ensemble Data for Retail Users
-// ============================================================================
-
-function generateSimplifiedEnsembleConfidence(): EnsembleConfidenceData {
-  return {
-    confidence: 72,
-    direction: "bullish",
-    weights: [
-      { method: "AI Accuracy", weight: 0.35, contribution: 0.38, accuracy: 68 },
-      { method: "Model Agreement", weight: 0.35, contribution: 0.32, accuracy: 65 },
-      { method: "Market Regime", weight: 0.30, contribution: 0.30, accuracy: 62 },
-    ],
-    modelsAgreeing: 7524,
-    modelsTotal: 10179,
-    ensembleMethod: "accuracy-weighted",
-  };
-}
 
 // Default fallback regime data for loading/error states
 const DEFAULT_REGIME: RegimeData = {
@@ -671,10 +653,10 @@ export function ProRetailDashboard() {
   const [horizon, setHorizon] = useState("all");
   const [minConfidence, setMinConfidence] = useState(0);
 
-  // Simplified ensemble data for retail users
-  const ensembleConfidence = useMemo(() => generateSimplifiedEnsembleConfidence(), []);
   // Fetch HMM regime data from API
   const { data: regimeData = DEFAULT_REGIME } = useHMMRegime("crude-oil");
+  // Fetch ensemble confidence for display explanation
+  const { data: ensembleConfidence } = useEnsembleConfidence("crude-oil");
 
   const filteredSignals = useMemo(() => {
     return allSignals.filter((signal) => {
@@ -750,29 +732,29 @@ export function ProRetailDashboard() {
 
         {/* Sidebar */}
         <div className="space-y-4">
-          {/* Simplified Ensemble Confidence - Educational */}
+          {/* Simplified Ensemble Confidence - Educational - API Connected */}
           <Card className="bg-gradient-to-br from-purple-500/5 to-cyan-500/5 border-purple-500/20">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <Brain className="w-5 h-5 text-purple-400" />
                 AI Confidence
                 <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[9px] ml-auto">
-                  Simplified
+                  Live
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <EnsembleConfidenceCard
-                data={ensembleConfidence}
+              <APIEnsembleConfidenceCard
+                assetId="crude-oil"
                 showBreakdown={false}
                 compact={true}
               />
               <div className="mt-3 p-2 bg-neutral-800/30 rounded-lg">
                 <p className="text-xs text-neutral-400">
                   <strong className="text-purple-400">What this means:</strong> Our AI models are{" "}
-                  {ensembleConfidence.confidence}% confident in a{" "}
-                  <span className={ensembleConfidence.direction === "bullish" ? "text-green-400" : "text-red-400"}>
-                    {ensembleConfidence.direction}
+                  {ensembleConfidence?.confidence ?? "--"}% confident in a{" "}
+                  <span className={ensembleConfidence?.direction === "bullish" ? "text-green-400" : ensembleConfidence?.direction === "bearish" ? "text-red-400" : "text-amber-400"}>
+                    {ensembleConfidence?.direction ?? "calculating"}
                   </span>{" "}
                   market direction.
                 </p>
