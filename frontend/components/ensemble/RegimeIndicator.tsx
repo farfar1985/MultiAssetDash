@@ -61,6 +61,73 @@ export interface RegimeIndicatorProps {
 // Helper Functions
 // ============================================================================
 
+interface RegimeShiftWarning {
+  isWarning: boolean;
+  targetRegime: "bull" | "bear" | "sideways";
+  probability: number;
+  currentProbability: number;
+  urgency: "low" | "medium" | "high";
+}
+
+/**
+ * Detect potential regime shifts based on probability distribution
+ * Warning conditions:
+ * - Second highest probability >= 30%
+ * - Gap between current and competing regime < 15%
+ */
+function detectRegimeShiftWarning(
+  currentRegime: MarketRegime,
+  probabilities: { bull: number; bear: number; sideways: number }
+): RegimeShiftWarning {
+  // Map current regime to probability key
+  const regimeToProb: Record<string, "bull" | "bear" | "sideways"> = {
+    bull: "bull",
+    bear: "bear",
+    sideways: "sideways",
+    "high-volatility": "sideways", // Map volatility regimes to sideways for probability comparison
+    "low-volatility": "sideways",
+  };
+
+  const currentProbKey = regimeToProb[currentRegime] || "sideways";
+  const currentProb = probabilities[currentProbKey];
+
+  // Find the highest competing regime probability
+  const competitors = Object.entries(probabilities)
+    .filter(([key]) => key !== currentProbKey)
+    .sort(([, a], [, b]) => b - a);
+
+  const [topCompetitorKey, topCompetitorProb] = competitors[0] as [
+    "bull" | "bear" | "sideways",
+    number
+  ];
+
+  // Calculate gap and determine warning status
+  const gap = currentProb - topCompetitorProb;
+
+  // Determine urgency based on gap and competitor probability
+  let urgency: "low" | "medium" | "high" = "low";
+  let isWarning = false;
+
+  if (topCompetitorProb >= 0.40 && gap < 0.10) {
+    urgency = "high";
+    isWarning = true;
+  } else if (topCompetitorProb >= 0.35 && gap < 0.15) {
+    urgency = "medium";
+    isWarning = true;
+  } else if (topCompetitorProb >= 0.30 && gap < 0.20) {
+    urgency = "low";
+    isWarning = true;
+  }
+
+  return {
+    isWarning,
+    targetRegime: topCompetitorKey,
+    probability: topCompetitorProb,
+    currentProbability: currentProb,
+    urgency,
+  };
+}
+
 function getRegimeConfig(regime: MarketRegime) {
   const configs: Record<
     MarketRegime,
@@ -134,6 +201,20 @@ export function RegimeIndicator({
   const confidencePercent = Math.round(data.confidence * 100);
   const isHighConfidence = data.confidence >= 0.75;
 
+  // Detect potential regime shift warnings
+  const shiftWarning = useMemo(
+    () => detectRegimeShiftWarning(data.regime, data.probabilities),
+    [data.regime, data.probabilities]
+  );
+
+  const targetConfig = useMemo(
+    () =>
+      shiftWarning.isWarning
+        ? getRegimeConfig(shiftWarning.targetRegime as MarketRegime)
+        : null,
+    [shiftWarning]
+  );
+
   // Size-based classes
   const sizeClasses = {
     sm: {
@@ -160,37 +241,68 @@ export function RegimeIndicator({
 
   if (compact) {
     return (
-      <div
-        className={cn(
-          "flex items-center gap-3 p-3 rounded-xl border",
-          config.bgColor,
-          config.borderColor,
-          className
-        )}
-      >
-        <div className={cn("rounded-lg", config.bgColor, sizeClass.iconContainer)}>
-          <Icon className={cn(sizeClass.icon, config.color)} />
+      <div className={cn("space-y-2", className)}>
+        <div
+          className={cn(
+            "flex items-center gap-3 p-3 rounded-xl border",
+            config.bgColor,
+            config.borderColor
+          )}
+        >
+          <div className={cn("rounded-lg", config.bgColor, sizeClass.iconContainer)}>
+            <Icon className={cn(sizeClass.icon, config.color)} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className={cn("font-semibold", config.color, sizeClass.title)}>
+                {config.label}
+              </span>
+              <Badge
+                className={cn(
+                  "text-[9px] px-1.5",
+                  isHighConfidence
+                    ? "bg-green-500/10 text-green-400 border-green-500/30"
+                    : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                )}
+              >
+                {confidencePercent}%
+              </Badge>
+            </div>
+            <div className={cn("text-neutral-500", sizeClass.subtitle)}>
+              {data.daysInRegime} days
+            </div>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className={cn("font-semibold", config.color, sizeClass.title)}>
-              {config.label}
-            </span>
-            <Badge
+
+        {/* Early Warning - Compact */}
+        {shiftWarning.isWarning && targetConfig && (
+          <div
+            className={cn(
+              "flex items-center gap-2 p-2 rounded-lg border animate-pulse",
+              shiftWarning.urgency === "high"
+                ? "bg-red-500/10 border-red-500/30"
+                : shiftWarning.urgency === "medium"
+                ? "bg-orange-500/10 border-orange-500/30"
+                : "bg-amber-500/10 border-amber-500/30"
+            )}
+          >
+            <AlertTriangle
               className={cn(
-                "text-[9px] px-1.5",
-                isHighConfidence
-                  ? "bg-green-500/10 text-green-400 border-green-500/30"
-                  : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                "w-3.5 h-3.5",
+                shiftWarning.urgency === "high"
+                  ? "text-red-400"
+                  : shiftWarning.urgency === "medium"
+                  ? "text-orange-400"
+                  : "text-amber-400"
               )}
-            >
-              {confidencePercent}%
-            </Badge>
+            />
+            <span className="text-[10px] text-neutral-300">
+              Shift to{" "}
+              <span className={targetConfig.color}>{targetConfig.label}</span>
+              {" "}({(shiftWarning.probability * 100).toFixed(0)}%)
+            </span>
           </div>
-          <div className={cn("text-neutral-500", sizeClass.subtitle)}>
-            {data.daysInRegime} days
-          </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -265,6 +377,94 @@ export function RegimeIndicator({
             </div>
           </div>
         </div>
+
+        {/* Early Warning Alert */}
+        {shiftWarning.isWarning && targetConfig && (
+          <div
+            className={cn(
+              "p-4 rounded-xl border",
+              shiftWarning.urgency === "high"
+                ? "bg-red-500/10 border-red-500/30"
+                : shiftWarning.urgency === "medium"
+                ? "bg-orange-500/10 border-orange-500/30"
+                : "bg-amber-500/10 border-amber-500/30"
+            )}
+          >
+            <div className="flex items-start gap-3">
+              <div
+                className={cn(
+                  "p-2 rounded-lg animate-pulse",
+                  shiftWarning.urgency === "high"
+                    ? "bg-red-500/20"
+                    : shiftWarning.urgency === "medium"
+                    ? "bg-orange-500/20"
+                    : "bg-amber-500/20"
+                )}
+              >
+                <AlertTriangle
+                  className={cn(
+                    "w-5 h-5",
+                    shiftWarning.urgency === "high"
+                      ? "text-red-400"
+                      : shiftWarning.urgency === "medium"
+                      ? "text-orange-400"
+                      : "text-amber-400"
+                  )}
+                />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span
+                    className={cn(
+                      "text-sm font-semibold",
+                      shiftWarning.urgency === "high"
+                        ? "text-red-400"
+                        : shiftWarning.urgency === "medium"
+                        ? "text-orange-400"
+                        : "text-amber-400"
+                    )}
+                  >
+                    Regime Shift Warning
+                  </span>
+                  <Badge
+                    className={cn(
+                      "text-[9px] uppercase",
+                      shiftWarning.urgency === "high"
+                        ? "bg-red-500/20 text-red-400 border-red-500/30"
+                        : shiftWarning.urgency === "medium"
+                        ? "bg-orange-500/20 text-orange-400 border-orange-500/30"
+                        : "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                    )}
+                  >
+                    {shiftWarning.urgency}
+                  </Badge>
+                </div>
+                <p className="text-xs text-neutral-400 mb-3">
+                  Probability of transitioning to{" "}
+                  <span className={targetConfig.color}>{targetConfig.label}</span> is rising.
+                  Monitor for potential regime change.
+                </p>
+                <div className="flex items-center gap-4 text-xs">
+                  <div className="flex items-center gap-2">
+                    <Icon className={cn("w-4 h-4", config.color)} />
+                    <span className="text-neutral-400">Current:</span>
+                    <span className={cn("font-mono font-medium", config.color)}>
+                      {(shiftWarning.currentProbability * 100).toFixed(0)}%
+                    </span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-neutral-600" />
+                  <div className="flex items-center gap-2">
+                    <targetConfig.icon className={cn("w-4 h-4", targetConfig.color)} />
+                    <span className="text-neutral-400">Target:</span>
+                    <span className={cn("font-mono font-medium", targetConfig.color)}>
+                      {(shiftWarning.probability * 100).toFixed(0)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Trend Strength Gauge */}
         <div className="p-3 bg-neutral-800/30 rounded-lg">
