@@ -45,6 +45,12 @@ from utils.metrics import (
     calculate_calmar_ratio,
 )
 
+from backend.backtesting.costs import (
+    TransactionCostModel,
+    CostConfig,
+    CostBreakdown,
+)
+
 # Import ensemble methods
 from backend.ensemble_tier1 import (
     AccuracyWeightedEnsemble,
@@ -99,6 +105,12 @@ class FoldResult:
     n_bullish: int
     n_bearish: int
     n_neutral: int
+
+    # Transaction cost summary
+    total_costs: float = 0.0            # Total costs paid ($)
+    avg_cost_per_trade: float = 0.0     # Average cost per trade ($)
+    avg_cost_bps: float = 0.0           # Average cost in basis points
+    cost_drag_pct: float = 0.0          # Total cost as % of returns
 
     # Per-regime performance (if available)
     regime_performance: Dict[str, Dict[str, float]] = field(default_factory=dict)
@@ -194,6 +206,7 @@ class WalkForwardValidator:
         transaction_cost_bps: float = 5.0,
         holding_period: int = 5,
         verbose: bool = True,
+        cost_model: Optional[TransactionCostModel] = None,
     ):
         self.n_folds = n_folds
         self.train_pct = train_pct
@@ -202,11 +215,19 @@ class WalkForwardValidator:
         self.holding_period = holding_period
         self.verbose = verbose
 
+        # Use provided cost model or create from legacy bps parameter
+        if cost_model is not None:
+            self.cost_model = cost_model
+        else:
+            # Convert legacy bps to cost model for backward compatibility
+            self.cost_model = TransactionCostModel.from_bps(transaction_cost_bps)
+
         self._forecasts: Optional[pd.DataFrame] = None
         self._actuals: Optional[pd.Series] = None
         self._prices: Optional[pd.Series] = None
         self._horizons: Optional[List[int]] = None
         self._regimes: Optional[pd.Series] = None
+        self._volumes: Optional[pd.Series] = None  # For market impact
 
     def load_data(
         self,
@@ -439,19 +460,32 @@ class WalkForwardValidator:
         self,
         signals: pd.Series,
         prices: pd.Series,
-    ) -> Tuple[List[float], List[int]]:
+        volumes: Optional[pd.Series] = None,
+    ) -> Tuple[List[float], List[int], List[CostBreakdown]]:
         """
-        Calculate strategy returns from signals.
+        Calculate strategy returns from signals with detailed cost tracking.
+
+        Parameters
+        ----------
+        signals : pd.Series
+            Series of EnsembleResult objects
+        prices : pd.Series
+            Price series aligned with signals
+        volumes : pd.Series, optional
+            Volume series for market impact calculation
 
         Returns
         -------
         returns : List[float]
-            Percentage returns per trade
+            Percentage returns per trade (after costs)
         holding_days : List[int]
             Holding period for each trade
+        cost_breakdowns : List[CostBreakdown]
+            Detailed cost breakdown for each trade
         """
         returns = []
         holding_days = []
+        cost_breakdowns = []
         prev_signal = None
         position_start_idx = None
 
@@ -468,13 +502,29 @@ class WalkForwardValidator:
                     start_price = prices.iloc[position_start_idx]
                     end_price = prices.loc[date] if date in prices.index else start_price
 
+                    # Raw return before costs
                     pct_return = ((end_price / start_price) - 1) * 100 * prev_signal
 
-                    # Subtract transaction costs
-                    cost = (self.transaction_cost_bps / 10000) * 2 * 100  # Round-trip in %
-                    pct_return -= cost
+                    # Calculate transaction costs using the cost model
+                    # Assume $100k notional per trade for cost calculation
+                    trade_value = 100000.0
+                    vol = None
+                    if volumes is not None and date in volumes.index:
+                        vol = volumes.loc[date]
+
+                    cost_breakdown = self.cost_model.calculate_cost(
+                        price=start_price,
+                        trade_value=trade_value,
+                        volume=vol,
+                        is_round_trip=True,
+                    )
+
+                    # Subtract cost as percentage
+                    cost_pct = cost_breakdown.total / trade_value * 100
+                    pct_return -= cost_pct
 
                     returns.append(pct_return)
+                    cost_breakdowns.append(cost_breakdown)
 
                     # Calculate holding days
                     hold = i - position_start_idx
@@ -483,7 +533,7 @@ class WalkForwardValidator:
                 position_start_idx = i
                 prev_signal = signal_dir
 
-        return returns, holding_days
+        return returns, holding_days, cost_breakdowns
 
     def _calculate_accuracy(
         self,
@@ -622,9 +672,17 @@ class WalkForwardValidator:
                 n_neutral=0,
             )
 
-        # Calculate returns
+        # Calculate returns with cost tracking
         test_prices = self._prices.loc[test_forecasts.index]
-        returns, holding_days = self._calculate_returns(signals, test_prices)
+        test_volumes = self._volumes.loc[test_forecasts.index] if self._volumes is not None else None
+        returns, holding_days, cost_breakdowns = self._calculate_returns(
+            signals, test_prices, test_volumes
+        )
+
+        # Calculate cost metrics
+        total_costs = sum(cb.total for cb in cost_breakdowns) if cost_breakdowns else 0.0
+        avg_cost_per_trade = total_costs / len(cost_breakdowns) if cost_breakdowns else 0.0
+        avg_cost_bps = np.mean([cb.total_bps for cb in cost_breakdowns]) if cost_breakdowns else 0.0
 
         # Calculate metrics
         accuracy = self._calculate_accuracy(signals, test_actuals, horizon=self.holding_period)
@@ -647,6 +705,10 @@ class WalkForwardValidator:
 
         total_return = sum(returns) if returns else 0.0
 
+        # Cost drag: what percentage of gross returns went to costs
+        gross_return = total_return + (total_costs / 1000)  # Approximate gross
+        cost_drag_pct = (total_costs / 1000 / gross_return * 100) if gross_return > 0 else 0.0
+
         # Count signals
         n_bullish = sum(1 for r in signals if isinstance(r, EnsembleResult) and r.signal == 'BULLISH')
         n_bearish = sum(1 for r in signals if isinstance(r, EnsembleResult) and r.signal == 'BEARISH')
@@ -663,7 +725,7 @@ class WalkForwardValidator:
                 regime_prices = test_prices.loc[regime_mask]
 
                 if len(regime_signals) > 0:
-                    regime_returns, regime_holding = self._calculate_returns(regime_signals, regime_prices)
+                    regime_returns, regime_holding, _ = self._calculate_returns(regime_signals, regime_prices)
                     regime_acc = self._calculate_accuracy(regime_signals, regime_actuals)
 
                     regime_perf[str(regime)] = {
@@ -693,6 +755,10 @@ class WalkForwardValidator:
             n_bullish=n_bullish,
             n_bearish=n_bearish,
             n_neutral=n_neutral,
+            total_costs=total_costs,
+            avg_cost_per_trade=avg_cost_per_trade,
+            avg_cost_bps=avg_cost_bps,
+            cost_drag_pct=cost_drag_pct,
             regime_performance=regime_perf,
             returns=returns,
         )
@@ -814,6 +880,10 @@ class WalkForwardValidator:
             win_rates = [r.win_rate for r in fold_results]
             total_returns = [r.total_return for r in fold_results]
 
+            # Cost metrics
+            total_costs = [r.total_costs for r in fold_results]
+            avg_cost_bps = [r.avg_cost_bps for r in fold_results]
+
             summary[method_name] = {
                 # Mean metrics
                 'mean_accuracy': np.mean(accuracies),
@@ -836,6 +906,10 @@ class WalkForwardValidator:
                 # Trade stats
                 'total_trades': sum(r.n_trades for r in fold_results),
                 'avg_trades_per_fold': np.mean([r.n_trades for r in fold_results]),
+
+                # Cost metrics
+                'total_costs': sum(total_costs),
+                'mean_cost_bps': np.mean(avg_cost_bps) if avg_cost_bps else 0.0,
             }
 
         return summary
@@ -974,39 +1048,60 @@ class WalkForwardValidator:
 
     def print_results(self, comparison: MethodComparison) -> None:
         """Print formatted results to console."""
-        print("\n" + "=" * 80)
+        print("\n" + "=" * 90)
         print(f"WALK-FORWARD VALIDATION RESULTS")
         print(f"Asset: {comparison.asset_name} ({comparison.asset_id})")
         print(f"Folds: {comparison.n_folds}")
+        print(f"Cost Model: {self.cost_model.summary()}")
         print(f"Timestamp: {comparison.timestamp}")
-        print("=" * 80)
+        print("=" * 90)
 
         # Summary table
-        print("\n{:<25} {:>10} {:>10} {:>10} {:>10} {:>10} {:>6}".format(
-            "Method", "Accuracy%", "Sharpe", "Sortino", "MaxDD%", "WinRate%", "Rank"
+        print("\n{:<22} {:>8} {:>8} {:>8} {:>8} {:>8} {:>8} {:>5}".format(
+            "Method", "Acc%", "Sharpe", "Sortino", "MaxDD%", "Win%", "Cost(bps)", "Rank"
         ))
-        print("-" * 80)
+        print("-" * 90)
 
         for method in sorted(comparison.summary_metrics.keys(),
                             key=lambda m: comparison.rankings.get(m, 99)):
             metrics = comparison.summary_metrics[method]
             rank = comparison.rankings.get(method, 0)
 
-            print("{:<25} {:>10.1f} {:>10.2f} {:>10.2f} {:>10.1f} {:>10.1f} {:>6}".format(
+            print("{:<22} {:>8.1f} {:>8.2f} {:>8.2f} {:>8.1f} {:>8.1f} {:>8.1f} {:>5}".format(
                 method,
                 metrics['mean_accuracy'],
                 metrics['mean_sharpe'],
                 metrics['mean_sortino'],
                 metrics['mean_max_drawdown'],
                 metrics['mean_win_rate'],
+                metrics.get('mean_cost_bps', 0.0),
                 rank,
             ))
 
+        # Cost impact summary
+        print("\n" + "-" * 90)
+        print("TRANSACTION COST IMPACT")
+        print("-" * 90)
+
+        total_costs_all = sum(
+            metrics.get('total_costs', 0.0)
+            for metrics in comparison.summary_metrics.values()
+        )
+        total_trades_all = sum(
+            metrics.get('total_trades', 0)
+            for metrics in comparison.summary_metrics.values()
+        )
+        if total_trades_all > 0:
+            avg_cost_per_trade = total_costs_all / total_trades_all
+            print(f"Total costs across all methods: ${total_costs_all:,.2f}")
+            print(f"Average cost per trade: ${avg_cost_per_trade:.2f}")
+            print(f"Breakeven edge required: {self.cost_model.estimate_breakeven_edge():.2f}% per trade")
+
         # Significance tests
         if comparison.significance_tests:
-            print("\n" + "-" * 80)
+            print("\n" + "-" * 90)
             print("SIGNIFICANCE TESTS (vs best method)")
-            print("-" * 80)
+            print("-" * 90)
 
             for key, test in comparison.significance_tests.items():
                 sig_marker = "*" if test.is_significant else ""
@@ -1016,9 +1111,9 @@ class WalkForwardValidator:
                       f"p={test.p_value:.4f}{sig_marker}")
 
         # Per-tier summary
-        print("\n" + "-" * 80)
+        print("\n" + "-" * 90)
         print("PER-TIER SUMMARY")
-        print("-" * 80)
+        print("-" * 90)
 
         for tier in ['tier1', 'tier2', 'tier3']:
             tier_methods = [m for m in comparison.summary_metrics.keys() if m.startswith(tier)]
@@ -1039,6 +1134,10 @@ class WalkForwardValidator:
             'asset_name': comparison.asset_name,
             'n_folds': comparison.n_folds,
             'timestamp': comparison.timestamp,
+            'cost_model': {
+                'description': self.cost_model.summary(),
+                'config': self.cost_model.config.to_dict(),
+            },
             'summary_metrics': comparison.summary_metrics,
             'rankings': comparison.rankings,
             'significance_tests': {
@@ -1072,9 +1171,28 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+    # Basic validation with 5 folds
     python -m backend.backtesting.walk_forward --asset crude_oil --folds 5
-    python -m backend.backtesting.walk_forward --asset 1866_Crude_Oil --folds 10 --output results.json
-    python -m backend.backtesting.walk_forward --asset gold --methods tier1_combined tier2_combined tier3_combined
+
+    # With custom transaction costs
+    python -m backend.backtesting.walk_forward --asset crude_oil --costs "fixed=5 pct=0.001 spread=0.0002"
+
+    # Using a cost preset
+    python -m backend.backtesting.walk_forward --asset crude_oil --cost-preset commodities
+
+    # Compare specific methods with output
+    python -m backend.backtesting.walk_forward --asset gold \\
+        --methods tier1_combined tier2_combined tier3_combined \\
+        --costs "pct=0.0005" --output results.json
+
+Cost model parameters:
+    fixed=X     - Fixed cost per trade in $ (e.g., fixed=5)
+    pct=X       - Percentage commission (e.g., pct=0.001 for 10 bps)
+    spread=X    - Half bid-ask spread (e.g., spread=0.0002 for 2 bps)
+    slip=X      - Slippage (e.g., slip=0.0001)
+    impact=X    - Market impact coefficient (e.g., impact=0.1)
+
+Cost presets: zero, low, medium, high, futures, forex, crypto, commodities
         """,
     )
 
@@ -1119,7 +1237,22 @@ Examples:
         '--transaction-cost',
         type=float,
         default=5.0,
-        help="Transaction cost in basis points (default: 5.0)",
+        help="[DEPRECATED] Use --costs instead. Transaction cost in bps (default: 5.0)",
+    )
+
+    parser.add_argument(
+        '--costs',
+        type=str,
+        default=None,
+        help="Transaction cost specification (e.g., 'fixed=5 pct=0.001 spread=0.0002')",
+    )
+
+    parser.add_argument(
+        '--cost-preset',
+        type=str,
+        default=None,
+        choices=['zero', 'low', 'medium', 'high', 'futures', 'forex', 'crypto', 'commodities'],
+        help="Use a predefined cost model preset",
     )
 
     parser.add_argument(
@@ -1189,12 +1322,31 @@ def main():
         if not args.quiet:
             print(f"Resolved asset: {asset_id}_{asset_name}")
 
+        # Create cost model
+        cost_model = None
+        if args.cost_preset:
+            # Use preset
+            cost_model = TransactionCostModel.from_preset(args.cost_preset)
+            if not args.quiet:
+                print(f"Using cost preset: {args.cost_preset}")
+        elif args.costs:
+            # Parse cost string
+            cost_model = TransactionCostModel.from_string(args.costs)
+            if not args.quiet:
+                print(f"Cost model: {cost_model.summary()}")
+        else:
+            # Fall back to legacy bps parameter
+            cost_model = TransactionCostModel.from_bps(args.transaction_cost)
+            if not args.quiet:
+                print(f"Using legacy cost: {args.transaction_cost} bps")
+
         # Create validator
         validator = WalkForwardValidator(
             n_folds=args.folds,
             transaction_cost_bps=args.transaction_cost,
             holding_period=args.holding_period,
             verbose=not args.quiet,
+            cost_model=cost_model,
         )
 
         # Load data
