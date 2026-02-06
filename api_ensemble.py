@@ -33,34 +33,108 @@ def load_optimal_config(asset_name: str) -> dict:
     return None
 
 ASSETS = {
+    # Core assets with full ensemble support
     1866: {
         'name': 'Crude_Oil',
         'display_name': 'Crude Oil (WTI)',
         'category': 'Commodities',
         'horizons': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        'threshold': 0.0,  # Updated from optimization
-        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [9, 10], 'aggregation': 'mean'}  # Sharpe 1.727, WR 68.5%
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [9, 10], 'aggregation': 'mean'}
     },
     1625: {
         'name': 'SP500',
         'display_name': 'S&P 500',
         'category': 'Indices',
         'horizons': [1, 3, 5, 8, 9],
-        'threshold': 0.0,  # Updated from optimization
-        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [3, 8], 'aggregation': 'mean'}  # Sharpe 1.184, WR 57.4%
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [3, 8], 'aggregation': 'mean'}
     },
     1860: {
         'name': 'Bitcoin',
         'display_name': 'Bitcoin (BTC)',
         'category': 'Crypto',
         'horizons': [1, 3, 5, 8, 10],
-        'threshold': 0.0,  # Updated from optimization
-        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [3, 5], 'aggregation': 'median'}  # Sharpe 0.359, WR 55.6%
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pairwise_slopes', 'horizons': [3, 5], 'aggregation': 'median'}
     },
     1861: {
         'name': 'Gold',
         'display_name': 'Gold',
         'category': 'Commodities',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    # Additional assets with HMM regime models (Amira 2026-02-06)
+    1862: {
+        'name': 'Natural_Gas',
+        'display_name': 'Natural Gas',
+        'category': 'Commodities',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    1863: {
+        'name': 'Silver',
+        'display_name': 'Silver',
+        'category': 'Commodities',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    1864: {
+        'name': 'Copper',
+        'display_name': 'Copper',
+        'category': 'Commodities',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    1865: {
+        'name': 'Wheat',
+        'display_name': 'Wheat',
+        'category': 'Commodities',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    1867: {
+        'name': 'Corn',
+        'display_name': 'Corn',
+        'category': 'Commodities',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    1868: {
+        'name': 'Soybean',
+        'display_name': 'Soybean',
+        'category': 'Commodities',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    1869: {
+        'name': 'Platinum',
+        'display_name': 'Platinum',
+        'category': 'Commodities',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    1870: {
+        'name': 'Ethereum',
+        'display_name': 'Ethereum (ETH)',
+        'category': 'Crypto',
+        'horizons': [],
+        'threshold': 0.0,
+        'best_ensemble': {'method': 'pending', 'horizons': []}
+    },
+    1871: {
+        'name': 'Nasdaq',
+        'display_name': 'Nasdaq 100',
+        'category': 'Indices',
         'horizons': [],
         'threshold': 0.0,
         'best_ensemble': {'method': 'pending', 'horizons': []}
@@ -460,31 +534,123 @@ def get_quantum_dashboard():
 
 # ============ HMM REGIME DETECTION ENDPOINTS ============
 
+# Directory for Amira's pre-trained HMM models
+REGIME_MODELS_DIR = os.path.join(os.path.dirname(__file__), 'regime_models')
+
 # Lazy-load HMM detectors (avoid startup overhead)
 _hmm_detectors = {}
+_regime_summary = None
+
+def load_regime_summary():
+    """Load the regime summary configuration from Amira's models."""
+    global _regime_summary
+    if _regime_summary is None:
+        summary_path = os.path.join(REGIME_MODELS_DIR, 'regime_summary.json')
+        if os.path.exists(summary_path):
+            with open(summary_path, 'r') as f:
+                _regime_summary = json.load(f)
+        else:
+            _regime_summary = {}
+    return _regime_summary
 
 def get_hmm_detector(asset_id: int):
-    """Get or create HMM detector for an asset."""
+    """
+    Get or create HMM detector for an asset.
+
+    Priority:
+    1. Load pre-trained joblib model from regime_models/ (Amira's models)
+    2. Load JSON config from configs/ (legacy)
+    3. Train on-the-fly if data available
+    """
     if asset_id not in _hmm_detectors:
         try:
             from hmm_regime_detector import HMMRegimeDetector
             detector = HMMRegimeDetector(n_regimes=3)
 
-            # Try to load pre-trained model
             asset = ASSETS.get(asset_id)
-            if asset:
-                config_path = os.path.join(CONFIGS_DIR, f"hmm_{asset['name'].lower()}.json")
-                if os.path.exists(config_path):
+            if not asset:
+                return None
+
+            # Load regime summary for this asset
+            summary = load_regime_summary()
+            asset_config = summary.get('assets', {}).get(str(asset_id), {})
+
+            # Priority 1: Try to load joblib model from regime_models/
+            if asset_config:
+                joblib_path = os.path.join(REGIME_MODELS_DIR, asset_config.get('model_file', ''))
+                if os.path.exists(joblib_path):
+                    try:
+                        model_data = joblib.load(joblib_path)
+                        # Restore HMM model from joblib
+                        detector.n_regimes = model_data.get('n_regimes', 3)
+                        detector.lookback = model_data.get('lookback', 20)
+                        detector.regime_labels = {int(k): v for k, v in model_data.get('regime_labels', {}).items()}
+                        detector.state_means = np.array(model_data['state_means']) if model_data.get('state_means') else None
+
+                        # Restore scaler
+                        detector.scaler.mean_ = np.array(model_data['scaler_mean'])
+                        detector.scaler.scale_ = np.array(model_data['scaler_scale'])
+
+                        # Restore HMM parameters
+                        from hmmlearn import hmm
+                        detector.model = hmm.GaussianHMM(
+                            n_components=detector.n_regimes,
+                            covariance_type="full"
+                        )
+                        detector.model.startprob_ = np.array(model_data['hmm_startprob'])
+                        detector.model.transmat_ = np.array(model_data['hmm_transmat'])
+                        detector.model.means_ = np.array(model_data['hmm_means'])
+                        detector.model.covars_ = np.array(model_data['hmm_covars'])
+
+                        # Set historical accuracy from summary
+                        detector.historical_accuracy = asset_config.get('historical_accuracy', {})
+                        detector.trained = True
+
+                        print(f"Loaded pre-trained HMM model for {asset['name']} from joblib")
+                        _hmm_detectors[asset_id] = detector
+                        return detector
+                    except Exception as e:
+                        print(f"Failed to load joblib model for {asset['name']}: {e}")
+
+            # Priority 2: Try to load JSON config from configs/ (legacy)
+            config_path = os.path.join(CONFIGS_DIR, f"hmm_{asset['name'].lower()}.json")
+            if os.path.exists(config_path):
+                try:
                     detector.load(config_path)
-                else:
-                    # Train on the fly if no saved model
-                    prices = get_asset_prices(asset_id)
-                    if prices is not None and len(prices) > 100:
-                        detector.fit(prices)
-                        detector.save(config_path)
+                    print(f"Loaded HMM model for {asset['name']} from JSON config")
+                    _hmm_detectors[asset_id] = detector
+                    return detector
+                except Exception as e:
+                    print(f"Failed to load JSON config for {asset['name']}: {e}")
+
+            # Priority 3: Train on the fly if no saved model
+            prices = get_asset_prices(asset_id)
+            if prices is not None and len(prices) > 100:
+                detector.fit(prices)
+                # Save to regime_models/ for future use
+                joblib_path = os.path.join(REGIME_MODELS_DIR, f"{asset['name'].lower()}_hmm.joblib")
+                try:
+                    model_data = {
+                        'n_regimes': detector.n_regimes,
+                        'lookback': detector.lookback,
+                        'vol_window': detector.vol_window,
+                        'regime_labels': detector.regime_labels,
+                        'state_means': detector.state_means.tolist() if detector.state_means is not None else None,
+                        'scaler_mean': detector.scaler.mean_.tolist(),
+                        'scaler_scale': detector.scaler.scale_.tolist(),
+                        'hmm_startprob': detector.model.startprob_.tolist(),
+                        'hmm_transmat': detector.model.transmat_.tolist(),
+                        'hmm_means': detector.model.means_.tolist(),
+                        'hmm_covars': detector.model.covars_.tolist()
+                    }
+                    joblib.dump(model_data, joblib_path)
+                    print(f"Trained and saved HMM model for {asset['name']}")
+                except Exception as e:
+                    print(f"Failed to save model for {asset['name']}: {e}")
 
             _hmm_detectors[asset_id] = detector
-        except ImportError:
+        except ImportError as e:
+            print(f"HMM import error: {e}")
             return None
     return _hmm_detectors.get(asset_id)
 
@@ -568,16 +734,33 @@ def get_all_hmm_regimes():
     """
     Get HMM regime data for all assets.
     Useful for dashboard overview.
+
+    Returns comprehensive data for MultiAssetRegimeOverview component.
     """
     regimes = {}
+    summary = load_regime_summary()
 
     for asset_id, asset in ASSETS.items():
+        asset_config = summary.get('assets', {}).get(str(asset_id), {})
         detector = get_hmm_detector(asset_id)
+
+        base_data = {
+            'asset_id': asset_id,
+            'name': asset['name'],
+            'display_name': asset.get('display_name', asset['name']),
+            'category': asset.get('category', 'Other'),
+        }
 
         if not detector or not detector.trained:
             regimes[asset['name']] = {
+                **base_data,
                 'regime': 'sideways',
                 'confidence': 0.5,
+                'daysInRegime': 0,
+                'volatility': 20.0,
+                'trendStrength': 0.0,
+                'probabilities': {'bull': 0.33, 'bear': 0.33, 'sideways': 0.34},
+                'historicalAccuracy': asset_config.get('historical_accuracy', {}).get('sideways', 50.0),
                 'method': 'mock'
             }
             continue
@@ -585,24 +768,57 @@ def get_all_hmm_regimes():
         prices = get_asset_prices(asset_id)
         if prices is None or len(prices) < 50:
             regimes[asset['name']] = {
+                **base_data,
                 'regime': 'sideways',
                 'confidence': 0.5,
+                'daysInRegime': 0,
+                'volatility': 20.0,
+                'trendStrength': 0.0,
+                'probabilities': {'bull': 0.33, 'bear': 0.33, 'sideways': 0.34},
+                'historicalAccuracy': asset_config.get('historical_accuracy', {}).get('sideways', 50.0),
                 'method': 'mock'
             }
             continue
 
         result = detector.predict(prices)
+
+        # Get historical accuracy for current regime
+        current_regime = result['regime']
+        hist_accuracy = asset_config.get('historical_accuracy', {}).get(current_regime, 65.0)
+
         regimes[asset['name']] = {
+            **base_data,
             'regime': result['regime'],
             'confidence': result['confidence'],
-            'daysInRegime': result['daysInRegime'],
-            'volatility': result['volatility'],
+            'daysInRegime': result.get('daysInRegime', 1),
+            'volatility': result.get('volatility', 20.0),
+            'trendStrength': result.get('trendStrength', 0.0),
+            'probabilities': result.get('probabilities', {}),
+            'historicalAccuracy': hist_accuracy,
             'method': result.get('method', 'GaussianHMM')
         }
 
+    # Group by category for frontend convenience
+    by_category = {}
+    for name, data in regimes.items():
+        cat = data.get('category', 'Other')
+        if cat not in by_category:
+            by_category[cat] = []
+        by_category[cat].append(data)
+
+    # Compute regime distribution summary
+    regime_counts = {}
+    for data in regimes.values():
+        r = data['regime']
+        regime_counts[r] = regime_counts.get(r, 0) + 1
+
     return jsonify({
         'timestamp': datetime.utcnow().isoformat() + 'Z',
-        'regimes': regimes
+        'regimes': regimes,
+        'by_category': by_category,
+        'regime_distribution': regime_counts,
+        'total_assets': len(regimes),
+        'calibration_date': summary.get('calibration_date', 'unknown')
     })
 
 

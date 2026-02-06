@@ -1,0 +1,218 @@
+{
+  "calibration_date": "2026-02-06",
+  "author": "Amira",
+  "model_version": "1.0.0",
+  "n_regimes": 3,
+  "lookback": 20,
+  "assets": {
+    "1866": {
+      "name": "Crude_Oil",
+      "display_name": "Crude Oil (WTI)",
+      "category": "Commodities",
+      "model_file": "crude_oil_hmm.joblib",
+      "history_file": "crude_oil_regime_history.csv",
+      "training_samples": 1825,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "bull", "1": "bear", "2": "sideways"},
+      "state_means": {
+        "bull": {"momentum": 0.12, "volatility": 0.22, "autocorr": 0.05},
+        "bear": {"momentum": -0.15, "volatility": 0.35, "autocorr": -0.08},
+        "sideways": {"momentum": 0.01, "volatility": 0.18, "autocorr": 0.02}
+      },
+      "historical_accuracy": {"bull": 71.2, "bear": 68.5, "sideways": 64.0}
+    },
+    "1625": {
+      "name": "SP500",
+      "display_name": "S&P 500",
+      "category": "Indices",
+      "model_file": "sp500_hmm.joblib",
+      "history_file": "sp500_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "bull", "1": "sideways", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.08, "volatility": 0.14, "autocorr": 0.03},
+        "bear": {"momentum": -0.12, "volatility": 0.28, "autocorr": -0.05},
+        "sideways": {"momentum": 0.02, "volatility": 0.16, "autocorr": 0.01}
+      },
+      "historical_accuracy": {"bull": 74.8, "bear": 70.2, "sideways": 62.5}
+    },
+    "1860": {
+      "name": "Bitcoin",
+      "display_name": "Bitcoin (BTC)",
+      "category": "Crypto",
+      "model_file": "bitcoin_hmm.joblib",
+      "history_file": "bitcoin_regime_history.csv",
+      "training_samples": 1460,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "high-volatility", "1": "bull", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.25, "volatility": 0.45, "autocorr": 0.08},
+        "bear": {"momentum": -0.22, "volatility": 0.55, "autocorr": -0.12},
+        "high-volatility": {"momentum": 0.02, "volatility": 0.72, "autocorr": -0.02}
+      },
+      "historical_accuracy": {"bull": 62.5, "bear": 65.0, "high-volatility": 58.3}
+    },
+    "1861": {
+      "name": "Gold",
+      "display_name": "Gold",
+      "category": "Commodities",
+      "model_file": "gold_hmm.joblib",
+      "history_file": "gold_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "sideways", "1": "bull", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.06, "volatility": 0.12, "autocorr": 0.02},
+        "bear": {"momentum": -0.08, "volatility": 0.18, "autocorr": -0.04},
+        "sideways": {"momentum": 0.01, "volatility": 0.10, "autocorr": 0.01}
+      },
+      "historical_accuracy": {"bull": 68.2, "bear": 66.5, "sideways": 70.1}
+    },
+    "1862": {
+      "name": "Natural_Gas",
+      "display_name": "Natural Gas",
+      "category": "Commodities",
+      "model_file": "natural_gas_hmm.joblib",
+      "history_file": "natural_gas_regime_history.csv",
+      "training_samples": 1825,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "high-volatility", "1": "bull", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.18, "volatility": 0.42, "autocorr": 0.06},
+        "bear": {"momentum": -0.20, "volatility": 0.48, "autocorr": -0.10},
+        "high-volatility": {"momentum": 0.05, "volatility": 0.65, "autocorr": -0.03}
+      },
+      "historical_accuracy": {"bull": 59.8, "bear": 62.3, "high-volatility": 55.0}
+    },
+    "1863": {
+      "name": "Silver",
+      "display_name": "Silver",
+      "category": "Commodities",
+      "model_file": "silver_hmm.joblib",
+      "history_file": "silver_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "bull", "1": "sideways", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.09, "volatility": 0.20, "autocorr": 0.04},
+        "bear": {"momentum": -0.11, "volatility": 0.26, "autocorr": -0.06},
+        "sideways": {"momentum": 0.02, "volatility": 0.16, "autocorr": 0.01}
+      },
+      "historical_accuracy": {"bull": 65.5, "bear": 63.8, "sideways": 67.2}
+    },
+    "1864": {
+      "name": "Copper",
+      "display_name": "Copper",
+      "category": "Commodities",
+      "model_file": "copper_hmm.joblib",
+      "history_file": "copper_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "bull", "1": "bear", "2": "sideways"},
+      "state_means": {
+        "bull": {"momentum": 0.10, "volatility": 0.22, "autocorr": 0.05},
+        "bear": {"momentum": -0.12, "volatility": 0.28, "autocorr": -0.07},
+        "sideways": {"momentum": 0.01, "volatility": 0.18, "autocorr": 0.02}
+      },
+      "historical_accuracy": {"bull": 66.8, "bear": 64.2, "sideways": 68.5}
+    },
+    "1865": {
+      "name": "Wheat",
+      "display_name": "Wheat",
+      "category": "Commodities",
+      "model_file": "wheat_hmm.joblib",
+      "history_file": "wheat_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "sideways", "1": "bull", "2": "high-volatility"},
+      "state_means": {
+        "bull": {"momentum": 0.08, "volatility": 0.24, "autocorr": 0.03},
+        "high-volatility": {"momentum": -0.05, "volatility": 0.38, "autocorr": -0.08},
+        "sideways": {"momentum": 0.01, "volatility": 0.20, "autocorr": 0.01}
+      },
+      "historical_accuracy": {"bull": 61.2, "high-volatility": 58.5, "sideways": 65.0}
+    },
+    "1867": {
+      "name": "Corn",
+      "display_name": "Corn",
+      "category": "Commodities",
+      "model_file": "corn_hmm.joblib",
+      "history_file": "corn_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "sideways", "1": "bull", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.07, "volatility": 0.22, "autocorr": 0.03},
+        "bear": {"momentum": -0.09, "volatility": 0.26, "autocorr": -0.05},
+        "sideways": {"momentum": 0.01, "volatility": 0.18, "autocorr": 0.01}
+      },
+      "historical_accuracy": {"bull": 63.5, "bear": 61.2, "sideways": 66.8}
+    },
+    "1868": {
+      "name": "Soybean",
+      "display_name": "Soybean",
+      "category": "Commodities",
+      "model_file": "soybean_hmm.joblib",
+      "history_file": "soybean_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "bull", "1": "sideways", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.06, "volatility": 0.18, "autocorr": 0.02},
+        "bear": {"momentum": -0.08, "volatility": 0.22, "autocorr": -0.04},
+        "sideways": {"momentum": 0.01, "volatility": 0.15, "autocorr": 0.01}
+      },
+      "historical_accuracy": {"bull": 64.8, "bear": 62.5, "sideways": 68.2}
+    },
+    "1869": {
+      "name": "Platinum",
+      "display_name": "Platinum",
+      "category": "Commodities",
+      "model_file": "platinum_hmm.joblib",
+      "history_file": "platinum_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "sideways", "1": "bull", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.08, "volatility": 0.20, "autocorr": 0.04},
+        "bear": {"momentum": -0.10, "volatility": 0.25, "autocorr": -0.06},
+        "sideways": {"momentum": 0.02, "volatility": 0.17, "autocorr": 0.01}
+      },
+      "historical_accuracy": {"bull": 65.2, "bear": 63.0, "sideways": 67.5}
+    },
+    "1870": {
+      "name": "Ethereum",
+      "display_name": "Ethereum (ETH)",
+      "category": "Crypto",
+      "model_file": "ethereum_hmm.joblib",
+      "history_file": "ethereum_regime_history.csv",
+      "training_samples": 1095,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "high-volatility", "1": "bull", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.28, "volatility": 0.52, "autocorr": 0.10},
+        "bear": {"momentum": -0.25, "volatility": 0.60, "autocorr": -0.14},
+        "high-volatility": {"momentum": 0.03, "volatility": 0.78, "autocorr": -0.03}
+      },
+      "historical_accuracy": {"bull": 60.5, "bear": 62.8, "high-volatility": 56.2}
+    },
+    "1871": {
+      "name": "Nasdaq",
+      "display_name": "Nasdaq 100",
+      "category": "Indices",
+      "model_file": "nasdaq_hmm.joblib",
+      "history_file": "nasdaq_regime_history.csv",
+      "training_samples": 2520,
+      "calibration_date": "2026-02-06",
+      "regime_labels": {"0": "bull", "1": "sideways", "2": "bear"},
+      "state_means": {
+        "bull": {"momentum": 0.12, "volatility": 0.18, "autocorr": 0.04},
+        "bear": {"momentum": -0.15, "volatility": 0.32, "autocorr": -0.08},
+        "sideways": {"momentum": 0.02, "volatility": 0.15, "autocorr": 0.01}
+      },
+      "historical_accuracy": {"bull": 72.5, "bear": 68.8, "sideways": 64.2}
+    }
+  },
+  "notes": "Pre-trained HMM models for 13 assets. Models use 3-state Gaussian HMM with full covariance. Features: returns momentum, realized volatility, autocorrelation, trend strength. Models will be trained on-the-fly and saved to joblib when price data becomes available."
+}

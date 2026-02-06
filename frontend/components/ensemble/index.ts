@@ -40,3 +40,11 @@ export type { APIPairwiseVotingChartProps } from "./APIPairwiseVotingChart";
 
 export { APIConfidenceIntervalBar } from "./APIConfidenceIntervalBar";
 export type { APIConfidenceIntervalBarProps } from "./APIConfidenceIntervalBar";
+
+// Multi-asset overview
+export { MultiAssetRegimeOverview, useAllRegimes } from "./MultiAssetRegimeOverview";
+export type {
+  MultiAssetRegimeOverviewProps,
+  MultiAssetRegimeResponse,
+  AssetRegimeData,
+} from "./MultiAssetRegimeOverview";

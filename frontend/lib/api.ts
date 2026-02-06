@@ -575,12 +575,24 @@ const MOCK_HMM_REGIME: Record<AssetId, RegimeData> = {
 
 /**
  * Map backend asset IDs to frontend AssetId strings
+ * Updated 2026-02-06 with Amira's 13-asset HMM models
  */
 const ASSET_ID_MAP: Record<string, number> = {
+  // Core assets with full ensemble support
   "crude-oil": 1866,
   "sp500": 1625,
   "bitcoin": 1860,
   "gold": 1861,
+  // Additional assets with HMM regime models
+  "natural-gas": 1862,
+  "silver": 1863,
+  "copper": 1864,
+  "wheat": 1865,
+  "corn": 1867,
+  "soybean": 1868,
+  "platinum": 1869,
+  "ethereum": 1870,
+  "nasdaq": 1871,
 };
 
 /**
