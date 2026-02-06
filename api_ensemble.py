@@ -1229,9 +1229,468 @@ def get_ensemble_dashboard(asset_id):
     })
 
 
+# ============ TIER 1/2/3 ENSEMBLE ENDPOINTS ============
+
+# Lazy-load tier ensemble classes
+_tier_ensembles = {'tier1': {}, 'tier2': {}, 'tier3': {}}
+
+
+def get_forecast_data(asset_id: int) -> tuple:
+    """
+    Load forecast data and actuals for an asset.
+    Returns (forecasts_df, actuals_series, horizons) or (None, None, None).
+    """
+    asset = ASSETS.get(asset_id)
+    if not asset or not asset['horizons']:
+        return None, None, None
+
+    horizons = asset['horizons']
+    forecasts_dict = {}
+    actuals = None
+
+    for h in horizons:
+        X, y = load_horizon_data(asset_id, h)
+        if X is None:
+            continue
+
+        # Use ensemble prediction as the "forecast" for this horizon
+        from ensemble_methods import EnsembleMethods
+        ensemble = EnsembleMethods(lookback_window=60)
+        weights = ensemble.top_k_by_sharpe(X, y, top_pct=0.1)
+        ensemble_pred = (X * weights).sum(axis=1)
+
+        forecasts_dict[f'd{h}'] = ensemble_pred
+
+        if actuals is None:
+            actuals = y
+
+    if not forecasts_dict:
+        return None, None, None
+
+    forecasts_df = pd.DataFrame(forecasts_dict)
+    return forecasts_df, actuals, horizons
+
+
+def compute_tier1_prediction(asset_id: int, method: str = 'combined') -> dict:
+    """
+    Compute Tier 1 ensemble prediction for an asset.
+
+    Methods: 'accuracy', 'magnitude', 'correlation', 'combined'
+    """
+    forecasts, actuals, horizons = get_forecast_data(asset_id)
+    if forecasts is None:
+        return {'error': 'Insufficient data for Tier 1 prediction'}
+
+    try:
+        from backend.ensemble_tier1 import (
+            AccuracyWeightedEnsemble,
+            MagnitudeWeightedVoting,
+            ErrorCorrelationWeighting,
+            CombinedTier1Ensemble
+        )
+
+        # Select method
+        if method == 'accuracy':
+            ensemble = AccuracyWeightedEnsemble()
+        elif method == 'magnitude':
+            ensemble = MagnitudeWeightedVoting()
+        elif method == 'correlation':
+            ensemble = ErrorCorrelationWeighting()
+        else:
+            ensemble = CombinedTier1Ensemble()
+
+        # Fit and predict
+        if isinstance(ensemble, CombinedTier1Ensemble):
+            ensemble.fit(forecasts, actuals, horizons)
+            result = ensemble.predict_single(forecasts.iloc[-1], horizons)
+        else:
+            ensemble.fit(forecasts, actuals, horizons)
+            result = ensemble.predict_single(forecasts.iloc[-1], horizons)
+
+        # Format weights for JSON
+        weights_json = {f"({k[0]},{k[1]})": round(v, 4) for k, v in result.weights.items()}
+
+        return {
+            'signal': result.signal,
+            'confidence': round(result.confidence, 3),
+            'netProbability': round(result.net_probability, 4),
+            'weights': weights_json,
+            'method': method,
+            'metadata': result.metadata
+        }
+
+    except Exception as e:
+        return {'error': str(e)}
+
+
+def compute_tier2_prediction(asset_id: int, method: str = 'combined') -> dict:
+    """
+    Compute Tier 2 ensemble prediction for an asset.
+
+    Methods: 'bma', 'regime', 'conformal', 'combined'
+    Returns prediction with regime info and uncertainty.
+    """
+    forecasts, actuals, horizons = get_forecast_data(asset_id)
+    if forecasts is None:
+        return {'error': 'Insufficient data for Tier 2 prediction'}
+
+    try:
+        from backend.ensemble_tier2 import (
+            BayesianModelAveraging,
+            RegimeAdaptiveEnsemble,
+            ConformalPredictionInterval,
+            CombinedTier2Ensemble
+        )
+
+        # Select method
+        if method == 'bma':
+            ensemble = BayesianModelAveraging()
+        elif method == 'regime':
+            ensemble = RegimeAdaptiveEnsemble()
+        elif method == 'conformal':
+            ensemble = ConformalPredictionInterval()
+        else:
+            ensemble = CombinedTier2Ensemble()
+
+        # Fit and predict
+        ensemble.fit(forecasts, actuals, horizons)
+
+        if isinstance(ensemble, CombinedTier2Ensemble):
+            prices = actuals.values if actuals is not None else None
+            result = ensemble.predict_single(forecasts.iloc[-1], horizons, prices=prices)
+        elif isinstance(ensemble, RegimeAdaptiveEnsemble):
+            prices = actuals.values if actuals is not None else None
+            result = ensemble.predict_single(forecasts.iloc[-1], horizons, prices=prices)
+        else:
+            result = ensemble.predict_single(forecasts.iloc[-1], horizons)
+
+        # Format weights for JSON
+        weights_json = {f"({k[0]},{k[1]})": round(v, 4) for k, v in result.weights.items()}
+
+        response = {
+            'signal': result.signal,
+            'confidence': round(result.confidence, 3),
+            'netProbability': round(result.net_probability, 4),
+            'weights': weights_json,
+            'method': method,
+            'metadata': result.metadata
+        }
+
+        # Add Tier 2 specific fields
+        if result.uncertainty is not None:
+            response['uncertainty'] = round(result.uncertainty, 4)
+
+        if result.interval_lower is not None:
+            response['interval'] = {
+                'lower': round(result.interval_lower, 4),
+                'upper': round(result.interval_upper, 4)
+            }
+
+        if result.regime is not None:
+            response['regime'] = result.regime
+
+        return response
+
+    except Exception as e:
+        return {'error': str(e)}
+
+
+def compute_tier3_prediction(asset_id: int, method: str = 'combined') -> dict:
+    """
+    Compute Tier 3 ensemble prediction for an asset.
+
+    Methods: 'thompson', 'attention', 'quantile', 'combined'
+    Returns prediction with full uncertainty quantification.
+    """
+    forecasts, actuals, horizons = get_forecast_data(asset_id)
+    if forecasts is None:
+        return {'error': 'Insufficient data for Tier 3 prediction'}
+
+    try:
+        from backend.ensemble_tier3 import (
+            ThompsonSamplingEnsemble,
+            AttentionBasedEnsemble,
+            QuantileRegressionForest,
+            CombinedTier3Ensemble
+        )
+
+        # Select method
+        if method == 'thompson':
+            ensemble = ThompsonSamplingEnsemble()
+        elif method == 'attention':
+            ensemble = AttentionBasedEnsemble()
+        elif method == 'quantile':
+            ensemble = QuantileRegressionForest()
+        else:
+            ensemble = CombinedTier3Ensemble()
+
+        # Fit and predict
+        ensemble.fit(forecasts, actuals, horizons)
+
+        if isinstance(ensemble, CombinedTier3Ensemble):
+            prices = actuals.values if actuals is not None else None
+            result = ensemble.predict_single(forecasts.iloc[-1], horizons, prices=prices)
+        elif isinstance(ensemble, AttentionBasedEnsemble):
+            prices = actuals.values if actuals is not None else None
+            result = ensemble.predict_single(forecasts.iloc[-1], horizons, prices=prices)
+        else:
+            result = ensemble.predict_single(forecasts.iloc[-1], horizons)
+
+        # Format weights for JSON
+        weights_json = {f"({k[0]},{k[1]})": round(v, 4) for k, v in result.weights.items()}
+
+        response = {
+            'signal': result.signal,
+            'confidence': round(result.confidence, 3),
+            'netProbability': round(result.net_probability, 4),
+            'weights': weights_json,
+            'method': method,
+            'metadata': result.metadata
+        }
+
+        # Add Tier 3 specific fields
+        if result.uncertainty is not None:
+            response['uncertainty'] = round(result.uncertainty, 4)
+
+        if result.interval_lower is not None:
+            response['interval'] = {
+                'lower': round(result.interval_lower, 4),
+                'upper': round(result.interval_upper, 4)
+            }
+
+        if result.quantiles is not None:
+            response['quantiles'] = {
+                str(k): round(v, 4) for k, v in result.quantiles.items()
+            }
+
+        if result.attention_weights is not None:
+            response['attentionWeights'] = result.attention_weights
+
+        if result.exploration_bonus is not None:
+            response['explorationBonus'] = round(result.exploration_bonus, 4)
+
+        return response
+
+    except Exception as e:
+        return {'error': str(e)}
+
+
+@app.route('/api/v1/ensemble/tier1/<int:asset_id>', methods=['GET'])
+def get_tier1_prediction(asset_id):
+    """
+    Get Tier 1 ensemble prediction for an asset.
+
+    Tier 1 methods (Essential):
+    - accuracy: Weight pairs by historical directional accuracy
+    - magnitude: Weight by signal magnitude (stronger = more confident)
+    - correlation: Downweight pairs with correlated errors
+    - combined: Meta-ensemble of all three (default)
+
+    Query params:
+    - method: accuracy | magnitude | correlation | combined (default)
+
+    Returns:
+    - signal: BULLISH | BEARISH | NEUTRAL
+    - confidence: 0-1 confidence score
+    - netProbability: -1 to 1 net signal probability
+    - weights: pair weights used
+    - method: method used
+    - metadata: method-specific metadata
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    method = request.args.get('method', 'combined')
+    if method not in ['accuracy', 'magnitude', 'correlation', 'combined']:
+        method = 'combined'
+
+    result = compute_tier1_prediction(asset_id, method)
+    asset = ASSETS[asset_id]
+
+    if 'error' in result:
+        return jsonify({
+            'error': True,
+            'code': 'PREDICTION_FAILED',
+            'message': result['error']
+        }), 400
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'tier': 1,
+        **result
+    })
+
+
+@app.route('/api/v1/ensemble/tier2/<int:asset_id>', methods=['GET'])
+def get_tier2_prediction(asset_id):
+    """
+    Get Tier 2 ensemble prediction for an asset.
+
+    Tier 2 methods (Advanced):
+    - bma: Bayesian Model Averaging with posterior weights
+    - regime: Regime-Adaptive with HMM-detected market states
+    - conformal: Conformal Prediction with calibrated intervals
+    - combined: Meta-ensemble of all three (default)
+
+    Query params:
+    - method: bma | regime | conformal | combined (default)
+
+    Returns:
+    - signal: BULLISH | BEARISH | NEUTRAL
+    - confidence: 0-1 confidence score
+    - netProbability: -1 to 1 net signal probability
+    - weights: pair weights used
+    - uncertainty: model uncertainty estimate
+    - interval: {lower, upper} prediction interval (conformal/combined)
+    - regime: current detected regime (regime/combined)
+    - method: method used
+    - metadata: method-specific metadata
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    method = request.args.get('method', 'combined')
+    if method not in ['bma', 'regime', 'conformal', 'combined']:
+        method = 'combined'
+
+    result = compute_tier2_prediction(asset_id, method)
+    asset = ASSETS[asset_id]
+
+    if 'error' in result:
+        return jsonify({
+            'error': True,
+            'code': 'PREDICTION_FAILED',
+            'message': result['error']
+        }), 400
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'tier': 2,
+        **result
+    })
+
+
+@app.route('/api/v1/ensemble/tier3/<int:asset_id>', methods=['GET'])
+def get_tier3_prediction(asset_id):
+    """
+    Get Tier 3 ensemble prediction for an asset.
+
+    Tier 3 methods (Research/Cutting-edge):
+    - thompson: Thompson Sampling with multi-armed bandit exploration
+    - attention: Transformer-style attention over model predictions
+    - quantile: Quantile Regression Forest for full distribution
+    - combined: Meta-ensemble of all three (default)
+
+    Query params:
+    - method: thompson | attention | quantile | combined (default)
+
+    Returns:
+    - signal: BULLISH | BEARISH | NEUTRAL
+    - confidence: 0-1 confidence score
+    - netProbability: -1 to 1 net signal probability
+    - weights: pair weights / feature importances
+    - uncertainty: model uncertainty estimate
+    - interval: {lower, upper} prediction interval
+    - quantiles: {0.1, 0.25, 0.5, 0.75, 0.9} quantile predictions (quantile/combined)
+    - attentionWeights: per-pair attention scores (attention/combined)
+    - explorationBonus: exploration bonus from Thompson sampling
+    - method: method used
+    - metadata: method-specific metadata
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    method = request.args.get('method', 'combined')
+    if method not in ['thompson', 'attention', 'quantile', 'combined']:
+        method = 'combined'
+
+    result = compute_tier3_prediction(asset_id, method)
+    asset = ASSETS[asset_id]
+
+    if 'error' in result:
+        return jsonify({
+            'error': True,
+            'code': 'PREDICTION_FAILED',
+            'message': result['error']
+        }), 400
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'tier': 3,
+        **result
+    })
+
+
+@app.route('/api/v1/ensemble/tiers/<int:asset_id>', methods=['GET'])
+def get_all_tiers_prediction(asset_id):
+    """
+    Get predictions from all three ensemble tiers for comparison.
+
+    Returns predictions from Tier 1, 2, and 3 combined methods
+    in a single response for easy comparison.
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    asset = ASSETS[asset_id]
+
+    tier1 = compute_tier1_prediction(asset_id, 'combined')
+    tier2 = compute_tier2_prediction(asset_id, 'combined')
+    tier3 = compute_tier3_prediction(asset_id, 'combined')
+
+    # Compute consensus
+    signals = []
+    if 'signal' in tier1:
+        signals.append(1 if tier1['signal'] == 'BULLISH' else -1 if tier1['signal'] == 'BEARISH' else 0)
+    if 'signal' in tier2:
+        signals.append(1 if tier2['signal'] == 'BULLISH' else -1 if tier2['signal'] == 'BEARISH' else 0)
+    if 'signal' in tier3:
+        signals.append(1 if tier3['signal'] == 'BULLISH' else -1 if tier3['signal'] == 'BEARISH' else 0)
+
+    if signals:
+        consensus_score = sum(signals) / len(signals)
+        if consensus_score > 0.3:
+            consensus = 'BULLISH'
+        elif consensus_score < -0.3:
+            consensus = 'BEARISH'
+        else:
+            consensus = 'NEUTRAL'
+        agreement = sum(1 for s in signals if (s > 0) == (consensus_score > 0)) / len(signals)
+    else:
+        consensus = 'NEUTRAL'
+        agreement = 0.0
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'tier1': tier1,
+        'tier2': tier2,
+        'tier3': tier3,
+        'consensus': {
+            'signal': consensus,
+            'agreement': round(agreement, 2),
+            'tiersAgreeing': sum(1 for s in signals if (s > 0) == (consensus_score > 0)) if signals else 0,
+            'totalTiers': len(signals)
+        }
+    })
+
+
 if __name__ == '__main__':
     print("=" * 50)
     print("  Nexus Ensemble API Server")
     print("  Starting on http://localhost:5001")
+    print("=" * 50)
+    print("\n  Tier Ensemble Endpoints:")
+    print("  - /api/v1/ensemble/tier1/<asset_id>")
+    print("  - /api/v1/ensemble/tier2/<asset_id>")
+    print("  - /api/v1/ensemble/tier3/<asset_id>")
+    print("  - /api/v1/ensemble/tiers/<asset_id> (all tiers)")
     print("=" * 50)
     app.run(host='0.0.0.0', port=5001, debug=True)
