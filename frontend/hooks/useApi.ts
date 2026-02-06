@@ -25,7 +25,19 @@ import api, {
   type HealthStatus,
   type QuantumDashboard,
 } from "@/lib/api-client";
-import { getHMMRegime, getAllHMMRegimes, type RegimeData } from "@/lib/api";
+import {
+  getHMMRegime,
+  getAllHMMRegimes,
+  getEnsembleConfidence,
+  getPairwiseVoting,
+  getConfidenceInterval,
+  getEnsembleDashboard,
+  type RegimeData,
+  type EnsembleConfidenceData,
+  type PairwiseVotingData,
+  type ConfidenceInterval,
+  type EnsembleDashboardData,
+} from "@/lib/api";
 import type { AssetId } from "@/types";
 
 // Query keys factory for consistent cache management
@@ -84,6 +96,11 @@ export const queryKeys = {
   // HMM Regime Detection keys
   hmmRegime: (assetId: string) => [...queryKeys.backend(), "hmm", "regime", assetId] as const,
   hmmRegimeAll: () => [...queryKeys.backend(), "hmm", "regimes"] as const,
+  // Ensemble component keys
+  ensembleConfidence: (assetId: string) => [...queryKeys.backend(), "ensemble", "confidence", assetId] as const,
+  pairwiseVoting: (assetId: string) => [...queryKeys.backend(), "ensemble", "pairwise", assetId] as const,
+  confidenceInterval: (assetId: string, horizon: number) => [...queryKeys.backend(), "ensemble", "interval", assetId, horizon] as const,
+  ensembleDashboard: (assetId: string) => [...queryKeys.backend(), "ensemble", "dashboard", assetId] as const,
 };
 
 // ============================================================================
@@ -530,6 +547,79 @@ export function useAllHMMRegimes(
   return useQuery({
     queryKey: queryKeys.hmmRegimeAll(),
     queryFn: () => getAllHMMRegimes(),
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+// ============================================================================
+// Ensemble Component Hooks
+// ============================================================================
+
+/**
+ * Fetch ensemble confidence data for an asset
+ */
+export function useEnsembleConfidence(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<EnsembleConfidenceData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.ensembleConfidence(assetId),
+    queryFn: () => getEnsembleConfidence(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch pairwise voting data for an asset
+ */
+export function usePairwiseVoting(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<PairwiseVotingData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.pairwiseVoting(assetId),
+    queryFn: () => getPairwiseVoting(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch confidence interval data for an asset
+ */
+export function useConfidenceInterval(
+  assetId: AssetId,
+  horizon: number = 5,
+  options?: Omit<UseQueryOptions<ConfidenceInterval, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.confidenceInterval(assetId, horizon),
+    queryFn: () => getConfidenceInterval(assetId, horizon),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch all ensemble data for an asset in a single call
+ */
+export function useEnsembleDashboard(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<EnsembleDashboardData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.ensembleDashboard(assetId),
+    queryFn: () => getEnsembleDashboard(assetId),
+    enabled: !!assetId,
     staleTime: 30000,
     refetchInterval: 60000,
     ...options,

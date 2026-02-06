@@ -30,3 +30,13 @@ export type {
   ConfidenceInterval,
   ConfidenceIntervalBarProps,
 } from "./ConfidenceIntervalBar";
+
+// API-connected wrapper components
+export { APIEnsembleConfidenceCard } from "./APIEnsembleConfidenceCard";
+export type { APIEnsembleConfidenceCardProps } from "./APIEnsembleConfidenceCard";
+
+export { APIPairwiseVotingChart } from "./APIPairwiseVotingChart";
+export type { APIPairwiseVotingChartProps } from "./APIPairwiseVotingChart";
+
+export { APIConfidenceIntervalBar } from "./APIConfidenceIntervalBar";
+export type { APIConfidenceIntervalBarProps } from "./APIConfidenceIntervalBar";

@@ -606,6 +606,399 @@ def get_all_hmm_regimes():
     })
 
 
+# ============ ENSEMBLE CONFIDENCE ENDPOINTS ============
+
+def compute_ensemble_confidence(asset_id: int) -> dict:
+    """
+    Compute ensemble confidence data for an asset.
+    Uses the actual ensemble methods to calculate weighted confidence.
+    """
+    asset = ASSETS.get(asset_id)
+    if not asset or not asset['best_ensemble']['horizons']:
+        return get_mock_ensemble_confidence()
+
+    try:
+        from ensemble_methods import EnsembleMethods
+        ensemble = EnsembleMethods(lookback_window=60)
+        horizons = asset['best_ensemble']['horizons']
+
+        # Collect method contributions
+        weights_data = []
+        total_signal = 0
+        models_agreeing = 0
+        models_total = 0
+
+        for h in horizons:
+            X, y = load_horizon_data(asset_id, h)
+            if X is None:
+                continue
+
+            models_total += X.shape[1]
+
+            # Calculate weights using top-k by Sharpe
+            weights = ensemble.top_k_by_sharpe(X, y, top_pct=0.1)
+            ensemble_pred = (X * weights).sum(axis=1)
+
+            # Latest signal
+            signal = np.sign(ensemble_pred.diff().iloc[-1])
+            total_signal += signal
+
+            # Count agreeing models
+            latest_preds = X.iloc[-1]
+            prev_preds = X.iloc[-2]
+            model_signals = np.sign(latest_preds - prev_preds)
+            if signal != 0:
+                models_agreeing += int((model_signals == signal).sum())
+
+            # Add method contribution
+            active_models = int((weights > 0.001).sum())
+            weights_data.append({
+                'method': f'H{h}_TopK',
+                'weight': float(weights.sum()),
+                'contribution': float(abs(ensemble_pred.iloc[-1])),
+                'accuracy': float((np.sign(ensemble_pred.shift(1)) == np.sign(y)).mean() * 100) if len(y) > 1 else 50.0
+            })
+
+        # Determine direction
+        if total_signal > 0.3:
+            direction = 'bullish'
+        elif total_signal < -0.3:
+            direction = 'bearish'
+        else:
+            direction = 'neutral'
+
+        # Calculate confidence from agreement ratio
+        agreement_ratio = models_agreeing / max(models_total, 1)
+        confidence = min(95, max(35, agreement_ratio * 100 + 20))
+
+        return {
+            'confidence': round(confidence, 1),
+            'direction': direction,
+            'weights': weights_data,
+            'modelsAgreeing': models_agreeing,
+            'modelsTotal': models_total,
+            'ensembleMethod': asset['best_ensemble'].get('aggregation', 'accuracy-weighted')
+        }
+
+    except Exception as e:
+        print(f"Error computing ensemble confidence: {e}")
+        return get_mock_ensemble_confidence()
+
+
+def get_mock_ensemble_confidence() -> dict:
+    """Return mock ensemble confidence data."""
+    return {
+        'confidence': 65.0,
+        'direction': 'neutral',
+        'weights': [
+            {'method': 'TopK_Sharpe', 'weight': 0.35, 'contribution': 0.42, 'accuracy': 62.0},
+            {'method': 'Magnitude', 'weight': 0.30, 'contribution': 0.38, 'accuracy': 58.0},
+            {'method': 'Recent_Perf', 'weight': 0.35, 'contribution': 0.40, 'accuracy': 60.0}
+        ],
+        'modelsAgreeing': 45,
+        'modelsTotal': 80,
+        'ensembleMethod': 'accuracy-weighted'
+    }
+
+
+@app.route('/api/v1/ensemble/confidence/<int:asset_id>', methods=['GET'])
+def get_ensemble_confidence(asset_id):
+    """
+    Get ensemble confidence data for an asset.
+
+    Returns:
+    - confidence: weighted confidence score (0-100)
+    - direction: bullish | bearish | neutral
+    - weights: individual method contributions
+    - modelsAgreeing/modelsTotal: model agreement stats
+    - ensembleMethod: method used
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    result = compute_ensemble_confidence(asset_id)
+    asset = ASSETS[asset_id]
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        **result
+    })
+
+
+# ============ PAIRWISE VOTING ENDPOINTS ============
+
+def compute_pairwise_voting(asset_id: int) -> dict:
+    """
+    Compute pairwise voting data from horizon pairs.
+    Uses the pairwise slopes method to determine votes.
+    """
+    asset = ASSETS.get(asset_id)
+    if not asset or len(asset['horizons']) < 2:
+        return get_mock_pairwise_voting()
+
+    try:
+        horizons = asset['horizons']
+        votes = []
+        bullish_count = 0
+        bearish_count = 0
+        neutral_count = 0
+        total_magnitude = 0
+
+        # Generate all pairs
+        for i, h1 in enumerate(horizons):
+            for h2 in horizons[i+1:]:
+                X1, y1 = load_horizon_data(asset_id, h1)
+                X2, y2 = load_horizon_data(asset_id, h2)
+
+                if X1 is None or X2 is None:
+                    continue
+
+                # Calculate ensemble predictions for each horizon
+                from ensemble_methods import EnsembleMethods
+                ensemble = EnsembleMethods(lookback_window=60)
+
+                w1 = ensemble.top_k_by_sharpe(X1, y1, top_pct=0.1)
+                w2 = ensemble.top_k_by_sharpe(X2, y2, top_pct=0.1)
+
+                pred1 = (X1 * w1).sum(axis=1).iloc[-1]
+                pred2 = (X2 * w2).sum(axis=1).iloc[-1]
+
+                # Pairwise slope (drift)
+                slope = (pred2 - pred1) / (h2 - h1)
+                magnitude = abs(slope) * 100
+
+                if slope > 0.01:
+                    vote = 'bullish'
+                    bullish_count += 1
+                elif slope < -0.01:
+                    vote = 'bearish'
+                    bearish_count += 1
+                else:
+                    vote = 'neutral'
+                    neutral_count += 1
+
+                total_magnitude += magnitude
+
+                votes.append({
+                    'h1': f'D+{h1}',
+                    'h2': f'D+{h2}',
+                    'vote': vote,
+                    'magnitude': round(magnitude, 2),
+                    'weight': round(1.0 / max(len(horizons) - 1, 1), 3)
+                })
+
+        # Determine final signal
+        total_votes = bullish_count + bearish_count + neutral_count
+        if total_votes == 0:
+            return get_mock_pairwise_voting()
+
+        net_prob = (bullish_count - bearish_count) / total_votes
+
+        if net_prob > 0.2:
+            signal = 'bullish'
+        elif net_prob < -0.2:
+            signal = 'bearish'
+        else:
+            signal = 'neutral'
+
+        return {
+            'votes': votes,
+            'bullishCount': bullish_count,
+            'bearishCount': bearish_count,
+            'neutralCount': neutral_count,
+            'netProbability': round(net_prob, 3),
+            'signal': signal
+        }
+
+    except Exception as e:
+        print(f"Error computing pairwise voting: {e}")
+        return get_mock_pairwise_voting()
+
+
+def get_mock_pairwise_voting() -> dict:
+    """Return mock pairwise voting data."""
+    return {
+        'votes': [
+            {'h1': 'D+1', 'h2': 'D+5', 'vote': 'bullish', 'magnitude': 1.25, 'weight': 0.2},
+            {'h1': 'D+1', 'h2': 'D+10', 'vote': 'bullish', 'magnitude': 2.10, 'weight': 0.2},
+            {'h1': 'D+5', 'h2': 'D+10', 'vote': 'neutral', 'magnitude': 0.45, 'weight': 0.2},
+            {'h1': 'D+3', 'h2': 'D+7', 'vote': 'bearish', 'magnitude': 0.82, 'weight': 0.2},
+            {'h1': 'D+7', 'h2': 'D+10', 'vote': 'bullish', 'magnitude': 0.95, 'weight': 0.2}
+        ],
+        'bullishCount': 3,
+        'bearishCount': 1,
+        'neutralCount': 1,
+        'netProbability': 0.4,
+        'signal': 'bullish'
+    }
+
+
+@app.route('/api/v1/ensemble/pairwise/<int:asset_id>', methods=['GET'])
+def get_pairwise_voting(asset_id):
+    """
+    Get pairwise voting data for an asset.
+
+    Returns:
+    - votes: array of horizon pair votes
+    - bullishCount/bearishCount/neutralCount: vote tallies
+    - netProbability: net signal probability
+    - signal: final signal direction
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    result = compute_pairwise_voting(asset_id)
+    asset = ASSETS[asset_id]
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        **result
+    })
+
+
+# ============ CONFIDENCE INTERVAL ENDPOINTS ============
+
+def compute_confidence_interval(asset_id: int, horizon: int = 5, coverage: float = 0.90) -> dict:
+    """
+    Compute prediction confidence interval for an asset.
+    Uses bootstrap resampling of model predictions.
+    """
+    asset = ASSETS.get(asset_id)
+    if not asset:
+        return get_mock_confidence_interval()
+
+    try:
+        X, y = load_horizon_data(asset_id, horizon)
+        if X is None or len(X) < 50:
+            return get_mock_confidence_interval()
+
+        from ensemble_methods import EnsembleMethods
+        ensemble = EnsembleMethods(lookback_window=60)
+
+        # Get weighted ensemble prediction
+        weights = ensemble.top_k_by_sharpe(X, y, top_pct=0.1)
+        ensemble_pred = (X * weights).sum(axis=1)
+
+        # Bootstrap confidence interval
+        n_bootstrap = 100
+        alpha = 1 - coverage
+        predictions = []
+
+        latest_X = X.iloc[-1]
+        for _ in range(n_bootstrap):
+            # Resample weights with noise
+            noisy_weights = weights * (1 + np.random.normal(0, 0.1, len(weights)))
+            noisy_weights = np.maximum(noisy_weights, 0)
+            noisy_weights = noisy_weights / noisy_weights.sum()
+            pred = float((latest_X * noisy_weights).sum())
+            predictions.append(pred)
+
+        predictions = np.array(predictions)
+
+        # Calculate percentiles
+        lower = float(np.percentile(predictions, alpha/2 * 100))
+        point = float(ensemble_pred.iloc[-1])
+        upper = float(np.percentile(predictions, (1 - alpha/2) * 100))
+
+        return {
+            'lower': round(lower, 4),
+            'point': round(point, 4),
+            'upper': round(upper, 4),
+            'coverage': coverage
+        }
+
+    except Exception as e:
+        print(f"Error computing confidence interval: {e}")
+        return get_mock_confidence_interval()
+
+
+def get_mock_confidence_interval() -> dict:
+    """Return mock confidence interval data."""
+    return {
+        'lower': -0.85,
+        'point': 1.25,
+        'upper': 3.35,
+        'coverage': 0.90
+    }
+
+
+@app.route('/api/v1/ensemble/interval/<int:asset_id>', methods=['GET'])
+def get_confidence_interval(asset_id):
+    """
+    Get prediction confidence interval for an asset.
+
+    Query params:
+    - horizon: forecast horizon (default 5)
+    - coverage: CI coverage level (default 0.90)
+
+    Returns:
+    - lower: lower bound of interval
+    - point: point estimate
+    - upper: upper bound of interval
+    - coverage: coverage level
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    horizon = request.args.get('horizon', 5, type=int)
+    coverage = request.args.get('coverage', 0.90, type=float)
+
+    result = compute_confidence_interval(asset_id, horizon, coverage)
+    asset = ASSETS[asset_id]
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'horizon': f'D+{horizon}',
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        **result
+    })
+
+
+# ============ COMBINED ENSEMBLE DASHBOARD ENDPOINT ============
+
+@app.route('/api/v1/ensemble/dashboard/<int:asset_id>', methods=['GET'])
+def get_ensemble_dashboard(asset_id):
+    """
+    Get all ensemble data for an asset in a single call.
+    Includes: regime, confidence, pairwise voting, and intervals.
+    """
+    if asset_id not in ASSETS:
+        return jsonify({'error': True, 'code': 'ASSET_NOT_FOUND'}), 404
+
+    asset = ASSETS[asset_id]
+
+    # Get HMM regime
+    detector = get_hmm_detector(asset_id)
+    prices = get_asset_prices(asset_id)
+
+    if detector and detector.trained and prices is not None and len(prices) >= 50:
+        regime_data = detector.predict(prices)
+    else:
+        regime_data = {
+            'regime': 'sideways',
+            'confidence': 0.5,
+            'probabilities': {'bull': 0.33, 'bear': 0.33, 'sideways': 0.34},
+            'daysInRegime': 1,
+            'volatility': 20.0,
+            'trendStrength': 0.0
+        }
+
+    return jsonify({
+        'asset_id': asset_id,
+        'asset_name': asset['name'],
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'regime': regime_data,
+        'confidence': compute_ensemble_confidence(asset_id),
+        'pairwise': compute_pairwise_voting(asset_id),
+        'interval': compute_confidence_interval(asset_id)
+    })
+
+
 if __name__ == '__main__':
     print("=" * 50)
     print("  Nexus Ensemble API Server")

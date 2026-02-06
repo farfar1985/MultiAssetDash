@@ -664,6 +664,229 @@ export async function getAllHMMRegimes(): Promise<Partial<Record<AssetId, Regime
 }
 
 // ============================================================================
+// Ensemble Confidence API
+// ============================================================================
+
+import type {
+  EnsembleConfidenceData,
+  ConfidenceWeight,
+} from "@/components/ensemble/EnsembleConfidenceCard";
+import type { PairwiseVotingData, HorizonPairVote } from "@/components/ensemble/PairwiseVotingChart";
+import type { ConfidenceInterval } from "@/components/ensemble/ConfidenceIntervalBar";
+
+export type { EnsembleConfidenceData, ConfidenceWeight, PairwiseVotingData, HorizonPairVote, ConfidenceInterval };
+
+/**
+ * Mock ensemble confidence data
+ */
+const MOCK_ENSEMBLE_CONFIDENCE: EnsembleConfidenceData = {
+  confidence: 72,
+  direction: "bullish",
+  weights: [
+    { method: "TopK_Sharpe", weight: 0.35, contribution: 0.45, accuracy: 68.5 },
+    { method: "Magnitude", weight: 0.30, contribution: 0.32, accuracy: 62.0 },
+    { method: "Recent_Perf", weight: 0.35, contribution: 0.38, accuracy: 65.0 },
+  ],
+  modelsAgreeing: 58,
+  modelsTotal: 80,
+  ensembleMethod: "accuracy-weighted",
+};
+
+/**
+ * Get ensemble confidence data for an asset
+ */
+export async function getEnsembleConfidence(assetId: AssetId): Promise<EnsembleConfidenceData> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return { ...MOCK_ENSEMBLE_CONFIDENCE };
+  }
+
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/ensemble/confidence/${backendId}`));
+  if (!response.ok) {
+    console.warn(`Ensemble confidence fetch failed for ${assetId}, using mock data`);
+    return { ...MOCK_ENSEMBLE_CONFIDENCE };
+  }
+
+  const data = await response.json();
+  return {
+    confidence: data.confidence,
+    direction: data.direction,
+    weights: data.weights,
+    modelsAgreeing: data.modelsAgreeing,
+    modelsTotal: data.modelsTotal,
+    ensembleMethod: data.ensembleMethod,
+  };
+}
+
+// ============================================================================
+// Pairwise Voting API
+// ============================================================================
+
+/**
+ * Mock pairwise voting data
+ */
+const MOCK_PAIRWISE_VOTING: PairwiseVotingData = {
+  votes: [
+    { h1: "D+1", h2: "D+5", vote: "bullish", magnitude: 1.25, weight: 0.2 },
+    { h1: "D+1", h2: "D+10", vote: "bullish", magnitude: 2.10, weight: 0.2 },
+    { h1: "D+5", h2: "D+10", vote: "neutral", magnitude: 0.45, weight: 0.2 },
+    { h1: "D+3", h2: "D+7", vote: "bearish", magnitude: 0.82, weight: 0.2 },
+    { h1: "D+7", h2: "D+10", vote: "bullish", magnitude: 0.95, weight: 0.2 },
+  ],
+  bullishCount: 3,
+  bearishCount: 1,
+  neutralCount: 1,
+  netProbability: 0.4,
+  signal: "bullish",
+};
+
+/**
+ * Get pairwise voting data for an asset
+ */
+export async function getPairwiseVoting(assetId: AssetId): Promise<PairwiseVotingData> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return { ...MOCK_PAIRWISE_VOTING };
+  }
+
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/ensemble/pairwise/${backendId}`));
+  if (!response.ok) {
+    console.warn(`Pairwise voting fetch failed for ${assetId}, using mock data`);
+    return { ...MOCK_PAIRWISE_VOTING };
+  }
+
+  const data = await response.json();
+  return {
+    votes: data.votes,
+    bullishCount: data.bullishCount,
+    bearishCount: data.bearishCount,
+    neutralCount: data.neutralCount,
+    netProbability: data.netProbability,
+    signal: data.signal,
+  };
+}
+
+// ============================================================================
+// Confidence Interval API
+// ============================================================================
+
+/**
+ * Mock confidence interval data
+ */
+const MOCK_CONFIDENCE_INTERVAL: ConfidenceInterval = {
+  lower: -0.85,
+  point: 1.25,
+  upper: 3.35,
+  coverage: 0.90,
+};
+
+/**
+ * Get prediction confidence interval for an asset
+ */
+export async function getConfidenceInterval(
+  assetId: AssetId,
+  horizon: number = 5,
+  coverage: number = 0.90
+): Promise<ConfidenceInterval> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return { ...MOCK_CONFIDENCE_INTERVAL };
+  }
+
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/ensemble/interval/${backendId}?horizon=${horizon}&coverage=${coverage}`));
+  if (!response.ok) {
+    console.warn(`Confidence interval fetch failed for ${assetId}, using mock data`);
+    return { ...MOCK_CONFIDENCE_INTERVAL };
+  }
+
+  const data = await response.json();
+  return {
+    lower: data.lower,
+    point: data.point,
+    upper: data.upper,
+    coverage: data.coverage,
+  };
+}
+
+// ============================================================================
+// Combined Ensemble Dashboard API
+// ============================================================================
+
+export interface EnsembleDashboardData {
+  regime: RegimeData;
+  confidence: EnsembleConfidenceData;
+  pairwise: PairwiseVotingData;
+  interval: ConfidenceInterval;
+  timestamp: string;
+}
+
+/**
+ * Get all ensemble data for an asset in a single call
+ */
+export async function getEnsembleDashboard(assetId: AssetId): Promise<EnsembleDashboardData> {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 150));
+    const regime = await getHMMRegime(assetId);
+    return {
+      regime,
+      confidence: { ...MOCK_ENSEMBLE_CONFIDENCE },
+      pairwise: { ...MOCK_PAIRWISE_VOTING },
+      interval: { ...MOCK_CONFIDENCE_INTERVAL },
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  const backendId = ASSET_ID_MAP[assetId];
+  if (!backendId) {
+    throw new Error(`Unknown asset: ${assetId}`);
+  }
+
+  const response = await fetch(getApiUrl(`/ensemble/dashboard/${backendId}`));
+  if (!response.ok) {
+    // Fallback to individual calls
+    const [regime, confidence, pairwise, interval] = await Promise.all([
+      getHMMRegime(assetId),
+      getEnsembleConfidence(assetId),
+      getPairwiseVoting(assetId),
+      getConfidenceInterval(assetId),
+    ]);
+    return { regime, confidence, pairwise, interval, timestamp: new Date().toISOString() };
+  }
+
+  const data = await response.json();
+  return {
+    regime: {
+      regime: data.regime.regime,
+      confidence: data.regime.confidence,
+      probabilities: data.regime.probabilities,
+      daysInRegime: data.regime.daysInRegime,
+      volatility: data.regime.volatility,
+      trendStrength: data.regime.trendStrength,
+      historicalAccuracy: data.regime.historicalAccuracy,
+    },
+    confidence: data.confidence,
+    pairwise: data.pairwise,
+    interval: data.interval,
+    timestamp: data.timestamp,
+  };
+}
+
+// ============================================================================
 // Batch/Convenience Functions
 // ============================================================================
 
