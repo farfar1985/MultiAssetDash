@@ -1,0 +1,2984 @@
+{
+  "1387_Nifty_Bank": {
+    "calibration": {
+      "2": {
+        "aic": 4888.566468786327,
+        "bic": 5102.6570389333765,
+        "log_likelihood": -2388.2832343931636,
+        "converged": true,
+        "avg_regime_persistence": 56.333333333333336,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0003451808154571205,
+            "volatility": 0.11757722712346305,
+            "trend": 0.009644031841319924,
+            "count": 219
+          },
+          "1": {
+            "returns": 0.0010262207697265776,
+            "volatility": 0.06396729364129577,
+            "trend": 0.013359233689922869,
+            "count": 119
+          }
+        }
+      },
+      "3": {
+        "aic": 4404.233204924024,
+        "bic": 4736.838197831046,
+        "log_likelihood": -2115.116602462012,
+        "converged": true,
+        "avg_regime_persistence": 37.55555555555556,
+        "regime_labels": [
+          "bear",
+          "sideways",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 7.773425151103278e-05,
+            "volatility": 0.10313655932384953,
+            "trend": 0.009204327091536277,
+            "count": 153
+          },
+          "1": {
+            "returns": 0.0009651705773321417,
+            "volatility": 0.15105332065893082,
+            "trend": 0.010663347397636556,
+            "count": 66
+          },
+          "2": {
+            "returns": 0.0010262207697265776,
+            "volatility": 0.06396729364129577,
+            "trend": 0.013359233689922869,
+            "count": 119
+          }
+        }
+      },
+      "4": {
+        "aic": 4182.025479226742,
+        "bic": 4640.790986684705,
+        "log_likelihood": -1971.0127396133714,
+        "converged": true,
+        "avg_regime_persistence": 21.125,
+        "regime_labels": [
+          "high-volatility",
+          "bull",
+          "low-volatility",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.00010212665799981988,
+            "volatility": 0.11585529619186229,
+            "trend": -0.004372391172667623,
+            "count": 111
+          },
+          "1": {
+            "returns": 0.001808418212824095,
+            "volatility": 0.11854586365996858,
+            "trend": 0.024652089419779023,
+            "count": 56
+          },
+          "2": {
+            "returns": 0.0006310459918478104,
+            "volatility": 0.06817619034760193,
+            "trend": 0.009707214819028035,
+            "count": 140
+          },
+          "3": {
+            "returns": -0.00010448540749195577,
+            "volatility": 0.13930154169139936,
+            "trend": 0.046696778075627124,
+            "count": 31
+          }
+        }
+      },
+      "5": {
+        "aic": 3875.253751481753,
+        "bic": 4467.825865281621,
+        "log_likelihood": -1782.6268757408766,
+        "converged": true,
+        "avg_regime_persistence": 18.77777777777778,
+        "regime_labels": [
+          "bear",
+          "bull",
+          "high-volatility",
+          "sideways",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 9.519950888058115e-05,
+            "volatility": 0.09140192304695083,
+            "trend": -0.004099527123540507,
+            "count": 59
+          },
+          "1": {
+            "returns": 0.0012884057333361369,
+            "volatility": 0.11605098717707477,
+            "trend": 0.005648856203773592,
+            "count": 67
+          },
+          "2": {
+            "returns": 0.0008979313965010907,
+            "volatility": 0.16010325856435825,
+            "trend": 0.05703686057413502,
+            "count": 23
+          },
+          "3": {
+            "returns": 0.0006264515460382446,
+            "volatility": 0.10223793886909437,
+            "trend": 0.02268799548742691,
+            "count": 126
+          },
+          "4": {
+            "returns": 9.824758896433025e-05,
+            "volatility": 0.05760374346400584,
+            "trend": -0.009608646152935746,
+            "count": 63
+          }
+        }
+      },
+      "optimal_states": 5,
+      "recommendation": "Use 5 states (lowest BIC)"
+    },
+    "optimal_states": 5,
+    "current_regime": {
+      "currentRegime": "bear",
+      "confidence": 0.9986899767924733,
+      "probabilities": [
+        {
+          "regime": "bear",
+          "probability": 0.9986899767924733
+        },
+        {
+          "regime": "bull",
+          "probability": 0.0012892270360132184
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 2.8381994677401134e-14
+        },
+        {
+          "regime": "sideways",
+          "probability": 2.074335569409052e-05
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 5.281581223188951e-08
+        }
+      ],
+      "trendStrength": -0.012126637645437241,
+      "regimeDuration": 35,
+      "stateSequence": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "transitionMatrix": [
+        [
+          0.9129587655213003,
+          0.01734740510149209,
+          6.53448527831061e-250,
+          0.03461935203428964,
+          0.035074477342918034
+        ],
+        [
+          0.01543962423441412,
+          0.954395731637466,
+          0.01512162954908398,
+          9.178048335546626e-19,
+          0.01504301457903592
+        ],
+        [
+          0.0,
+          7.784173253496687e-89,
+          0.9565217391183722,
+          0.043478260881627734,
+          0.0
+        ],
+        [
+          0.00779352809890513,
+          0.008000866313070116,
+          0.0,
+          0.9763205057441254,
+          0.007885099843899379
+        ],
+        [
+          0.06349556430453876,
+          0.015796449579195463,
+          0.0,
+          4.60604541799117e-13,
+          0.9207079861158052
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:50.124445"
+    },
+    "model_path": "regime_models\\1387_Nifty_Bank_hmm.joblib",
+    "history_path": "regime_models\\1387_Nifty_Bank_regime_history.csv"
+  },
+  "1398_Nifty_50": {
+    "calibration": {
+      "2": {
+        "aic": 4542.244302823959,
+        "bic": 4756.334872971008,
+        "log_likelihood": -2215.1221514119793,
+        "converged": true,
+        "avg_regime_persistence": 56.333333333333336,
+        "regime_labels": [
+          "risk-on",
+          "risk-off"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0010120188042431753,
+            "volatility": 0.10718123813370711,
+            "trend": 0.013086197382536493,
+            "count": 146
+          },
+          "1": {
+            "returns": -0.00010761827070323556,
+            "volatility": 0.07201518621684673,
+            "trend": 0.003186786770707406,
+            "count": 192
+          }
+        }
+      },
+      "3": {
+        "aic": 4043.7104147983505,
+        "bic": 4376.315407705373,
+        "log_likelihood": -1934.8552073991752,
+        "converged": true,
+        "avg_regime_persistence": 42.25,
+        "regime_labels": [
+          "sideways",
+          "bear",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0002230723866882146,
+            "volatility": 0.0732241099790906,
+            "trend": 0.007317119031249726,
+            "count": 168
+          },
+          "1": {
+            "returns": -0.00023697166034785706,
+            "volatility": 0.07034553265493365,
+            "trend": -0.005262777919451122,
+            "count": 97
+          },
+          "2": {
+            "returns": 0.0015424948977343078,
+            "volatility": 0.1417836900978086,
+            "trend": 0.024707689572095272,
+            "count": 73
+          }
+        }
+      },
+      "4": {
+        "aic": 3917.9264107046974,
+        "bic": 4376.69191816266,
+        "log_likelihood": -1838.9632053523487,
+        "converged": true,
+        "avg_regime_persistence": 30.727272727272727,
+        "regime_labels": [
+          "low-volatility",
+          "bear",
+          "high-volatility",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.000842163907259959,
+            "volatility": 0.063257023846271,
+            "trend": 0.011304892393200353,
+            "count": 147
+          },
+          "1": {
+            "returns": -0.0010529254398686189,
+            "volatility": 0.08312437886532362,
+            "trend": -0.008386923480364546,
+            "count": 116
+          },
+          "2": {
+            "returns": 0.0015477367597052523,
+            "volatility": 0.13104299037945388,
+            "trend": 0.019290552004855306,
+            "count": 57
+          },
+          "3": {
+            "returns": 0.002067349933268268,
+            "volatility": 0.1702619786526425,
+            "trend": 0.0407750197484018,
+            "count": 18
+          }
+        }
+      },
+      "5": {
+        "aic": 3840.755676372961,
+        "bic": 4433.327790172829,
+        "log_likelihood": -1765.3778381864804,
+        "converged": true,
+        "avg_regime_persistence": 4.970588235294118,
+        "regime_labels": [
+          "sideways",
+          "bull",
+          "low-volatility",
+          "high-volatility",
+          "sideways"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.000283363166156992,
+            "volatility": 0.12475636052206306,
+            "trend": 0.018108645142647598,
+            "count": 30
+          },
+          "1": {
+            "returns": 0.0033785191809716313,
+            "volatility": 0.12715061315683987,
+            "trend": 0.019979935912113993,
+            "count": 30
+          },
+          "2": {
+            "returns": -0.00012624972819447183,
+            "volatility": 0.06588905901240627,
+            "trend": -0.008353360989391993,
+            "count": 116
+          },
+          "3": {
+            "returns": 0.0016601456262116923,
+            "volatility": 0.17150667950341877,
+            "trend": 0.03853078862791355,
+            "count": 20
+          },
+          "4": {
+            "returns": -9.312514246841045e-06,
+            "volatility": 0.0763725554597269,
+            "trend": 0.011113834847848605,
+            "count": 142
+          }
+        }
+      },
+      "optimal_states": 3,
+      "recommendation": "Use 3 states (lowest BIC)"
+    },
+    "optimal_states": 3,
+    "current_regime": {
+      "currentRegime": "sideways",
+      "confidence": 0.9999978830223551,
+      "probabilities": [
+        {
+          "regime": "sideways",
+          "probability": 0.9999978830223551
+        },
+        {
+          "regime": "bear",
+          "probability": 2.116977587018624e-06
+        },
+        {
+          "regime": "bull",
+          "probability": 3.62920001853881e-14
+        }
+      ],
+      "trendStrength": -0.025357086132963925,
+      "regimeDuration": 9,
+      "stateSequence": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "transitionMatrix": [
+        [
+          0.9877025990723548,
+          0.012297400927645122,
+          4.8544251442567316e-82
+        ],
+        [
+          0.03102842093387677,
+          0.9587656576807193,
+          0.0102059213854039
+        ],
+        [
+          1.241412662956426e-84,
+          0.013679410911412237,
+          0.9863205890885878
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:50.998605"
+    },
+    "model_path": "regime_models\\1398_Nifty_50_hmm.joblib",
+    "history_path": "regime_models\\1398_Nifty_50_regime_history.csv"
+  },
+  "1435_MCX_Copper": {
+    "calibration": {
+      "2": {
+        "aic": 3640.123660310813,
+        "bic": 3854.0483044105454,
+        "log_likelihood": -1764.0618301554066,
+        "converged": true,
+        "avg_regime_persistence": 56.166666666666664,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0010986213151553408,
+            "volatility": 0.10478392850744972,
+            "trend": 0.021009455048482704,
+            "count": 234
+          },
+          "1": {
+            "returns": 0.0014258103899525722,
+            "volatility": 0.31048213454451795,
+            "trend": 0.052963872352074365,
+            "count": 103
+          }
+        }
+      },
+      "3": {
+        "aic": 3388.1838534128706,
+        "bic": 3720.5310683535263,
+        "log_likelihood": -1607.0919267064353,
+        "converged": true,
+        "avg_regime_persistence": 22.466666666666665,
+        "regime_labels": [
+          "bear",
+          "sideways",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0005307962524375856,
+            "volatility": 0.09196243007511104,
+            "trend": 0.021549831052131537,
+            "count": 196
+          },
+          "1": {
+            "returns": 0.0014245316603879936,
+            "volatility": 0.24591585696414828,
+            "trend": 0.018993358789855447,
+            "count": 94
+          },
+          "2": {
+            "returns": 0.0035317833267494996,
+            "volatility": 0.32677387828674215,
+            "trend": 0.09281593023711529,
+            "count": 47
+          }
+        }
+      },
+      "4": {
+        "aic": 3039.9270015538764,
+        "bic": 3498.33695319616,
+        "log_likelihood": -1399.9635007769382,
+        "converged": true,
+        "avg_regime_persistence": 21.0625,
+        "regime_labels": [
+          "low-volatility",
+          "bull",
+          "bear",
+          "high-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0011547027296524676,
+            "volatility": 0.09918902254232449,
+            "trend": 0.020640380161182626,
+            "count": 171
+          },
+          "1": {
+            "returns": 0.004398832738781616,
+            "volatility": 0.4658186374008028,
+            "trend": 0.14528214805078726,
+            "count": 23
+          },
+          "2": {
+            "returns": -0.00033230099546620106,
+            "volatility": 0.24635781338622176,
+            "trend": 0.009014872363460257,
+            "count": 86
+          },
+          "3": {
+            "returns": 0.0023488846273510325,
+            "volatility": 0.13398553794136078,
+            "trend": 0.047810840309135016,
+            "count": 57
+          }
+        }
+      },
+      "5": {
+        "aic": 2813.544049947981,
+        "bic": 3405.6569041525972,
+        "log_likelihood": -1251.7720249739905,
+        "converged": true,
+        "avg_regime_persistence": 18.72222222222222,
+        "regime_labels": [
+          "sideways",
+          "sideways",
+          "sideways",
+          "high-volatility",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.004862398095336002,
+            "volatility": 0.2271279131524751,
+            "trend": 0.048671203790502694,
+            "count": 50
+          },
+          "1": {
+            "returns": 0.0008149032416648156,
+            "volatility": 0.16874563775167872,
+            "trend": 0.037298087786811956,
+            "count": 55
+          },
+          "2": {
+            "returns": 8.647462477229291e-05,
+            "volatility": 0.2797911320251807,
+            "trend": 0.00884559585399519,
+            "count": 47
+          },
+          "3": {
+            "returns": 0.005651105924749223,
+            "volatility": 0.4751733517009572,
+            "trend": 0.15326531667275844,
+            "count": 20
+          },
+          "4": {
+            "returns": -6.6069757950448445e-06,
+            "volatility": 0.08004874639793859,
+            "trend": 0.014578708952823502,
+            "count": 165
+          }
+        }
+      },
+      "optimal_states": 5,
+      "recommendation": "Use 5 states (lowest BIC)"
+    },
+    "optimal_states": 5,
+    "current_regime": {
+      "currentRegime": "sideways",
+      "confidence": 1.0,
+      "probabilities": [
+        {
+          "regime": "sideways",
+          "probability": 2.8240863606711197e-72
+        },
+        {
+          "regime": "sideways",
+          "probability": 3.519879377808667e-31
+        },
+        {
+          "regime": "sideways",
+          "probability": 1.0
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 0.0
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 3.9058532949551765e-96
+        }
+      ],
+      "trendStrength": 0.016058132672743156,
+      "regimeDuration": 14,
+      "stateSequence": [
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "transitionMatrix": [
+        [
+          0.8998291305955363,
+          0.04007114870689654,
+          0.020033101507062688,
+          0.02003022120705519,
+          0.02003639798344934
+        ],
+        [
+          0.018130977901125542,
+          0.9093739613961106,
+          0.018116603350327824,
+          2.5994088751398195e-87,
+          0.054378457352435995
+        ],
+        [
+          1.2492745562416279e-81,
+          0.021740235071442744,
+          0.9782597649285573,
+          4.4624636003270477e-150,
+          2.910853526355301e-152
+        ],
+        [
+          3.138717980336011e-242,
+          0.050000001645294966,
+          6.869023785314281e-211,
+          0.9499999983547049,
+          0.0
+        ],
+        [
+          0.02426228309891293,
+          0.006075681918403249,
+          2.6578328686664597e-139,
+          0.0,
+          0.9696620349826838
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:51.930214"
+    },
+    "model_path": "regime_models\\1435_MCX_Copper_hmm.joblib",
+    "history_path": "regime_models\\1435_MCX_Copper_regime_history.csv"
+  },
+  "1518_RUSSEL": {
+    "calibration": {
+      "2": {
+        "aic": 4725.858564865738,
+        "bic": 4939.78320896547,
+        "log_likelihood": -2306.929282432869,
+        "converged": true,
+        "avg_regime_persistence": 19.823529411764707,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.00030431939152672586,
+            "volatility": 0.228027956023956,
+            "trend": 0.013701891080351228,
+            "count": 142
+          },
+          "1": {
+            "returns": 0.0006935626477790159,
+            "volatility": 0.15537882292035812,
+            "trend": 0.028113128054139333,
+            "count": 195
+          }
+        }
+      },
+      "3": {
+        "aic": 4403.367065395146,
+        "bic": 4735.714280335801,
+        "log_likelihood": -2114.683532697573,
+        "converged": true,
+        "avg_regime_persistence": 25.923076923076923,
+        "regime_labels": [
+          "bull",
+          "sideways",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0024057189530993697,
+            "volatility": 0.32750712832835555,
+            "trend": 0.013283170974295919,
+            "count": 38
+          },
+          "1": {
+            "returns": 0.001285273026349608,
+            "volatility": 0.18077571477831253,
+            "trend": 0.03544372084538802,
+            "count": 99
+          },
+          "2": {
+            "returns": -0.00020100639956342067,
+            "volatility": 0.16168386792670564,
+            "trend": 0.017070198216251928,
+            "count": 200
+          }
+        }
+      },
+      "4": {
+        "aic": 3267.732744265654,
+        "bic": 3726.1426959079377,
+        "log_likelihood": -1513.866372132827,
+        "converged": true,
+        "avg_regime_persistence": 17.736842105263158,
+        "regime_labels": [
+          "bear",
+          "bull",
+          "high-volatility",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.0030719920359568486,
+            "volatility": 0.18532223778627263,
+            "trend": 0.010929171124900204,
+            "count": 74
+          },
+          "1": {
+            "returns": 0.002432865002390597,
+            "volatility": 0.358265232050851,
+            "trend": 0.0035379888112627516,
+            "count": 31
+          },
+          "2": {
+            "returns": 0.0014087448102234196,
+            "volatility": 0.176880322655936,
+            "trend": 0.030975367159083538,
+            "count": 209
+          },
+          "3": {
+            "returns": 0.0015625652245089897,
+            "volatility": 0.03872978260958241,
+            "trend": 0.0015408891881228727,
+            "count": 23
+          }
+        }
+      },
+      "5": {
+        "aic": 3898.4525535521643,
+        "bic": 4490.565407756781,
+        "log_likelihood": -1794.2262767760822,
+        "converged": true,
+        "avg_regime_persistence": 1.7925531914893618,
+        "regime_labels": [
+          "bull",
+          "sideways",
+          "low-volatility",
+          "high-volatility",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0022788258926885684,
+            "volatility": 0.1690751387254275,
+            "trend": 0.03876178732189093,
+            "count": 86
+          },
+          "1": {
+            "returns": 0.0004519136266503357,
+            "volatility": 0.16973929293121606,
+            "trend": 0.035953210286484544,
+            "count": 100
+          },
+          "2": {
+            "returns": -0.00014925360757583054,
+            "volatility": 0.10633313979529187,
+            "trend": 0.006571311700477869,
+            "count": 51
+          },
+          "3": {
+            "returns": 0.0013948076083959112,
+            "volatility": 0.3641557529873406,
+            "trend": 0.0014132507133107083,
+            "count": 30
+          },
+          "4": {
+            "returns": -0.0013849230541151053,
+            "volatility": 0.21166837545975867,
+            "trend": 0.0017337049644611145,
+            "count": 70
+          }
+        }
+      },
+      "optimal_states": 4,
+      "recommendation": "Use 4 states (lowest BIC)"
+    },
+    "optimal_states": 4,
+    "current_regime": {
+      "currentRegime": "bear",
+      "confidence": 0.9596229550797837,
+      "probabilities": [
+        {
+          "regime": "bear",
+          "probability": 0.9596229550797837
+        },
+        {
+          "regime": "bull",
+          "probability": 1.4945636580399597e-35
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 0.04037704492021711
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 0.0
+        }
+      ],
+      "trendStrength": -0.006131944484278922,
+      "regimeDuration": 7,
+      "stateSequence": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "transitionMatrix": [
+        [
+          0.9309845600955201,
+          7.7656967730177535e-28,
+          0.05535832211917546,
+          0.013657117785304403
+        ],
+        [
+          1.2733950664529292e-49,
+          0.9037190318410385,
+          0.03178900212999395,
+          0.06449196602896749
+        ],
+        [
+          0.02880288113332753,
+          1.4174978816336768e-23,
+          0.9711971188666725,
+          6.134008534302322e-37
+        ],
+        [
+          1.283695822665571e-10,
+          0.12981862108201034,
+          0.04409442226760189,
+          0.8260869565220181
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:52.756131"
+    },
+    "model_path": "regime_models\\1518_RUSSEL_hmm.joblib",
+    "history_path": "regime_models\\1518_RUSSEL_regime_history.csv"
+  },
+  "1625_SP500": {
+    "calibration": {
+      "2": {
+        "aic": 4302.06051613295,
+        "bic": 4516.316522146256,
+        "log_likelihood": -2095.030258066475,
+        "converged": true,
+        "avg_regime_persistence": 113.0,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -7.65814381054987e-05,
+            "volatility": 0.10572040879140504,
+            "trend": 0.01775884705158175,
+            "count": 300
+          },
+          "1": {
+            "returns": 0.00447744987644875,
+            "volatility": 0.32524606440962706,
+            "trend": 0.01712666648462252,
+            "count": 39
+          }
+        }
+      },
+      "3": {
+        "aic": 2113.631394313933,
+        "bic": 2446.4934036560326,
+        "log_likelihood": -969.8156971569666,
+        "converged": true,
+        "avg_regime_persistence": 113.0,
+        "regime_labels": [
+          "sideways",
+          "bear",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0005698703945977155,
+            "volatility": 0.10387294788142165,
+            "trend": 0.020334557692650856,
+            "count": 262
+          },
+          "1": {
+            "returns": -0.002045232157571957,
+            "volatility": 0.12784696421687555,
+            "trend": 0.0,
+            "count": 39
+          },
+          "2": {
+            "returns": 0.0021606348555409586,
+            "volatility": 0.32105197894753545,
+            "trend": 0.01757736823421785,
+            "count": 38
+          }
+        }
+      },
+      "4": {
+        "aic": 3395.5871730695508,
+        "bic": 3854.7071859552047,
+        "log_likelihood": -1577.7935865347754,
+        "converged": true,
+        "avg_regime_persistence": 30.818181818181817,
+        "regime_labels": [
+          "bear",
+          "high-volatility",
+          "low-volatility",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.002390165167543262,
+            "volatility": 0.1282824688769097,
+            "trend": 0.004648500472357801,
+            "count": 61
+          },
+          "1": {
+            "returns": 0.0019336862518400343,
+            "volatility": 0.1683054347671397,
+            "trend": 0.0480129309807577,
+            "count": 33
+          },
+          "2": {
+            "returns": 0.0006902587955200183,
+            "volatility": 0.10268229356591727,
+            "trend": 0.01871825037283439,
+            "count": 230
+          },
+          "3": {
+            "returns": 0.004991667979311014,
+            "volatility": 0.49363211202859275,
+            "trend": -0.011839248570395831,
+            "count": 15
+          }
+        }
+      },
+      "5": {
+        "aic": 3208.4693961774406,
+        "bic": 3801.4994128214103,
+        "log_likelihood": -1449.2346980887203,
+        "converged": true,
+        "avg_regime_persistence": 1.7474226804123711,
+        "regime_labels": [
+          "low-volatility",
+          "sideways",
+          "high-volatility",
+          "bear",
+          "sideways"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0005411404998370191,
+            "volatility": 0.09671902780655504,
+            "trend": 0.019990017614925987,
+            "count": 94
+          },
+          "1": {
+            "returns": 0.0019336862518400343,
+            "volatility": 0.1683054347671397,
+            "trend": 0.0480129309807577,
+            "count": 33
+          },
+          "2": {
+            "returns": 0.005068642256702758,
+            "volatility": 0.4715035865834227,
+            "trend": -0.007511104234213974,
+            "count": 20
+          },
+          "3": {
+            "returns": -0.0019397617702481727,
+            "volatility": 0.11614586708837933,
+            "trend": 0.006921943984042969,
+            "count": 85
+          },
+          "4": {
+            "returns": 0.0009390108952475718,
+            "volatility": 0.09768767059892042,
+            "trend": 0.019569743703246562,
+            "count": 107
+          }
+        }
+      },
+      "optimal_states": 3,
+      "recommendation": "Use 3 states (lowest BIC)"
+    },
+    "optimal_states": 3,
+    "current_regime": {
+      "currentRegime": "sideways",
+      "confidence": 1.0,
+      "probabilities": [
+        {
+          "regime": "sideways",
+          "probability": 1.0
+        },
+        {
+          "regime": "bear",
+          "probability": 0.0
+        },
+        {
+          "regime": "bull",
+          "probability": 2.8867449407032884e-267
+        }
+      ],
+      "trendStrength": -0.0022260657707201914,
+      "regimeDuration": 262,
+      "stateSequence": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "transitionMatrix": [
+        [
+          1.0,
+          4.791713693354222e-100,
+          1.897207744856024e-247
+        ],
+        [
+          2.2104807114294374e-149,
+          0.9743589743589735,
+          0.025641025641026532
+        ],
+        [
+          0.02631379020968768,
+          4.034942499652018e-189,
+          0.9736862097903123
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:53.622372"
+    },
+    "model_path": "regime_models\\1625_SP500_hmm.joblib",
+    "history_path": "regime_models\\1625_SP500_regime_history.csv"
+  },
+  "1859_Brent_Oil": {
+    "calibration": {
+      "2": {
+        "aic": 4942.982285606152,
+        "bic": 5156.906929705884,
+        "log_likelihood": -2415.491142803076,
+        "converged": true,
+        "avg_regime_persistence": 25.923076923076923,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.0015566093864190053,
+            "volatility": 0.28910667492102404,
+            "trend": -0.016174981107999108,
+            "count": 137
+          },
+          "1": {
+            "returns": 0.0008237336240308836,
+            "volatility": 0.25218336246115725,
+            "trend": 0.004497283885897006,
+            "count": 200
+          }
+        }
+      },
+      "3": {
+        "aic": 4931.387853570927,
+        "bic": 5263.7350685115825,
+        "log_likelihood": -2378.6939267854636,
+        "converged": true,
+        "avg_regime_persistence": 1.6600985221674878,
+        "regime_labels": [
+          "bear",
+          "bull",
+          "sideways"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.0048534843855025924,
+            "volatility": 0.253139358397849,
+            "trend": -0.016658903638898624,
+            "count": 98
+          },
+          "1": {
+            "returns": 0.003423164606706326,
+            "volatility": 0.25536048743527795,
+            "trend": -0.013917138230113459,
+            "count": 100
+          },
+          "2": {
+            "returns": 0.0006101888343553555,
+            "volatility": 0.28561569129420683,
+            "trend": 0.012286120467675786,
+            "count": 139
+          }
+        }
+      },
+      "4": {
+        "aic": 4115.764608717995,
+        "bic": 4574.1745603602785,
+        "log_likelihood": -1937.8823043589975,
+        "converged": true,
+        "avg_regime_persistence": 15.318181818181818,
+        "regime_labels": [
+          "high-volatility",
+          "bear",
+          "low-volatility",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 5.3821558576064856e-05,
+            "volatility": 0.29896151475974786,
+            "trend": -0.007881872279132483,
+            "count": 78
+          },
+          "1": {
+            "returns": -0.003985869440362087,
+            "volatility": 0.18972749132263356,
+            "trend": -0.01932113553837604,
+            "count": 66
+          },
+          "2": {
+            "returns": 0.0007292532980047305,
+            "volatility": 0.28292902240763745,
+            "trend": 0.004288883527535051,
+            "count": 172
+          },
+          "3": {
+            "returns": 0.004044236814520187,
+            "volatility": 0.26378488208304574,
+            "trend": -0.007820124668921563,
+            "count": 21
+          }
+        }
+      },
+      "5": {
+        "aic": 3680.133341107741,
+        "bic": 4272.2461953123575,
+        "log_likelihood": -1685.0666705538706,
+        "converged": true,
+        "avg_regime_persistence": 11.233333333333333,
+        "regime_labels": [
+          "sideways",
+          "sideways",
+          "bull",
+          "low-volatility",
+          "high-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 9.5147134984972e-05,
+            "volatility": 0.2785657316056543,
+            "trend": -0.007448496471227451,
+            "count": 91
+          },
+          "1": {
+            "returns": 0.0011784734701820523,
+            "volatility": 0.24816700804204336,
+            "trend": -0.0015736771504497185,
+            "count": 46
+          },
+          "2": {
+            "returns": 0.0027178596269404843,
+            "volatility": 0.2832767251873093,
+            "trend": 0.031248715332540873,
+            "count": 71
+          },
+          "3": {
+            "returns": -0.003484234797623009,
+            "volatility": 0.2006565670715363,
+            "trend": -0.029819310767625697,
+            "count": 72
+          },
+          "4": {
+            "returns": -0.0009382466338447664,
+            "volatility": 0.3284070647879584,
+            "trend": -0.01119266175711302,
+            "count": 57
+          }
+        }
+      },
+      "optimal_states": 5,
+      "recommendation": "Use 5 states (lowest BIC)"
+    },
+    "optimal_states": 5,
+    "current_regime": {
+      "currentRegime": "bull",
+      "confidence": 0.9999553852433642,
+      "probabilities": [
+        {
+          "regime": "sideways",
+          "probability": 2.59728773590179e-20
+        },
+        {
+          "regime": "sideways",
+          "probability": 4.461475670740615e-05
+        },
+        {
+          "regime": "bull",
+          "probability": 0.9999553852433642
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 1.5176220978303944e-42
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 3.480924245294178e-59
+        }
+      ],
+      "trendStrength": 0.09798264874112554,
+      "regimeDuration": 25,
+      "stateSequence": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "transitionMatrix": [
+        [
+          0.9440354482126763,
+          0.055964551787323756,
+          1.3717559949331874e-192,
+          2.4473156822917808e-62,
+          2.3253071336997453e-123
+        ],
+        [
+          0.08999467292831706,
+          0.7338493132502593,
+          0.04425532628202129,
+          0.06592871406588645,
+          0.06597197347351597
+        ],
+        [
+          3.1630387292434603e-114,
+          0.04294914787630753,
+          0.9570508521236923,
+          3.8073538387127245e-108,
+          5e-324
+        ],
+        [
+          0.013917746160717,
+          0.01409496057397353,
+          0.02782493506607761,
+          0.930247262808155,
+          0.013915095391076824
+        ],
+        [
+          2.2211975025514904e-50,
+          0.05251421511126128,
+          1.6638949658142325e-183,
+          0.017460535707108944,
+          0.9300252491816298
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:54.613175"
+    },
+    "model_path": "regime_models\\1859_Brent_Oil_hmm.joblib",
+    "history_path": "regime_models\\1859_Brent_Oil_regime_history.csv"
+  },
+  "1860_Bitcoin": {
+    "error": "Unknown datetime string format, unable to parse: accuracy, at position 0"
+  },
+  "1866_Crude_Oil": {
+    "error": "Unknown datetime string format, unable to parse: accuracy, at position 0"
+  },
+  "256_USD_INR": {
+    "calibration": {
+      "2": {
+        "aic": 4833.927591210626,
+        "bic": 5048.018161357675,
+        "log_likelihood": -2360.963795605313,
+        "converged": true,
+        "avg_regime_persistence": 42.25,
+        "regime_labels": [
+          "risk-on",
+          "risk-off"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0002236636005832857,
+            "volatility": 0.04292011549343357,
+            "trend": 0.0025587338310920156,
+            "count": 219
+          },
+          "1": {
+            "returns": -4.191923447584752e-05,
+            "volatility": 0.028539509887279935,
+            "trend": 0.007165793712079624,
+            "count": 119
+          }
+        }
+      },
+      "3": {
+        "aic": 4416.818073505157,
+        "bic": 4749.42306641218,
+        "log_likelihood": -2121.4090367525787,
+        "converged": true,
+        "avg_regime_persistence": 19.88235294117647,
+        "regime_labels": [
+          "sideways",
+          "bear",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.0002543286038874309,
+            "volatility": 0.035130548222950864,
+            "trend": -0.00031656496303498913,
+            "count": 75
+          },
+          "1": {
+            "returns": -0.0002956217953235315,
+            "volatility": 0.048814342483717826,
+            "trend": -0.0009929338380176473,
+            "count": 91
+          },
+          "2": {
+            "returns": 0.0005230823737855373,
+            "volatility": 0.033248899342492005,
+            "trend": 0.008879020419964283,
+            "count": 172
+          }
+        }
+      },
+      "4": {
+        "aic": 2979.634723162169,
+        "bic": 3438.400230620131,
+        "log_likelihood": -1369.8173615810845,
+        "converged": true,
+        "avg_regime_persistence": 24.142857142857142,
+        "regime_labels": [
+          "bull",
+          "high-volatility",
+          "low-volatility",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.00038999731474269474,
+            "volatility": 0.03341422420916728,
+            "trend": 0.008341257904114486,
+            "count": 179
+          },
+          "1": {
+            "returns": 0.00017837618735877932,
+            "volatility": 0.05301136283287077,
+            "trend": -0.0004543092474164276,
+            "count": 34
+          },
+          "2": {
+            "returns": -0.0001283553429096668,
+            "volatility": 0.04773499523704491,
+            "trend": -0.0006147284731210272,
+            "count": 105
+          },
+          "3": {
+            "returns": -0.0009201529539256051,
+            "volatility": 0.0,
+            "trend": 0.0,
+            "count": 20
+          }
+        }
+      },
+      "5": {
+        "aic": 3898.587889350628,
+        "bic": 4491.160003150496,
+        "log_likelihood": -1794.293944675314,
+        "converged": true,
+        "avg_regime_persistence": 1.8469945355191257,
+        "regime_labels": [
+          "high-volatility",
+          "bull",
+          "sideways",
+          "sideways",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.0006241795922313935,
+            "volatility": 0.043262294696480526,
+            "trend": 0.002347535336208091,
+            "count": 82
+          },
+          "1": {
+            "returns": 0.000673771578350972,
+            "volatility": 0.04270048486213779,
+            "trend": 0.0029354382363912046,
+            "count": 92
+          },
+          "2": {
+            "returns": 0.00028100888103877906,
+            "volatility": 0.04276693965985298,
+            "trend": 0.008470337016501262,
+            "count": 81
+          },
+          "3": {
+            "returns": 0.0005727956582727635,
+            "volatility": 0.028690605054913224,
+            "trend": 0.0054474682496106425,
+            "count": 54
+          },
+          "4": {
+            "returns": -0.0007070001355541993,
+            "volatility": 0.010563427993337178,
+            "trend": -0.001025056496069109,
+            "count": 29
+          }
+        }
+      },
+      "optimal_states": 4,
+      "recommendation": "Use 4 states (lowest BIC)"
+    },
+    "optimal_states": 4,
+    "current_regime": {
+      "currentRegime": "bull",
+      "confidence": 0.9996755615997861,
+      "probabilities": [
+        {
+          "regime": "bull",
+          "probability": 0.9996755615997861
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 3.6705146507173686e-64
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 0.0003244384003127111
+        },
+        {
+          "regime": "bear",
+          "probability": 0.0
+        }
+      ],
+      "trendStrength": 0.010223547517342065,
+      "regimeDuration": 17,
+      "stateSequence": [
+        2,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "transitionMatrix": [
+        [
+          0.9775493622821796,
+          2.7292074119792806e-11,
+          0.022450637690528442,
+          0.0
+        ],
+        [
+          3.79602640970054e-31,
+          0.9411134318132208,
+          0.05888656818677918,
+          0.0
+        ],
+        [
+          0.03823595144023411,
+          0.01910448908113185,
+          0.942659559478634,
+          0.0
+        ],
+        [
+          0.04999999999999033,
+          0.0,
+          1.9676702895740326e-63,
+          0.9500000000000097
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:55.511401"
+    },
+    "model_path": "regime_models\\256_USD_INR_hmm.joblib",
+    "history_path": "regime_models\\256_USD_INR_regime_history.csv"
+  },
+  "269_NASDAQ": {
+    "calibration": {
+      "2": {
+        "aic": 4138.500308578271,
+        "bic": 4352.424952678003,
+        "log_likelihood": -2013.2501542891355,
+        "converged": true,
+        "avg_regime_persistence": 84.25,
+        "regime_labels": [
+          "risk-on",
+          "risk-off"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.000634911577325244,
+            "volatility": 0.2507929538085886,
+            "trend": 0.020755564140331223,
+            "count": 101
+          },
+          "1": {
+            "returns": 0.0005843396495473519,
+            "volatility": 0.12565399823690016,
+            "trend": 0.02347795395489776,
+            "count": 236
+          }
+        }
+      },
+      "3": {
+        "aic": 3962.4494535307695,
+        "bic": 4294.796668471425,
+        "log_likelihood": -1894.2247267653847,
+        "converged": true,
+        "avg_regime_persistence": 24.071428571428573,
+        "regime_labels": [
+          "bear",
+          "sideways",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.0011275946231563006,
+            "volatility": 0.13610638816849904,
+            "trend": 0.007505189985405966,
+            "count": 149
+          },
+          "1": {
+            "returns": 0.0014668561417456114,
+            "volatility": 0.13946595338269374,
+            "trend": 0.03933100379920931,
+            "count": 168
+          },
+          "2": {
+            "returns": 0.0061804996820025385,
+            "volatility": 0.563714995658849,
+            "trend": -0.004438641728166434,
+            "count": 20
+          }
+        }
+      },
+      "4": {
+        "aic": 3368.344383549779,
+        "bic": 3826.7543351920626,
+        "log_likelihood": -1564.1721917748896,
+        "converged": true,
+        "avg_regime_persistence": 37.44444444444444,
+        "regime_labels": [
+          "high-volatility",
+          "bear",
+          "bull",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0029096507147373636,
+            "volatility": 0.21814309418429256,
+            "trend": 0.07074009161859983,
+            "count": 33
+          },
+          "1": {
+            "returns": -0.00041499633344061306,
+            "volatility": 0.1328679116847765,
+            "trend": 0.013307392578347833,
+            "count": 237
+          },
+          "2": {
+            "returns": 0.0061804996820025385,
+            "volatility": 0.563714995658849,
+            "trend": -0.004438641728166434,
+            "count": 20
+          },
+          "3": {
+            "returns": 0.0017182104340865134,
+            "volatility": 0.10684499634096223,
+            "trend": 0.04760865705554091,
+            "count": 47
+          }
+        }
+      },
+      "5": {
+        "aic": 3365.4159635939463,
+        "bic": 3957.528817798562,
+        "log_likelihood": -1527.7079817969732,
+        "converged": true,
+        "avg_regime_persistence": 4.2125,
+        "regime_labels": [
+          "sideways",
+          "bear",
+          "high-volatility",
+          "low-volatility",
+          "sideways"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.00023474831158333998,
+            "volatility": 0.19893597411726918,
+            "trend": 0.03824973389926149,
+            "count": 34
+          },
+          "1": {
+            "returns": -0.001180898978646629,
+            "volatility": 0.2105163682970474,
+            "trend": 0.033694903053427525,
+            "count": 46
+          },
+          "2": {
+            "returns": 0.0061804996820025385,
+            "volatility": 0.563714995658849,
+            "trend": -0.004438641728166434,
+            "count": 20
+          },
+          "3": {
+            "returns": 0.0016764645263655105,
+            "volatility": 0.1000488616807098,
+            "trend": 0.041620846836958776,
+            "count": 90
+          },
+          "4": {
+            "returns": -0.00017769839446265726,
+            "volatility": 0.12420515913254208,
+            "trend": 0.007684008419957869,
+            "count": 147
+          }
+        }
+      },
+      "optimal_states": 4,
+      "recommendation": "Use 4 states (lowest BIC)"
+    },
+    "optimal_states": 4,
+    "current_regime": {
+      "currentRegime": "bear",
+      "confidence": 1.0,
+      "probabilities": [
+        {
+          "regime": "high-volatility",
+          "probability": 2.9072974613079693e-194
+        },
+        {
+          "regime": "bear",
+          "probability": 1.0
+        },
+        {
+          "regime": "bull",
+          "probability": 0.0
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 1.2215195157205638e-48
+        }
+      ],
+      "trendStrength": -0.0062933919986994874,
+      "regimeDuration": 120,
+      "stateSequence": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "transitionMatrix": [
+        [
+          0.9696969696969733,
+          1.4083477433968004e-48,
+          0.0,
+          0.030303030303026755
+        ],
+        [
+          8.279868511341195e-169,
+          0.9872754459137753,
+          0.004238124596700582,
+          0.008486429489524093
+        ],
+        [
+          0.05000000000000794,
+          1.1677293177314502e-144,
+          0.9499999999999921,
+          0.0
+        ],
+        [
+          7.677375298412322e-192,
+          0.06381765011338099,
+          0.0,
+          0.936182349886619
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:56.364689"
+    },
+    "model_path": "regime_models\\269_NASDAQ_hmm.joblib",
+    "history_path": "regime_models\\269_NASDAQ_regime_history.csv"
+  },
+  "291_SPDR_China_ETF": {
+    "calibration": {
+      "2": {
+        "aic": 4968.791889614281,
+        "bic": 5191.8923213327635,
+        "log_likelihood": -2428.3959448071405,
+        "converged": true,
+        "avg_regime_persistence": 49.625,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.00016082491498481302,
+            "volatility": 0.23428585339261948,
+            "trend": 0.007007251923993905,
+            "count": 143
+          },
+          "1": {
+            "returns": 0.0012535781415137972,
+            "volatility": 0.15666631805784226,
+            "trend": 0.021177616086315867,
+            "count": 254
+          }
+        }
+      },
+      "3": {
+        "aic": 5418.975576300346,
+        "bic": 5765.578032720132,
+        "log_likelihood": -2622.487788150173,
+        "converged": true,
+        "avg_regime_persistence": 1.1642228739002933,
+        "regime_labels": [
+          "bull",
+          "sideways",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.00135981461759354,
+            "volatility": 0.16469104679815846,
+            "trend": 0.02436309902841566,
+            "count": 169
+          },
+          "1": {
+            "returns": 0.0004364435019658439,
+            "volatility": 0.16516152773054868,
+            "trend": 0.022889470928382134,
+            "count": 170
+          },
+          "2": {
+            "returns": -0.00014815828630733858,
+            "volatility": 0.2997564689440427,
+            "trend": -0.028059004871928465,
+            "count": 58
+          }
+        }
+      },
+      "4": {
+        "aic": 4128.199131148101,
+        "bic": 4606.271484830563,
+        "log_likelihood": -1944.0995655740503,
+        "converged": true,
+        "avg_regime_persistence": 22.055555555555557,
+        "regime_labels": [
+          "low-volatility",
+          "bull",
+          "high-volatility",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0008779854520072232,
+            "volatility": 0.17050927512832859,
+            "trend": 0.009920046549156101,
+            "count": 115
+          },
+          "1": {
+            "returns": 0.0014045276876172676,
+            "volatility": 0.1749334440836392,
+            "trend": 0.05190326413671171,
+            "count": 145
+          },
+          "2": {
+            "returns": -6.09755958135044e-05,
+            "volatility": 0.2861820556053919,
+            "trend": -0.021618173809378555,
+            "count": 80
+          },
+          "3": {
+            "returns": -7.606857751891124e-05,
+            "volatility": 0.0952217779213983,
+            "trend": -0.009757425213517664,
+            "count": 57
+          }
+        }
+      },
+      "5": {
+        "aic": 3940.5416136988047,
+        "bic": 4558.051737205319,
+        "log_likelihood": -1815.2708068494023,
+        "converged": true,
+        "avg_regime_persistence": 18.904761904761905,
+        "regime_labels": [
+          "sideways",
+          "bear",
+          "high-volatility",
+          "bull",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 2.2969095357357116e-06,
+            "volatility": 0.15462020119177317,
+            "trend": -0.005284692644084632,
+            "count": 66
+          },
+          "1": {
+            "returns": -0.0012440790234553567,
+            "volatility": 0.20268583139639693,
+            "trend": 0.015058090427564034,
+            "count": 44
+          },
+          "2": {
+            "returns": -0.0006973181499848039,
+            "volatility": 0.3736799537884145,
+            "trend": -0.04528695002568715,
+            "count": 44
+          },
+          "3": {
+            "returns": 0.0026483407927633306,
+            "volatility": 0.17681716648235785,
+            "trend": 0.013576859265023842,
+            "count": 70
+          },
+          "4": {
+            "returns": 0.0011288838682673504,
+            "volatility": 0.14655429099007367,
+            "trend": 0.04109613236607337,
+            "count": 173
+          }
+        }
+      },
+      "optimal_states": 5,
+      "recommendation": "Use 5 states (lowest BIC)"
+    },
+    "optimal_states": 5,
+    "current_regime": {
+      "currentRegime": "low-volatility",
+      "confidence": 0.9999976597262148,
+      "probabilities": [
+        {
+          "regime": "sideways",
+          "probability": 2.0685819875345104e-06
+        },
+        {
+          "regime": "bear",
+          "probability": 1.5489081371502096e-13
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 1.0155613807518318e-08
+        },
+        {
+          "regime": "bull",
+          "probability": 2.6153605600770454e-07
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 0.9999976597262148
+        }
+      ],
+      "trendStrength": 0.014079413693597755,
+      "regimeDuration": 1,
+      "stateSequence": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        4
+      ],
+      "transitionMatrix": [
+        [
+          0.9246078378405331,
+          0.015075591776385146,
+          1.4392061523802656e-93,
+          0.03015420410080544,
+          0.03016236628227642
+        ],
+        [
+          0.0684563970363624,
+          0.8859089037876361,
+          0.0228223222562577,
+          0.022812376919743596,
+          2.981560080437254e-16
+        ],
+        [
+          2.5815692312137448e-36,
+          0.04589186929387782,
+          0.9541081307061222,
+          4.672888066074296e-119,
+          1.3726523030404045e-87
+        ],
+        [
+          9.35464145339013e-48,
+          1.6135004421079988e-40,
+          2.7345900983907296e-104,
+          0.9571401137397548,
+          0.04285988626024516
+        ],
+        [
+          0.011644428567256195,
+          0.011528389273936476,
+          0.0059301069857016836,
+          3.792842101988821e-49,
+          0.9708970751731056
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:57.315089"
+    },
+    "model_path": "regime_models\\291_SPDR_China_ETF_hmm.joblib",
+    "history_path": "regime_models\\291_SPDR_China_ETF_regime_history.csv"
+  },
+  "336_DOW_JONES_Mini": {
+    "calibration": {
+      "2": {
+        "aic": 4546.876587976885,
+        "bic": 4760.801232076617,
+        "log_likelihood": -2217.4382939884426,
+        "converged": true,
+        "avg_regime_persistence": 112.33333333333333,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.00017149254551343735,
+            "volatility": 0.10736372687494132,
+            "trend": 0.013627985157054623,
+            "count": 257
+          },
+          "1": {
+            "returns": 0.0019392830601720912,
+            "volatility": 0.23318471299115212,
+            "trend": 0.015121055873262994,
+            "count": 80
+          }
+        }
+      },
+      "3": {
+        "aic": 4651.102019008156,
+        "bic": 4983.4492339488115,
+        "log_likelihood": -2238.551009504078,
+        "converged": true,
+        "avg_regime_persistence": 1.2813688212927756,
+        "regime_labels": [
+          "bear",
+          "bull",
+          "sideways"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.00043241294296326993,
+            "volatility": 0.10732905476616396,
+            "trend": 0.013731815760563655,
+            "count": 130
+          },
+          "1": {
+            "returns": 0.0009666599816999999,
+            "volatility": 0.11059136888724878,
+            "trend": 0.014625281830173817,
+            "count": 131
+          },
+          "2": {
+            "returns": 0.0005348721789386709,
+            "volatility": 0.2343027421358051,
+            "trend": 0.01330300903418465,
+            "count": 76
+          }
+        }
+      },
+      "4": {
+        "aic": 1958.5037469032063,
+        "bic": 2416.9136985454898,
+        "log_likelihood": -859.2518734516032,
+        "converged": true,
+        "avg_regime_persistence": 56.166666666666664,
+        "regime_labels": [
+          "low-volatility",
+          "bull",
+          "high-volatility",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0003059473236176794,
+            "volatility": 0.10582319771408139,
+            "trend": 0.01604071254522635,
+            "count": 201
+          },
+          "1": {
+            "returns": 0.003079119646550307,
+            "volatility": 0.38823737085608945,
+            "trend": -0.013249708343530458,
+            "count": 20
+          },
+          "2": {
+            "returns": 0.00176796720539451,
+            "volatility": 0.16971574312803073,
+            "trend": 0.02247291795518194,
+            "count": 78
+          },
+          "3": {
+            "returns": -0.003945004904792569,
+            "volatility": 0.10458465064509326,
+            "trend": 0.0,
+            "count": 38
+          }
+        }
+      },
+      "5": {
+        "aic": 3313.7796445053305,
+        "bic": 3905.8924987099463,
+        "log_likelihood": -1501.8898222526652,
+        "converged": true,
+        "avg_regime_persistence": 16.85,
+        "regime_labels": [
+          "sideways",
+          "low-volatility",
+          "sideways",
+          "bear",
+          "high-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0005723016456786137,
+            "volatility": 0.10776064260193001,
+            "trend": 0.019524922590294813,
+            "count": 152
+          },
+          "1": {
+            "returns": 0.00038418784637028085,
+            "volatility": 0.10095792295373339,
+            "trend": 0.012605204545741655,
+            "count": 92
+          },
+          "2": {
+            "returns": 0.0014695045950244199,
+            "volatility": 0.18664461544718594,
+            "trend": 0.020360069768573998,
+            "count": 46
+          },
+          "3": {
+            "returns": -0.005201691692390025,
+            "volatility": 0.1566336493045524,
+            "trend": -0.0032207199701022255,
+            "count": 27
+          },
+          "4": {
+            "returns": 0.003079119646550307,
+            "volatility": 0.38823737085608945,
+            "trend": -0.013249708343530458,
+            "count": 20
+          }
+        }
+      },
+      "optimal_states": 4,
+      "recommendation": "Use 4 states (lowest BIC)"
+    },
+    "optimal_states": 4,
+    "current_regime": {
+      "currentRegime": "low-volatility",
+      "confidence": 0.9999975885979864,
+      "probabilities": [
+        {
+          "regime": "low-volatility",
+          "probability": 0.9999975885979864
+        },
+        {
+          "regime": "bull",
+          "probability": 0.0
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 2.411402019457763e-06
+        },
+        {
+          "regime": "bear",
+          "probability": 0.0
+        }
+      ],
+      "trendStrength": -0.0007174532780754768,
+      "regimeDuration": 95,
+      "stateSequence": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "transitionMatrix": [
+        [
+          0.9950288734214003,
+          8.568403311550158e-248,
+          0.004971126578599637,
+          1.4750721181232059e-168
+        ],
+        [
+          2.5358782279061526e-160,
+          0.9499999999997465,
+          0.05000000000025352,
+          0.0
+        ],
+        [
+          0.026064094547438434,
+          3.520467855381909e-127,
+          0.9739359054525616,
+          1.8799399458216335e-221
+        ],
+        [
+          7.812037476097082e-168,
+          0.026315789473604384,
+          2.6337510497700037e-217,
+          0.9736842105263956
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:58.151906"
+    },
+    "model_path": "regime_models\\336_DOW_JONES_Mini_hmm.joblib",
+    "history_path": "regime_models\\336_DOW_JONES_Mini_regime_history.csv"
+  },
+  "358_Nikkei_225": {
+    "calibration": {
+      "2": {
+        "aic": 4647.223744457019,
+        "bic": 4861.148388556751,
+        "log_likelihood": -2267.6118722285096,
+        "converged": true,
+        "avg_regime_persistence": 48.142857142857146,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.000197561802227778,
+            "volatility": 0.2996337035520111,
+            "trend": 0.04160856681964875,
+            "count": 94
+          },
+          "1": {
+            "returns": 0.001402484937957637,
+            "volatility": 0.16131275407384432,
+            "trend": 0.02583117845073164,
+            "count": 243
+          }
+        }
+      },
+      "3": {
+        "aic": 4757.647346944483,
+        "bic": 5089.994561885138,
+        "log_likelihood": -2291.8236734722414,
+        "converged": true,
+        "avg_regime_persistence": 2.2026143790849675,
+        "regime_labels": [
+          "bull",
+          "sideways",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0019035615610241811,
+            "volatility": 0.26254523624341924,
+            "trend": 0.04291427387330763,
+            "count": 72
+          },
+          "1": {
+            "returns": 0.0014752291088304143,
+            "volatility": 0.2607215849759947,
+            "trend": 0.04213420305607746,
+            "count": 76
+          },
+          "2": {
+            "returns": 0.0005830730405728272,
+            "volatility": 0.15156862384196523,
+            "trend": 0.020614574039337225,
+            "count": 189
+          }
+        }
+      },
+      "4": {
+        "aic": 4068.2547577244886,
+        "bic": 4526.6647093667725,
+        "log_likelihood": -1914.1273788622443,
+        "converged": true,
+        "avg_regime_persistence": 16.85,
+        "regime_labels": [
+          "low-volatility",
+          "bull",
+          "bear",
+          "high-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.002420926155108373,
+            "volatility": 0.1792544257851051,
+            "trend": 0.052331802192802195,
+            "count": 123
+          },
+          "1": {
+            "returns": 0.004377619071890115,
+            "volatility": 0.4117846297622468,
+            "trend": 0.03220635287126381,
+            "count": 36
+          },
+          "2": {
+            "returns": -0.00089879272737454,
+            "volatility": 0.15207395850660677,
+            "trend": 0.007572209924321802,
+            "count": 128
+          },
+          "3": {
+            "returns": 0.00038103829541368374,
+            "volatility": 0.22053119283957476,
+            "trend": 0.03245396802362826,
+            "count": 50
+          }
+        }
+      },
+      "5": {
+        "aic": 3718.1570843231557,
+        "bic": 4310.269938527772,
+        "log_likelihood": -1704.0785421615778,
+        "converged": true,
+        "avg_regime_persistence": 11.233333333333333,
+        "regime_labels": [
+          "sideways",
+          "bull",
+          "bear",
+          "high-volatility",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0006592664019022332,
+            "volatility": 0.15037593091755638,
+            "trend": 0.024735522715829402,
+            "count": 126
+          },
+          "1": {
+            "returns": 0.004796403560958407,
+            "volatility": 0.2700394981985011,
+            "trend": 0.029747632060808136,
+            "count": 37
+          },
+          "2": {
+            "returns": -0.0004852717751667234,
+            "volatility": 0.24098146478785581,
+            "trend": 0.02296080431350137,
+            "count": 95
+          },
+          "3": {
+            "returns": 0.0028869098871149093,
+            "volatility": 0.34656461762336394,
+            "trend": 0.060548321855627314,
+            "count": 26
+          },
+          "4": {
+            "returns": 0.0013185153304495396,
+            "volatility": 0.12305319682684547,
+            "trend": 0.04179831354908353,
+            "count": 53
+          }
+        }
+      },
+      "optimal_states": 5,
+      "recommendation": "Use 5 states (lowest BIC)"
+    },
+    "optimal_states": 5,
+    "current_regime": {
+      "currentRegime": "bear",
+      "confidence": 0.8116137965272605,
+      "probabilities": [
+        {
+          "regime": "sideways",
+          "probability": 2.7750008303439343e-06
+        },
+        {
+          "regime": "bull",
+          "probability": 0.18838342842644007
+        },
+        {
+          "regime": "bear",
+          "probability": 0.8116137965272605
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 9.201206974478884e-49
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 4.5398822161279745e-11
+        }
+      ],
+      "trendStrength": 0.026711580619366182,
+      "regimeDuration": 18,
+      "stateSequence": [
+        4,
+        4,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "transitionMatrix": [
+        [
+          0.9525706474034935,
+          0.03924309105949576,
+          1.5094646103511438e-05,
+          1.192381303660845e-45,
+          0.008171166890907295
+        ],
+        [
+          0.026975561600623026,
+          0.7850218736711271,
+          0.134003638673257,
+          2.0565885735529887e-284,
+          0.053998926054992846
+        ],
+        [
+          0.04301130940418215,
+          0.03443696058980948,
+          0.9225517300060083,
+          0.0,
+          3.6413566552683267e-59
+        ],
+        [
+          1.7564156376644608e-161,
+          0.0,
+          0.0,
+          0.9230765254007808,
+          0.07692347459921926
+        ],
+        [
+          0.01877131829923586,
+          1.0935685459842672e-36,
+          0.05697327222388137,
+          0.03749650406161311,
+          0.8867589054152697
+        ]
+      ],
+      "timestamp": "2026-02-06T14:21:59.175180"
+    },
+    "model_path": "regime_models\\358_Nikkei_225_hmm.joblib",
+    "history_path": "regime_models\\358_Nikkei_225_regime_history.csv"
+  },
+  "477_GOLD": {
+    "calibration": {
+      "2": {
+        "aic": 4718.95988088456,
+        "bic": 4932.8845249842925,
+        "log_likelihood": -2303.47994044228,
+        "converged": true,
+        "avg_regime_persistence": 42.125,
+        "regime_labels": [
+          "risk-on",
+          "risk-off"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.001661208164507361,
+            "volatility": 0.24945927384240812,
+            "trend": 0.04462252728771393,
+            "count": 163
+          },
+          "1": {
+            "returns": 0.001418624342077729,
+            "volatility": 0.16334909455937102,
+            "trend": 0.015745695450141775,
+            "count": 174
+          }
+        }
+      },
+      "3": {
+        "aic": 4389.638535577313,
+        "bic": 4721.985750517968,
+        "log_likelihood": -2107.8192677886564,
+        "converged": true,
+        "avg_regime_persistence": 18.72222222222222,
+        "regime_labels": [
+          "sideways",
+          "bear",
+          "bull"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.001972996923941527,
+            "volatility": 0.22016324840085622,
+            "trend": 0.044838388235889634,
+            "count": 125
+          },
+          "1": {
+            "returns": -0.0008009309442293093,
+            "volatility": 0.14907305342714267,
+            "trend": 0.005996038945942877,
+            "count": 108
+          },
+          "2": {
+            "returns": 0.0034374374309644145,
+            "volatility": 0.2448491179750447,
+            "trend": 0.03616204058244235,
+            "count": 104
+          }
+        }
+      },
+      "4": {
+        "aic": 3918.7509682608907,
+        "bic": 4377.160919903174,
+        "log_likelihood": -1839.3754841304453,
+        "converged": true,
+        "avg_regime_persistence": 17.736842105263158,
+        "regime_labels": [
+          "bull",
+          "high-volatility",
+          "bear",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": 0.0042018511107405464,
+            "volatility": 0.2570823139720047,
+            "trend": 0.04842574715823301,
+            "count": 70
+          },
+          "1": {
+            "returns": 0.0018350945121474976,
+            "volatility": 0.18864681782408135,
+            "trend": 0.025825886938356402,
+            "count": 160
+          },
+          "2": {
+            "returns": -0.0015911039973552504,
+            "volatility": 0.2584218028964722,
+            "trend": 0.034912891326445115,
+            "count": 72
+          },
+          "3": {
+            "returns": 0.0012694958414389919,
+            "volatility": 0.06568518432010685,
+            "trend": -0.0006414122998669645,
+            "count": 35
+          }
+        }
+      },
+      "5": {
+        "aic": 3843.689665384207,
+        "bic": 4435.802519588823,
+        "log_likelihood": -1766.8448326921034,
+        "converged": true,
+        "avg_regime_persistence": 13.48,
+        "regime_labels": [
+          "high-volatility",
+          "sideways",
+          "bull",
+          "sideways",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.037845594396079714,
+            "volatility": 0.3381584289739794,
+            "trend": 0.016151484099278756,
+            "count": 8
+          },
+          "1": {
+            "returns": 0.002582303063530634,
+            "volatility": 0.28237478076307565,
+            "trend": 0.03506574029228178,
+            "count": 55
+          },
+          "2": {
+            "returns": 0.0041811543402922955,
+            "volatility": 0.22217017326453065,
+            "trend": 0.06160440897948655,
+            "count": 64
+          },
+          "3": {
+            "returns": 0.001927883022510713,
+            "volatility": 0.20513751341179998,
+            "trend": 0.03585572415534043,
+            "count": 110
+          },
+          "4": {
+            "returns": 0.0019869464275579216,
+            "volatility": 0.14064706151654127,
+            "trend": 0.0006858353557772642,
+            "count": 100
+          }
+        }
+      },
+      "optimal_states": 4,
+      "recommendation": "Use 4 states (lowest BIC)"
+    },
+    "optimal_states": 4,
+    "current_regime": {
+      "currentRegime": "bear",
+      "confidence": 1.0,
+      "probabilities": [
+        {
+          "regime": "bull",
+          "probability": 7.607207630386778e-37
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 5.1111330170984856e-49
+        },
+        {
+          "regime": "bear",
+          "probability": 1.0
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 0.0
+        }
+      ],
+      "trendStrength": 0.03994738775677592,
+      "regimeDuration": 3,
+      "stateSequence": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        2,
+        2
+      ],
+      "transitionMatrix": [
+        [
+          0.9429787086732745,
+          9.351544645458646e-11,
+          0.04266980513283315,
+          0.014351486100377014
+        ],
+        [
+          2.491286742096991e-15,
+          0.9687380978412264,
+          0.012506318500281511,
+          0.018755583658489675
+        ],
+        [
+          0.028335941746196924,
+          0.028361687909542212,
+          0.9433023696040365,
+          7.402244802601257e-10
+        ],
+        [
+          0.0574202485234246,
+          0.08582704725367413,
+          2.398011937630512e-38,
+          0.8567527042229013
+        ]
+      ],
+      "timestamp": "2026-02-06T14:22:00.028345"
+    },
+    "model_path": "regime_models\\477_GOLD_hmm.joblib",
+    "history_path": "regime_models\\477_GOLD_regime_history.csv"
+  },
+  "655_US_DOLLAR_Index": {
+    "calibration": {
+      "2": {
+        "aic": 4662.660182317732,
+        "bic": 4876.584826417464,
+        "log_likelihood": -2275.330091158866,
+        "converged": true,
+        "avg_regime_persistence": 56.166666666666664,
+        "regime_labels": [
+          "risk-off",
+          "risk-on"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.000482718970443159,
+            "volatility": 0.08445582863375646,
+            "trend": -0.007408811479175089,
+            "count": 142
+          },
+          "1": {
+            "returns": -0.0001880131374430443,
+            "volatility": 0.04182671102410474,
+            "trend": 0.0003078781911467174,
+            "count": 195
+          }
+        }
+      },
+      "3": {
+        "aic": 4376.570371648369,
+        "bic": 4708.917586589024,
+        "log_likelihood": -2101.2851858241843,
+        "converged": true,
+        "avg_regime_persistence": 22.466666666666665,
+        "regime_labels": [
+          "sideways",
+          "bull",
+          "bear"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.00021943306411168387,
+            "volatility": 0.04526527880010421,
+            "trend": 0.0005004648308195864,
+            "count": 110
+          },
+          "1": {
+            "returns": -0.00012876407862704895,
+            "volatility": 0.05949486812395181,
+            "trend": -0.002932948727203652,
+            "count": 164
+          },
+          "2": {
+            "returns": -0.0009516461850349359,
+            "volatility": 0.08591424246594098,
+            "trend": -0.008985119411079498,
+            "count": 63
+          }
+        }
+      },
+      "4": {
+        "aic": 4081.792573979289,
+        "bic": 4540.202525621573,
+        "log_likelihood": -1920.8962869896445,
+        "converged": true,
+        "avg_regime_persistence": 21.0625,
+        "regime_labels": [
+          "bear",
+          "bull",
+          "low-volatility",
+          "high-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.00108084700099617,
+            "volatility": 0.11491155006769753,
+            "trend": -0.015180455618366638,
+            "count": 26
+          },
+          "1": {
+            "returns": 6.96201140163627e-06,
+            "volatility": 0.04614169456700915,
+            "trend": 0.0023170522527324947,
+            "count": 73
+          },
+          "2": {
+            "returns": -0.0001854996888987936,
+            "volatility": 0.05145849667121264,
+            "trend": -0.0031023513623302593,
+            "count": 193
+          },
+          "3": {
+            "returns": -0.0009291871211838687,
+            "volatility": 0.08580894339995553,
+            "trend": -0.0037269808491433827,
+            "count": 45
+          }
+        }
+      },
+      "5": {
+        "aic": 3769.5497736192624,
+        "bic": 4361.662627823878,
+        "log_likelihood": -1729.7748868096312,
+        "converged": true,
+        "avg_regime_persistence": 12.481481481481481,
+        "regime_labels": [
+          "sideways",
+          "bull",
+          "high-volatility",
+          "sideways",
+          "low-volatility"
+        ],
+        "state_characteristics": {
+          "0": {
+            "returns": -0.0005153635446222571,
+            "volatility": 0.056932396371533855,
+            "trend": -0.0013010764385303977,
+            "count": 77
+          },
+          "1": {
+            "returns": 6.926207230276058e-05,
+            "volatility": 0.06296541739821605,
+            "trend": -0.004373188777022889,
+            "count": 144
+          },
+          "2": {
+            "returns": -0.0017954850409249174,
+            "volatility": 0.12078109467308931,
+            "trend": -0.015400946004304542,
+            "count": 20
+          },
+          "3": {
+            "returns": -0.00019709199611896857,
+            "volatility": 0.04954984399289451,
+            "trend": -0.0023661269329591054,
+            "count": 41
+          },
+          "4": {
+            "returns": -0.0005728896076478161,
+            "volatility": 0.040926476228584745,
+            "trend": 0.002598858385932693,
+            "count": 55
+          }
+        }
+      },
+      "optimal_states": 5,
+      "recommendation": "Use 5 states (lowest BIC)"
+    },
+    "optimal_states": 5,
+    "current_regime": {
+      "currentRegime": "bull",
+      "confidence": 0.9999999851233952,
+      "probabilities": [
+        {
+          "regime": "sideways",
+          "probability": 1.4876513227400449e-08
+        },
+        {
+          "regime": "bull",
+          "probability": 0.9999999851233952
+        },
+        {
+          "regime": "high-volatility",
+          "probability": 0.0
+        },
+        {
+          "regime": "sideways",
+          "probability": 9.526449935645808e-230
+        },
+        {
+          "regime": "low-volatility",
+          "probability": 6.835375054548445e-195
+        }
+      ],
+      "trendStrength": -0.01216217981266708,
+      "regimeDuration": 11,
+      "stateSequence": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "transitionMatrix": [
+        [
+          0.8430724261237255,
+          0.08140926456732525,
+          0.0,
+          0.025175928608848465,
+          0.05034238070010086
+        ],
+        [
+          0.04608030077904697,
+          0.9539194422088474,
+          0.0,
+          3.517280427287342e-42,
+          2.5701210565216297e-07
+        ],
+        [
+          0.049999999655903966,
+          6.577726340719437e-10,
+          0.9499999996863233,
+          0.0,
+          0.0
+        ],
+        [
+          3.79191520579165e-20,
+          0.02449449017531447,
+          0.024435397872961586,
+          0.9510701119517239,
+          0.0
+        ],
+        [
+          0.09103300310063132,
+          1.0930467525909277e-24,
+          0.0,
+          9.203048538506455e-204,
+          0.9089669968993687
+        ]
+      ],
+      "timestamp": "2026-02-06T14:22:01.232516"
+    },
+    "model_path": "regime_models\\655_US_DOLLAR_Index_hmm.joblib",
+    "history_path": "regime_models\\655_US_DOLLAR_Index_regime_history.csv"
+  }
+}
