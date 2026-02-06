@@ -13,6 +13,7 @@ import {
   PairwiseVotingChart,
   HMMRegimeIndicator,
   ConfidenceIntervalBar,
+  MultiAssetRegimeOverview,
   type EnsembleConfidenceData,
   type PairwiseVotingData,
   type ConfidenceInterval,
@@ -42,6 +43,7 @@ import {
   CheckCircle2,
   Info,
   TrendingUp as ChartUp,
+  Globe,
 } from "lucide-react";
 
 // ============================================================================
@@ -915,6 +917,10 @@ export function HedgeFundDashboard() {
           <TabsTrigger value="risk" className="text-xs data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400">
             Risk & Factors
           </TabsTrigger>
+          <TabsTrigger value="regimes" className="text-xs data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+            <Globe className="w-3 h-3 mr-1" />
+            Regimes
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -1025,6 +1031,16 @@ export function HedgeFundDashboard() {
               <RiskAdjustedReturnsPanel positions={positions} />
             </div>
           </div>
+        </TabsContent>
+
+        {/* Market Regimes Tab */}
+        <TabsContent value="regimes" className="mt-4 space-y-4">
+          <MultiAssetRegimeOverview
+            viewMode="table"
+            onAssetClick={(assetId, assetName) => {
+              console.log(`Portfolio drill-down: ${assetName} (ID: ${assetId})`);
+            }}
+          />
         </TabsContent>
       </Tabs>
 

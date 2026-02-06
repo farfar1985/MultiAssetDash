@@ -36,6 +36,7 @@ import {
   PairwiseVotingChart,
   HMMRegimeIndicator,
   ConfidenceIntervalBar,
+  MultiAssetRegimeOverview,
   type EnsembleConfidenceData,
   type PairwiseVotingData,
   type ConfidenceInterval,
@@ -236,6 +237,7 @@ import {
   Users,
   GitBranch,
   Brain,
+  Globe,
 } from "lucide-react";
 
 // ============================================================================
@@ -772,6 +774,13 @@ export function AlphaProDashboardV2() {
             <GitBranch className="w-4 h-4 mr-2" />
             Analytics
           </TabsTrigger>
+          <TabsTrigger
+            value="regimes"
+            className="data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400"
+          >
+            <Globe className="w-4 h-4 mr-2" />
+            Market Regimes
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -1176,6 +1185,16 @@ export function AlphaProDashboardV2() {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        {/* Market Regimes Tab */}
+        <TabsContent value="regimes" className="space-y-6">
+          <MultiAssetRegimeOverview
+            viewMode="grid"
+            onAssetClick={(assetId, assetName) => {
+              console.log(`Navigate to asset: ${assetName} (ID: ${assetId})`);
+            }}
+          />
         </TabsContent>
       </Tabs>
 

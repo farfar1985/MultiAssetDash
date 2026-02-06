@@ -16,6 +16,7 @@ import {
   Users,
   Target,
   Activity,
+  Globe,
 } from "lucide-react";
 
 interface DashboardCard {
@@ -116,6 +117,18 @@ const DASHBOARDS: DashboardCard[] = [
     audience: "Quant Researchers",
     features: ["Regime Analysis", "Entropy Metrics", "Signal Decomposition"],
   },
+  {
+    id: "regimes",
+    name: "Market Regimes",
+    description: "Multi-asset HMM regime monitor across commodities, crypto, and indices",
+    href: "/dashboards/regimes",
+    icon: Globe,
+    color: "text-blue-400",
+    bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-500/30 hover:border-blue-500/50",
+    audience: "All Users",
+    features: ["13 Assets", "HMM Detection", "Category Filters"],
+  },
 ];
 
 export default function DashboardsIndexPage() {
@@ -143,7 +156,7 @@ export default function DashboardsIndexPage() {
               <Users className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-neutral-100">7</div>
+              <div className="text-2xl font-bold text-neutral-100">8</div>
               <div className="text-sm text-neutral-500">Persona Dashboards</div>
             </div>
           </CardContent>
@@ -165,7 +178,7 @@ export default function DashboardsIndexPage() {
               <Target className="w-6 h-6 text-green-400" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-neutral-100">12</div>
+              <div className="text-2xl font-bold text-neutral-100">13</div>
               <div className="text-sm text-neutral-500">Asset Classes</div>
             </div>
           </CardContent>
