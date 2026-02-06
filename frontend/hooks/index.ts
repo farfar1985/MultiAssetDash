@@ -22,6 +22,9 @@ export {
   useBackendOHLCV,
   useBackendEquity,
   useBackendEnsembleConfig,
+  // HMM Regime Detection hooks
+  useHMMRegime,
+  useAllHMMRegimes,
   // Query keys
   queryKeys,
 } from "./useApi";

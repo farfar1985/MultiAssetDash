@@ -8,10 +8,11 @@ import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/
 import type { AssetId } from "@/types";
 import {
   EnsembleConfidenceCard,
-  RegimeIndicator,
+  HMMRegimeIndicator,
   type EnsembleConfidenceData,
   type RegimeData,
 } from "@/components/ensemble";
+import { useHMMRegime } from "@/hooks";
 import {
   GraduationCap,
   TrendingUp,
@@ -223,17 +224,16 @@ function generateSimplifiedEnsembleConfidence(): EnsembleConfidenceData {
   };
 }
 
-function generateSimplifiedRegimeData(): RegimeData {
-  return {
-    regime: "bull",
-    confidence: 0.72,
-    probabilities: { bull: 0.58, bear: 0.22, sideways: 0.20 },
-    daysInRegime: 18,
-    historicalAccuracy: 68,
-    volatility: 16.5,
-    trendStrength: 0.45,
-  };
-}
+// Default fallback regime data for loading/error states
+const DEFAULT_REGIME: RegimeData = {
+  regime: "sideways",
+  confidence: 0.5,
+  probabilities: { bull: 0.33, bear: 0.33, sideways: 0.34 },
+  daysInRegime: 1,
+  historicalAccuracy: 50,
+  volatility: 20.0,
+  trendStrength: 0.0,
+};
 
 // ============================================================================
 // Components
@@ -673,7 +673,8 @@ export function ProRetailDashboard() {
 
   // Simplified ensemble data for retail users
   const ensembleConfidence = useMemo(() => generateSimplifiedEnsembleConfidence(), []);
-  const regimeData = useMemo(() => generateSimplifiedRegimeData(), []);
+  // Fetch HMM regime data from API
+  const { data: regimeData = DEFAULT_REGIME } = useHMMRegime("crude-oil");
 
   const filteredSignals = useMemo(() => {
     return allSignals.filter((signal) => {
@@ -788,8 +789,8 @@ export function ProRetailDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <RegimeIndicator
-                data={regimeData}
+              <HMMRegimeIndicator
+                assetId="crude-oil"
                 showProbabilities={false}
                 compact={true}
                 size="sm"

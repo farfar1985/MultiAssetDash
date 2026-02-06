@@ -25,6 +25,8 @@ import api, {
   type HealthStatus,
   type QuantumDashboard,
 } from "@/lib/api-client";
+import { getHMMRegime, getAllHMMRegimes, type RegimeData } from "@/lib/api";
+import type { AssetId } from "@/types";
 
 // Query keys factory for consistent cache management
 export const queryKeys = {
@@ -79,6 +81,9 @@ export const queryKeys = {
   backendConfigs: () => [...queryKeys.backend(), "configs"] as const,
   // Quantum API keys
   quantumDashboard: () => [...queryKeys.backend(), "quantum", "dashboard"] as const,
+  // HMM Regime Detection keys
+  hmmRegime: (assetId: string) => [...queryKeys.backend(), "hmm", "regime", assetId] as const,
+  hmmRegimeAll: () => [...queryKeys.backend(), "hmm", "regimes"] as const,
 };
 
 // ============================================================================
@@ -490,6 +495,43 @@ export function useFeatureImportance(
     queryKey: queryKeys.featureImportance(symbol),
     queryFn: () => api.getFeatureImportance(symbol),
     enabled: !!symbol,
+    ...options,
+  });
+}
+
+// ============================================================================
+// HMM Regime Detection Hooks
+// ============================================================================
+
+/**
+ * Fetch HMM-detected market regime for an asset
+ * @param assetId - Asset identifier (e.g., "crude-oil", "gold", "bitcoin", "sp500")
+ */
+export function useHMMRegime(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<RegimeData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.hmmRegime(assetId),
+    queryFn: () => getHMMRegime(assetId),
+    enabled: !!assetId,
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    refetchInterval: 60000, // Refresh every minute
+    ...options,
+  });
+}
+
+/**
+ * Fetch HMM regime data for all configured assets
+ */
+export function useAllHMMRegimes(
+  options?: Omit<UseQueryOptions<Partial<Record<AssetId, RegimeData>>, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.hmmRegimeAll(),
+    queryFn: () => getAllHMMRegimes(),
+    staleTime: 30000,
+    refetchInterval: 60000,
     ...options,
   });
 }

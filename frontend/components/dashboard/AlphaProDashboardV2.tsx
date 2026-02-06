@@ -34,11 +34,10 @@ import type { AssetId } from "@/types";
 import {
   EnsembleConfidenceCard,
   PairwiseVotingChart,
-  RegimeIndicator,
+  HMMRegimeIndicator,
   ConfidenceIntervalBar,
   type EnsembleConfidenceData,
   type PairwiseVotingData,
-  type RegimeData,
   type ConfidenceInterval,
 } from "@/components/ensemble";
 
@@ -309,38 +308,6 @@ function generateMockPairwiseVoting(
   };
 }
 
-function generateMockRegimeData(): RegimeData {
-  const regimes: RegimeData["regime"][] = ["bull", "bear", "sideways", "high-volatility", "low-volatility"];
-  const selectedRegime = regimes[Math.floor(Math.random() * 3)]; // Favor first 3
-
-  const probabilities = {
-    bull: 0.15 + Math.random() * 0.4,
-    bear: 0.1 + Math.random() * 0.3,
-    sideways: 0.1 + Math.random() * 0.35,
-  };
-
-  // Normalize probabilities
-  const total = probabilities.bull + probabilities.bear + probabilities.sideways;
-  probabilities.bull /= total;
-  probabilities.bear /= total;
-  probabilities.sideways /= total;
-
-  // Set regime based on highest probability
-  const maxProb = Math.max(probabilities.bull, probabilities.bear, probabilities.sideways);
-  const regime: RegimeData["regime"] =
-    maxProb === probabilities.bull ? "bull" :
-    maxProb === probabilities.bear ? "bear" : "sideways";
-
-  return {
-    regime,
-    confidence: 0.65 + Math.random() * 0.3,
-    probabilities,
-    daysInRegime: Math.floor(5 + Math.random() * 45),
-    historicalAccuracy: 58 + Math.random() * 18,
-    volatility: 12 + Math.random() * 25,
-    trendStrength: (Math.random() * 2 - 1) * 0.8,
-  };
-}
 
 function generateMockConfidenceInterval(
   direction: "bullish" | "bearish" | "neutral"
@@ -704,7 +671,6 @@ export function AlphaProDashboardV2() {
     () => generateMockPairwiseVoting(heroSignal.signalDirection),
     [heroSignal.signalDirection]
   );
-  const regimeData = useMemo(() => generateMockRegimeData(), [selectedAsset]);
   const confidenceIntervalData = useMemo(
     () => generateMockConfidenceInterval(heroSignal.signalDirection),
     [heroSignal.signalDirection]
@@ -840,8 +806,8 @@ export function AlphaProDashboardV2() {
               />
 
               {/* Regime Indicator */}
-              <RegimeIndicator
-                data={regimeData}
+              <HMMRegimeIndicator
+                assetId={selectedAsset}
                 showProbabilities={true}
                 compact={false}
                 size="md"
@@ -1136,8 +1102,8 @@ export function AlphaProDashboardV2() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Full Regime Indicator */}
-              <RegimeIndicator
-                data={regimeData}
+              <HMMRegimeIndicator
+                assetId={selectedAsset}
                 showProbabilities={true}
                 compact={false}
                 size="lg"

@@ -11,11 +11,10 @@ import { CorrelationMatrix } from "@/components/dashboard/CorrelationMatrix";
 import {
   EnsembleConfidenceCard,
   PairwiseVotingChart,
-  RegimeIndicator,
+  HMMRegimeIndicator,
   ConfidenceIntervalBar,
   type EnsembleConfidenceData,
   type PairwiseVotingData,
-  type RegimeData,
   type ConfidenceInterval,
 } from "@/components/ensemble";
 import {
@@ -261,17 +260,6 @@ function generatePairwiseVoting(): PairwiseVotingData {
   };
 }
 
-function generateRegimeData(): RegimeData {
-  return {
-    regime: "bull",
-    confidence: 0.78,
-    probabilities: { bull: 0.65, bear: 0.18, sideways: 0.17 },
-    daysInRegime: 23,
-    historicalAccuracy: 72.4,
-    volatility: 18.5,
-    trendStrength: 0.54,
-  };
-}
 
 function generateConfidenceInterval(): ConfidenceInterval {
   return {
@@ -902,7 +890,6 @@ export function HedgeFundDashboard() {
   // Ensemble data
   const ensembleConfidence = useMemo(() => generateEnsembleConfidence(), []);
   const pairwiseVoting = useMemo(() => generatePairwiseVoting(), []);
-  const regimeData = useMemo(() => generateRegimeData(), []);
   const confidenceInterval = useMemo(() => generateConfidenceInterval(), []);
 
   return (
@@ -942,8 +929,8 @@ export function HedgeFundDashboard() {
               />
             </div>
             <div className="col-span-3">
-              <RegimeIndicator
-                data={regimeData}
+              <HMMRegimeIndicator
+                assetId="crude-oil"
                 showProbabilities={false}
                 compact={false}
                 size="sm"

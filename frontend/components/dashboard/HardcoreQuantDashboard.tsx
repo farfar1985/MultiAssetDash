@@ -21,11 +21,10 @@ import { ApiHealthIndicator } from "@/components/dashboard/ApiHealthIndicator";
 import {
   EnsembleConfidenceCard,
   PairwiseVotingChart,
-  RegimeIndicator,
+  HMMRegimeIndicator,
   ConfidenceIntervalBar,
   type EnsembleConfidenceData,
   type PairwiseVotingData,
-  type RegimeData,
   type ConfidenceInterval,
 } from "@/components/ensemble";
 
@@ -215,17 +214,6 @@ function generateQuantPairwiseVoting(): PairwiseVotingData {
   };
 }
 
-function generateQuantRegimeData(): RegimeData {
-  return {
-    regime: "low-volatility",
-    confidence: 0.82,
-    probabilities: { bull: 0.42, bear: 0.22, sideways: 0.36 },
-    daysInRegime: 12,
-    historicalAccuracy: 74.2,
-    volatility: 14.8,
-    trendStrength: 0.38,
-  };
-}
 
 function generateQuantConfidenceInterval(): ConfidenceInterval {
   return {
@@ -721,7 +709,6 @@ export function HardcoreQuantDashboard() {
   // Ensemble data
   const ensembleConfidence = useMemo(() => generateQuantEnsembleConfidence(), []);
   const pairwiseVoting = useMemo(() => generateQuantPairwiseVoting(), []);
-  const regimeData = useMemo(() => generateQuantRegimeData(), []);
   const confidenceInterval = useMemo(() => generateQuantConfidenceInterval(), []);
 
   return (
@@ -793,7 +780,7 @@ export function HardcoreQuantDashboard() {
                 <EnsembleConfidenceCard data={ensembleConfidence} showBreakdown={false} compact={true} />
               </div>
               <div className="col-span-3">
-                <RegimeIndicator data={regimeData} showProbabilities={false} compact={true} size="sm" />
+                <HMMRegimeIndicator assetId="crude-oil" showProbabilities={false} compact={true} size="sm" />
               </div>
               <div className="col-span-3">
                 <PairwiseVotingChart data={pairwiseVoting} showGrid={false} compact={true} />
@@ -855,7 +842,7 @@ export function HardcoreQuantDashboard() {
             {/* Row 2: Regime + Confidence Interval */}
             <div className="grid grid-cols-12 gap-2">
               <div className="col-span-6">
-                <RegimeIndicator data={regimeData} showProbabilities={true} compact={false} size="lg" />
+                <HMMRegimeIndicator assetId="crude-oil" showProbabilities={true} compact={false} size="lg" />
               </div>
               <div className="col-span-6">
                 <ConfidenceIntervalBar data={confidenceInterval} assetName="Portfolio" horizon="D+5" showDetails={true} compact={false} />

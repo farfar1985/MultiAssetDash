@@ -22,6 +22,9 @@ export type {
   MarketRegime,
 } from "./RegimeIndicator";
 
+export { HMMRegimeIndicator } from "./HMMRegimeIndicator";
+export type { HMMRegimeIndicatorProps } from "./HMMRegimeIndicator";
+
 export { ConfidenceIntervalBar } from "./ConfidenceIntervalBar";
 export type {
   ConfidenceInterval,
