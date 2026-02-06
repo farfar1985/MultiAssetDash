@@ -9,6 +9,9 @@ from typing import Dict, List, Tuple, Optional
 import warnings
 warnings.filterwarnings('ignore')
 
+# Use standardized metrics
+from utils.metrics import calculate_sharpe_ratio_daily
+
 
 class EnsembleMethods:
     """
@@ -117,11 +120,9 @@ class EnsembleMethods:
             pred_direction = np.sign(preds[col] - prev_actuals)
             strategy_returns = pred_direction * returns
             strategy_returns = strategy_returns.dropna()
-            
-            if len(strategy_returns) > 1 and strategy_returns.std() > 0:
-                sharpe = (strategy_returns.mean() / strategy_returns.std()) * np.sqrt(252)
-            else:
-                sharpe = 0
+
+            # Use standardized Sharpe calculation
+            sharpe = calculate_sharpe_ratio_daily(strategy_returns.values)
             sharpes[col] = sharpe
         
         sharpe_series = pd.Series(sharpes)
@@ -269,15 +270,12 @@ class EnsembleMethods:
         pred_dir = np.sign(ens - prev_acts)
         dir_acc = (actual_dir == pred_dir).dropna().mean() * 100
         
-        # Sharpe (trading simulation)
+        # Sharpe (trading simulation) - using standardized calculation
         returns = (acts - prev_acts) / prev_acts
         strategy_returns = pred_dir * returns
         strategy_returns = strategy_returns.dropna()
-        
-        if len(strategy_returns) > 1 and strategy_returns.std() > 0:
-            sharpe = (strategy_returns.mean() / strategy_returns.std(ddof=1)) * np.sqrt(252)
-        else:
-            sharpe = 0
+
+        sharpe = calculate_sharpe_ratio_daily(strategy_returns.values)
         
         # Total return
         total_return = strategy_returns.sum() * 100
