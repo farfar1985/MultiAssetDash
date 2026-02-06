@@ -7,6 +7,12 @@ import { cn } from "@/lib/utils";
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
+  EnsembleConfidenceCard,
+  RegimeIndicator,
+  type EnsembleConfidenceData,
+  type RegimeData,
+} from "@/components/ensemble";
+import {
   GraduationCap,
   TrendingUp,
   TrendingDown,
@@ -196,6 +202,37 @@ function getEnhancedSignals(): EnhancedSignal[] {
   });
 
   return signals.sort((a, b) => b.confidence - a.confidence);
+}
+
+// ============================================================================
+// Simplified Ensemble Data for Retail Users
+// ============================================================================
+
+function generateSimplifiedEnsembleConfidence(): EnsembleConfidenceData {
+  return {
+    confidence: 72,
+    direction: "bullish",
+    weights: [
+      { method: "AI Accuracy", weight: 0.35, contribution: 0.38, accuracy: 68 },
+      { method: "Model Agreement", weight: 0.35, contribution: 0.32, accuracy: 65 },
+      { method: "Market Regime", weight: 0.30, contribution: 0.30, accuracy: 62 },
+    ],
+    modelsAgreeing: 7524,
+    modelsTotal: 10179,
+    ensembleMethod: "accuracy-weighted",
+  };
+}
+
+function generateSimplifiedRegimeData(): RegimeData {
+  return {
+    regime: "bull",
+    confidence: 0.72,
+    probabilities: { bull: 0.58, bear: 0.22, sideways: 0.20 },
+    daysInRegime: 18,
+    historicalAccuracy: 68,
+    volatility: 16.5,
+    trendStrength: 0.45,
+  };
 }
 
 // ============================================================================
@@ -634,6 +671,10 @@ export function ProRetailDashboard() {
   const [horizon, setHorizon] = useState("all");
   const [minConfidence, setMinConfidence] = useState(0);
 
+  // Simplified ensemble data for retail users
+  const ensembleConfidence = useMemo(() => generateSimplifiedEnsembleConfidence(), []);
+  const regimeData = useMemo(() => generateSimplifiedRegimeData(), []);
+
   const filteredSignals = useMemo(() => {
     return allSignals.filter((signal) => {
       if (direction !== "all" && signal.direction !== direction) return false;
@@ -708,6 +749,67 @@ export function ProRetailDashboard() {
 
         {/* Sidebar */}
         <div className="space-y-4">
+          {/* Simplified Ensemble Confidence - Educational */}
+          <Card className="bg-gradient-to-br from-purple-500/5 to-cyan-500/5 border-purple-500/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Brain className="w-5 h-5 text-purple-400" />
+                AI Confidence
+                <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[9px] ml-auto">
+                  Simplified
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <EnsembleConfidenceCard
+                data={ensembleConfidence}
+                showBreakdown={false}
+                compact={true}
+              />
+              <div className="mt-3 p-2 bg-neutral-800/30 rounded-lg">
+                <p className="text-xs text-neutral-400">
+                  <strong className="text-purple-400">What this means:</strong> Our AI models are{" "}
+                  {ensembleConfidence.confidence}% confident in a{" "}
+                  <span className={ensembleConfidence.direction === "bullish" ? "text-green-400" : "text-red-400"}>
+                    {ensembleConfidence.direction}
+                  </span>{" "}
+                  market direction.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Simplified Market Regime */}
+          <Card className="bg-gradient-to-br from-cyan-500/5 to-blue-500/5 border-cyan-500/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Activity className="w-5 h-5 text-cyan-400" />
+                Market Mood
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <RegimeIndicator
+                data={regimeData}
+                showProbabilities={false}
+                compact={true}
+                size="sm"
+              />
+              <div className="mt-3 p-2 bg-neutral-800/30 rounded-lg">
+                <p className="text-xs text-neutral-400">
+                  <strong className="text-cyan-400">Current market:</strong> We&apos;re in a{" "}
+                  <span className={
+                    regimeData.regime === "bull" ? "text-green-400" :
+                    regimeData.regime === "bear" ? "text-red-400" : "text-amber-400"
+                  }>
+                    {regimeData.regime === "bull" ? "bullish" :
+                     regimeData.regime === "bear" ? "bearish" : "sideways"}
+                  </span>{" "}
+                  market for the past {regimeData.daysInRegime} days.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           <LearningProgress />
           <QuickTips />
 

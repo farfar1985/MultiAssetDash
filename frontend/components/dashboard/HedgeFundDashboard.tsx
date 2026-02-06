@@ -9,6 +9,16 @@ import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import { CorrelationMatrix } from "@/components/dashboard/CorrelationMatrix";
 import {
+  EnsembleConfidenceCard,
+  PairwiseVotingChart,
+  RegimeIndicator,
+  ConfidenceIntervalBar,
+  type EnsembleConfidenceData,
+  type PairwiseVotingData,
+  type RegimeData,
+  type ConfidenceInterval,
+} from "@/components/ensemble";
+import {
   TrendingUp,
   TrendingDown,
   Minus,
@@ -210,6 +220,66 @@ function generateFactorExposures(): FactorExposure[] {
     { factor: "Carry", portfolioExposure: 0.55, benchmarkExposure: 0.25, activeExposure: 0.30, targetRange: [0.2, 0.4], status: "overweight" },
     { factor: "Liquidity", portfolioExposure: -0.08, benchmarkExposure: 0.05, activeExposure: -0.13, targetRange: [-0.1, 0.1], status: "in-range" },
   ];
+}
+
+// ============================================================================
+// Ensemble Mock Data Generators
+// ============================================================================
+
+function generateEnsembleConfidence(): EnsembleConfidenceData {
+  return {
+    confidence: 74,
+    direction: "bullish",
+    weights: [
+      { method: "Accuracy-Weighted", weight: 0.28, contribution: 0.25, accuracy: 68.2 },
+      { method: "Stacking Meta-Learner", weight: 0.25, contribution: 0.28, accuracy: 71.3 },
+      { method: "Magnitude-Weighted", weight: 0.22, contribution: 0.18, accuracy: 64.5 },
+      { method: "Error Correlation", weight: 0.15, contribution: 0.16, accuracy: 62.8 },
+      { method: "Regime-Adaptive", weight: 0.10, contribution: 0.13, accuracy: 69.1 },
+    ],
+    modelsAgreeing: 7842,
+    modelsTotal: 10179,
+    ensembleMethod: "stacking",
+  };
+}
+
+function generatePairwiseVoting(): PairwiseVotingData {
+  return {
+    votes: [
+      { h1: "D+1", h2: "D+5", vote: "bullish", magnitude: 1.24, weight: 0.8 },
+      { h1: "D+1", h2: "D+10", vote: "bullish", magnitude: 2.15, weight: 0.6 },
+      { h1: "D+5", h2: "D+10", vote: "bullish", magnitude: 0.91, weight: 0.9 },
+      { h1: "D+1", h2: "D+20", vote: "neutral", magnitude: 0.12, weight: 0.4 },
+      { h1: "D+10", h2: "D+50", vote: "bearish", magnitude: -0.65, weight: 0.5 },
+      { h1: "D+20", h2: "D+100", vote: "bullish", magnitude: 1.78, weight: 0.3 },
+    ],
+    bullishCount: 14,
+    bearishCount: 5,
+    neutralCount: 2,
+    netProbability: 0.43,
+    signal: "bullish",
+  };
+}
+
+function generateRegimeData(): RegimeData {
+  return {
+    regime: "bull",
+    confidence: 0.78,
+    probabilities: { bull: 0.65, bear: 0.18, sideways: 0.17 },
+    daysInRegime: 23,
+    historicalAccuracy: 72.4,
+    volatility: 18.5,
+    trendStrength: 0.54,
+  };
+}
+
+function generateConfidenceInterval(): ConfidenceInterval {
+  return {
+    lower: 0.45,
+    point: 1.82,
+    upper: 3.19,
+    coverage: 0.90,
+  };
 }
 
 // ============================================================================
@@ -829,6 +899,12 @@ export function HedgeFundDashboard() {
   const sizing = useMemo(() => generatePositionSizing(), []);
   const factors = useMemo(() => generateFactorExposures(), []);
 
+  // Ensemble data
+  const ensembleConfidence = useMemo(() => generateEnsembleConfidence(), []);
+  const pairwiseVoting = useMemo(() => generatePairwiseVoting(), []);
+  const regimeData = useMemo(() => generateRegimeData(), []);
+  const confidenceInterval = useMemo(() => generateConfidenceInterval(), []);
+
   return (
     <div className="space-y-4 pb-8 -m-6 p-6 bg-neutral-950 min-h-screen">
       {/* Header */}
@@ -856,6 +932,41 @@ export function HedgeFundDashboard() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="mt-4 space-y-4">
+          {/* Ensemble Intelligence Row */}
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-3">
+              <EnsembleConfidenceCard
+                data={ensembleConfidence}
+                showBreakdown={false}
+                compact={false}
+              />
+            </div>
+            <div className="col-span-3">
+              <RegimeIndicator
+                data={regimeData}
+                showProbabilities={false}
+                compact={false}
+                size="sm"
+              />
+            </div>
+            <div className="col-span-3">
+              <PairwiseVotingChart
+                data={pairwiseVoting}
+                showGrid={false}
+                compact={false}
+              />
+            </div>
+            <div className="col-span-3">
+              <ConfidenceIntervalBar
+                data={confidenceInterval}
+                assetName="Portfolio"
+                horizon="D+5"
+                showDetails={false}
+                compact={false}
+              />
+            </div>
+          </div>
+
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-3">
               <AssetAllocationChart positions={positions} />

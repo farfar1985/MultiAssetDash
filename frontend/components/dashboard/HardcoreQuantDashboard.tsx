@@ -17,6 +17,18 @@ import { VolatilitySurface } from "@/components/dashboard/VolatilitySurface";
 import { FactorAttributionPanel } from "@/components/dashboard/FactorAttributionPanel";
 import { ApiHealthIndicator } from "@/components/dashboard/ApiHealthIndicator";
 
+// Ensemble Components
+import {
+  EnsembleConfidenceCard,
+  PairwiseVotingChart,
+  RegimeIndicator,
+  ConfidenceIntervalBar,
+  type EnsembleConfidenceData,
+  type PairwiseVotingData,
+  type RegimeData,
+  type ConfidenceInterval,
+} from "@/components/ensemble";
+
 import {
   Activity,
   BarChart3,
@@ -148,6 +160,79 @@ function generateExecutionMetrics(): ExecutionMetrics {
     executionSpeed: 2.3,
     ordersToday: 847,
     volumeTraded: 12450000,
+  };
+}
+
+// ============================================================================
+// Ensemble Mock Data for Quant Dashboard
+// ============================================================================
+
+function generateQuantEnsembleConfidence(): EnsembleConfidenceData {
+  return {
+    confidence: 76,
+    direction: "bullish",
+    weights: [
+      { method: "Stacking", weight: 0.30, contribution: 0.32, accuracy: 72.1 },
+      { method: "Accuracy-Wtd", weight: 0.25, contribution: 0.24, accuracy: 68.5 },
+      { method: "BMA", weight: 0.20, contribution: 0.22, accuracy: 70.2 },
+      { method: "Regime-Adapt", weight: 0.15, contribution: 0.14, accuracy: 69.8 },
+      { method: "Error-Corr", weight: 0.10, contribution: 0.08, accuracy: 65.3 },
+    ],
+    modelsAgreeing: 7956,
+    modelsTotal: 10179,
+    ensembleMethod: "stacking",
+  };
+}
+
+function generateQuantPairwiseVoting(): PairwiseVotingData {
+  const horizons = ["D+1", "D+2", "D+5", "D+10", "D+20", "D+50"];
+  const votes: PairwiseVotingData["votes"] = [];
+
+  for (let i = 0; i < horizons.length; i++) {
+    for (let j = i + 1; j < horizons.length; j++) {
+      const magnitude = (Math.random() * 3 - 0.8);
+      votes.push({
+        h1: horizons[i],
+        h2: horizons[j],
+        vote: magnitude > 0.3 ? "bullish" : magnitude < -0.3 ? "bearish" : "neutral",
+        magnitude,
+        weight: 1 / (j - i),
+      });
+    }
+  }
+
+  const bullishCount = votes.filter(v => v.vote === "bullish").length;
+  const bearishCount = votes.filter(v => v.vote === "bearish").length;
+  const neutralCount = votes.filter(v => v.vote === "neutral").length;
+
+  return {
+    votes,
+    bullishCount,
+    bearishCount,
+    neutralCount,
+    netProbability: (bullishCount - bearishCount) / votes.length,
+    signal: bullishCount > bearishCount ? "bullish" : bearishCount > bullishCount ? "bearish" : "neutral",
+  };
+}
+
+function generateQuantRegimeData(): RegimeData {
+  return {
+    regime: "low-volatility",
+    confidence: 0.82,
+    probabilities: { bull: 0.42, bear: 0.22, sideways: 0.36 },
+    daysInRegime: 12,
+    historicalAccuracy: 74.2,
+    volatility: 14.8,
+    trendStrength: 0.38,
+  };
+}
+
+function generateQuantConfidenceInterval(): ConfidenceInterval {
+  return {
+    lower: -0.42,
+    point: 1.15,
+    upper: 2.72,
+    coverage: 0.95,
   };
 }
 
@@ -633,6 +718,12 @@ export function HardcoreQuantDashboard() {
   const timeframeSignals = useMemo(() => generateTimeframeSignals(), []);
   const executionMetrics = useMemo(() => generateExecutionMetrics(), []);
 
+  // Ensemble data
+  const ensembleConfidence = useMemo(() => generateQuantEnsembleConfidence(), []);
+  const pairwiseVoting = useMemo(() => generateQuantPairwiseVoting(), []);
+  const regimeData = useMemo(() => generateQuantRegimeData(), []);
+  const confidenceInterval = useMemo(() => generateQuantConfidenceInterval(), []);
+
   return (
     <div className="flex flex-col min-h-screen -m-6 bg-neutral-950">
       {/* Market Ticker */}
@@ -680,6 +771,9 @@ export function HardcoreQuantDashboard() {
             <TabsTrigger value="overview" className="text-[10px] h-7 px-3 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
               OVERVIEW
             </TabsTrigger>
+            <TabsTrigger value="ensemble" className="text-[10px] h-7 px-3 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+              ENSEMBLE
+            </TabsTrigger>
             <TabsTrigger value="signals" className="text-[10px] h-7 px-3 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
               SIGNALS
             </TabsTrigger>
@@ -693,6 +787,22 @@ export function HardcoreQuantDashboard() {
 
           {/* Overview Tab - Maximum Density */}
           <TabsContent value="overview" className="mt-2 space-y-2">
+            {/* Row 0: Ensemble Quick View */}
+            <div className="grid grid-cols-12 gap-2">
+              <div className="col-span-3">
+                <EnsembleConfidenceCard data={ensembleConfidence} showBreakdown={false} compact={true} />
+              </div>
+              <div className="col-span-3">
+                <RegimeIndicator data={regimeData} showProbabilities={false} compact={true} size="sm" />
+              </div>
+              <div className="col-span-3">
+                <PairwiseVotingChart data={pairwiseVoting} showGrid={false} compact={true} />
+              </div>
+              <div className="col-span-3">
+                <ConfidenceIntervalBar data={confidenceInterval} horizon="D+5" showDetails={false} compact={true} />
+              </div>
+            </div>
+
             {/* Row 1: Tick Data + Order Book + MTF Signals */}
             <div className="grid grid-cols-12 gap-2">
               <div className="col-span-3">
@@ -726,6 +836,39 @@ export function HardcoreQuantDashboard() {
               </div>
               <div className="col-span-7">
                 <CorrelationMatrix size="sm" showLabels={true} interactive={true} />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Ensemble Tab - Full Ensemble Analytics */}
+          <TabsContent value="ensemble" className="mt-2 space-y-2">
+            {/* Row 1: Full Confidence + Full Voting */}
+            <div className="grid grid-cols-12 gap-2">
+              <div className="col-span-6">
+                <EnsembleConfidenceCard data={ensembleConfidence} showBreakdown={true} compact={false} />
+              </div>
+              <div className="col-span-6">
+                <PairwiseVotingChart data={pairwiseVoting} showGrid={true} compact={false} />
+              </div>
+            </div>
+
+            {/* Row 2: Regime + Confidence Interval */}
+            <div className="grid grid-cols-12 gap-2">
+              <div className="col-span-6">
+                <RegimeIndicator data={regimeData} showProbabilities={true} compact={false} size="lg" />
+              </div>
+              <div className="col-span-6">
+                <ConfidenceIntervalBar data={confidenceInterval} assetName="Portfolio" horizon="D+5" showDetails={true} compact={false} />
+              </div>
+            </div>
+
+            {/* Row 3: MTF Signals + Signal Strength */}
+            <div className="grid grid-cols-12 gap-2">
+              <div className="col-span-7">
+                <TimeframeSignalPanel signals={timeframeSignals} />
+              </div>
+              <div className="col-span-5">
+                <SignalStrengthMeters />
               </div>
             </div>
           </TabsContent>
