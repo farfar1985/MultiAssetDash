@@ -30,6 +30,18 @@ import { QuantumStatusWidget as SystemQuantumStatus } from "./QuantumStatusWidge
 import { QuantumStatusWidget as AssetQuantumStatus } from "@/components/quantum";
 import type { AssetId } from "@/types";
 
+// Ensemble Visualization Components
+import {
+  EnsembleConfidenceCard,
+  PairwiseVotingChart,
+  RegimeIndicator,
+  ConfidenceIntervalBar,
+  type EnsembleConfidenceData,
+  type PairwiseVotingData,
+  type RegimeData,
+  type ConfidenceInterval,
+} from "@/components/ensemble";
+
 // API Hooks
 import {
   useBackendMetrics,
@@ -224,7 +236,126 @@ import {
   Scale,
   Users,
   GitBranch,
+  Brain,
 } from "lucide-react";
+
+// ============================================================================
+// Mock Data Generators for Ensemble Components
+// ============================================================================
+
+function generateMockEnsembleConfidence(
+  direction: "bullish" | "bearish" | "neutral",
+  confidence: number
+): EnsembleConfidenceData {
+  const methods = [
+    { method: "Accuracy-Weighted", weight: 0.28, contribution: 0.25, accuracy: 68.2 },
+    { method: "Magnitude-Weighted", weight: 0.22, contribution: 0.18, accuracy: 64.5 },
+    { method: "Stacking Meta-Learner", weight: 0.25, contribution: 0.28, accuracy: 71.3 },
+    { method: "Error Correlation", weight: 0.15, contribution: 0.16, accuracy: 62.8 },
+    { method: "Regime-Adaptive", weight: 0.10, contribution: 0.13, accuracy: 69.1 },
+  ];
+
+  const agreementRatio = confidence / 100;
+  const modelsTotal = 10179;
+  const modelsAgreeing = Math.round(modelsTotal * agreementRatio * (0.9 + Math.random() * 0.2));
+
+  return {
+    confidence,
+    direction,
+    weights: methods,
+    modelsAgreeing: Math.min(modelsAgreeing, modelsTotal),
+    modelsTotal,
+    ensembleMethod: "stacking",
+  };
+}
+
+function generateMockPairwiseVoting(
+  direction: "bullish" | "bearish" | "neutral"
+): PairwiseVotingData {
+  const horizons = ["D+1", "D+2", "D+5", "D+10", "D+20", "D+50", "D+100"];
+  const votes: PairwiseVotingData["votes"] = [];
+
+  // Generate all pairwise combinations
+  for (let i = 0; i < horizons.length; i++) {
+    for (let j = i + 1; j < horizons.length; j++) {
+      // Bias votes toward the direction
+      const baseBias = direction === "bullish" ? 0.65 : direction === "bearish" ? 0.35 : 0.5;
+      const rand = Math.random();
+      const isBullish = rand < baseBias;
+      const magnitude = (Math.random() * 3 - 0.5) * (isBullish ? 1 : -1);
+
+      votes.push({
+        h1: horizons[i],
+        h2: horizons[j],
+        vote: Math.abs(magnitude) < 0.2 ? "neutral" : magnitude > 0 ? "bullish" : "bearish",
+        magnitude,
+        weight: 1 / ((j - i) * 0.5 + 1),
+      });
+    }
+  }
+
+  const bullishCount = votes.filter((v) => v.vote === "bullish").length;
+  const bearishCount = votes.filter((v) => v.vote === "bearish").length;
+  const neutralCount = votes.filter((v) => v.vote === "neutral").length;
+  const total = bullishCount + bearishCount + neutralCount;
+
+  return {
+    votes,
+    bullishCount,
+    bearishCount,
+    neutralCount,
+    netProbability: (bullishCount - bearishCount) / total,
+    signal: direction,
+  };
+}
+
+function generateMockRegimeData(): RegimeData {
+  const regimes: RegimeData["regime"][] = ["bull", "bear", "sideways", "high-volatility", "low-volatility"];
+  const selectedRegime = regimes[Math.floor(Math.random() * 3)]; // Favor first 3
+
+  const probabilities = {
+    bull: 0.15 + Math.random() * 0.4,
+    bear: 0.1 + Math.random() * 0.3,
+    sideways: 0.1 + Math.random() * 0.35,
+  };
+
+  // Normalize probabilities
+  const total = probabilities.bull + probabilities.bear + probabilities.sideways;
+  probabilities.bull /= total;
+  probabilities.bear /= total;
+  probabilities.sideways /= total;
+
+  // Set regime based on highest probability
+  const maxProb = Math.max(probabilities.bull, probabilities.bear, probabilities.sideways);
+  const regime: RegimeData["regime"] =
+    maxProb === probabilities.bull ? "bull" :
+    maxProb === probabilities.bear ? "bear" : "sideways";
+
+  return {
+    regime,
+    confidence: 0.65 + Math.random() * 0.3,
+    probabilities,
+    daysInRegime: Math.floor(5 + Math.random() * 45),
+    historicalAccuracy: 58 + Math.random() * 18,
+    volatility: 12 + Math.random() * 25,
+    trendStrength: (Math.random() * 2 - 1) * 0.8,
+  };
+}
+
+function generateMockConfidenceInterval(
+  direction: "bullish" | "bearish" | "neutral"
+): ConfidenceInterval {
+  const baseBias = direction === "bullish" ? 1.2 : direction === "bearish" ? -1.2 : 0;
+  const point = baseBias + (Math.random() * 1.5 - 0.75);
+  const spread = 1.5 + Math.random() * 2;
+
+  return {
+    lower: point - spread,
+    point,
+    upper: point + spread,
+    coverage: 0.90,
+  };
+}
 
 // ============================================================================
 // Asset Selector Tabs
@@ -564,6 +695,21 @@ export function AlphaProDashboardV2() {
     heroSignal.confidence >= 75 ? "strong" : heroSignal.confidence >= 55 ? "moderate" : "weak"
   ), [heroSignal.signalDirection, heroSignal.confidence]);
 
+  // Ensemble visualization mock data
+  const ensembleConfidenceData = useMemo(
+    () => generateMockEnsembleConfidence(heroSignal.signalDirection, heroSignal.confidence),
+    [heroSignal.signalDirection, heroSignal.confidence]
+  );
+  const pairwiseVotingData = useMemo(
+    () => generateMockPairwiseVoting(heroSignal.signalDirection),
+    [heroSignal.signalDirection]
+  );
+  const regimeData = useMemo(() => generateMockRegimeData(), [selectedAsset]);
+  const confidenceIntervalData = useMemo(
+    () => generateMockConfidenceInterval(heroSignal.signalDirection),
+    [heroSignal.signalDirection]
+  );
+
   // Loading state
   const isLoading = metricsLoading || forecastLoading || signalLoading || ohlcvLoading;
 
@@ -666,6 +812,51 @@ export function AlphaProDashboardV2() {
         <TabsContent value="overview" className="space-y-6">
           {/* Hero Signal Panel */}
           <HeroSignalPanel data={heroSignal} onTrade={() => {}} />
+
+          {/* Ensemble Intelligence Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-purple-400" />
+              <h2 className="text-lg font-semibold text-neutral-200">Ensemble Intelligence</h2>
+              <Badge className="bg-purple-500/10 border-purple-500/30 text-purple-400 text-xs">
+                Advanced Analytics
+              </Badge>
+            </div>
+
+            {/* Ensemble Components Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+              {/* Ensemble Confidence Card */}
+              <EnsembleConfidenceCard
+                data={ensembleConfidenceData}
+                showBreakdown={false}
+                compact={false}
+              />
+
+              {/* Pairwise Voting Chart */}
+              <PairwiseVotingChart
+                data={pairwiseVotingData}
+                showGrid={false}
+                compact={false}
+              />
+
+              {/* Regime Indicator */}
+              <RegimeIndicator
+                data={regimeData}
+                showProbabilities={true}
+                compact={false}
+                size="md"
+              />
+
+              {/* Confidence Interval Bar */}
+              <ConfidenceIntervalBar
+                data={confidenceIntervalData}
+                assetName={assetInfo.name}
+                horizon="D+5"
+                showDetails={false}
+                compact={false}
+              />
+            </div>
+          </div>
 
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -920,6 +1111,51 @@ export function AlphaProDashboardV2() {
 
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
+          {/* Ensemble Deep Dive */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-purple-400" />
+              <h2 className="text-lg font-semibold text-neutral-200">Ensemble Deep Dive</h2>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Full Ensemble Confidence with Breakdown */}
+              <EnsembleConfidenceCard
+                data={ensembleConfidenceData}
+                showBreakdown={true}
+                compact={false}
+              />
+
+              {/* Full Pairwise Voting with Grid */}
+              <PairwiseVotingChart
+                data={pairwiseVotingData}
+                showGrid={true}
+                compact={false}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Full Regime Indicator */}
+              <RegimeIndicator
+                data={regimeData}
+                showProbabilities={true}
+                compact={false}
+                size="lg"
+              />
+
+              {/* Full Confidence Interval Bar */}
+              <ConfidenceIntervalBar
+                data={confidenceIntervalData}
+                assetName={assetInfo.name}
+                horizon="D+5"
+                showDetails={true}
+                compact={false}
+              />
+            </div>
+          </div>
+
+          <Separator className="bg-neutral-800" />
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Volatility Surface */}
             <div className="lg:col-span-2">
