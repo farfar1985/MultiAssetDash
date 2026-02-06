@@ -198,6 +198,28 @@ export interface HealthStatus {
   timestamp: string;
 }
 
+// Quantum Dashboard Types
+export type QuantumRegime = "LOW_VOL" | "NORMAL" | "ELEVATED" | "CRISIS";
+export type ContagionLevel = "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
+
+export interface QuantumAssetRegime {
+  regime: QuantumRegime;
+  confidence: number;
+  realized_vol: number;
+}
+
+export interface QuantumContagion {
+  level: ContagionLevel;
+  score: number;
+  highest_risk_pair: [string, string] | null;
+}
+
+export interface QuantumDashboard {
+  timestamp: string;
+  regimes: Record<string, QuantumAssetRegime>;
+  contagion: QuantumContagion | null;
+}
+
 // API Response wrapper
 export interface ApiResponse<T> {
   success: boolean;
@@ -453,6 +475,12 @@ export const backendApi = {
   }> => {
     return fetchApi(getApiUrl("/configs"));
   },
+
+  /**
+   * Get quantum dashboard with regime status for all assets and contagion analysis
+   */
+  getQuantumDashboard: (): Promise<QuantumDashboard> =>
+    fetchApi<QuantumDashboard>(getApiUrl("/quantum/dashboard")),
 };
 
 // ============================================================================

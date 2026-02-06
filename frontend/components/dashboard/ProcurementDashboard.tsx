@@ -3,392 +3,429 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { MOCK_ASSETS, MOCK_SIGNALS, type SignalData } from "@/lib/mock-data";
+import { MOCK_ASSETS, MOCK_SIGNALS } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
-  Truck,
-  Package,
   TrendingUp,
   TrendingDown,
   Minus,
   AlertTriangle,
   Clock,
   Calendar,
-  CheckCircle2,
-  Target,
-  Factory,
   Globe,
-  Warehouse,
-  Scale,
-  Zap,
-  Bell,
   Shield,
   Activity,
-  CircleDot,
-  Layers,
   FileText,
   Calculator,
-  PiggyBank,
+  DollarSign,
+  Building2,
+  ClipboardCheck,
+  AlertCircle,
+  BarChart3,
+  PieChart,
+  ArrowUpRight,
+  ArrowDownRight,
+  CheckSquare,
+  Square,
+  Users,
+  Truck,
 } from "lucide-react";
 
 // ============================================================================
 // Types
 // ============================================================================
 
-interface CommodityData {
+interface CommodityForecast {
   assetId: AssetId;
   name: string;
   symbol: string;
   currentPrice: number;
   unit: string;
-  change24h: number;
-  changePercent24h: number;
-  signal: SignalData;
-  procurement: ProcurementMetrics;
+  forecast: {
+    point: number;
+    low: number;
+    high: number;
+    confidence: number;
+  };
+  change: number;
+  direction: "up" | "down" | "flat";
 }
 
-interface ProcurementMetrics {
-  buyWindow: "optimal" | "acceptable" | "wait" | "urgent";
-  priceOutlook: "falling" | "stable" | "rising";
-  supplyRisk: "low" | "medium" | "high";
-  recommendedAction: string;
-  savingsOpportunity: number; // percentage
-  contractTiming: string;
-  volatilityLevel: "low" | "medium" | "high";
-  hedgeRecommendation: string;
-}
-
-interface BuyingOpportunity {
-  assetId: AssetId;
-  name: string;
-  symbol: string;
+interface CostBasis {
+  commodity: string;
+  avgCost: number;
   currentPrice: number;
-  unit: string;
-  urgency: "buy-now" | "consider" | "monitor" | "wait";
-  expectedMove: number;
-  timeframe: string;
-  savingsPotential: number;
-  confidence: number;
-  reasoning: string;
+  variance: number;
+  ytdSpend: number;
+  ytdVolume: number;
+}
+
+interface SupplierExposure {
+  supplier: string;
+  region: string;
+  commodities: string[];
+  riskScore: number;
+  spend: number;
+  contracts: number;
+}
+
+interface ComplianceItem {
+  id: string;
+  category: string;
+  item: string;
+  status: "complete" | "pending" | "overdue" | "na";
+  dueDate?: string;
+  assignee?: string;
+}
+
+interface BudgetItem {
+  category: string;
+  budget: number;
+  actual: number;
+  variance: number;
+  trend: "up" | "down" | "flat";
+}
+
+interface ContractExpiration {
+  id: string;
+  supplier: string;
+  commodity: string;
+  expiryDate: string;
+  value: number;
+  status: "active" | "expiring" | "expired" | "renewal";
 }
 
 // ============================================================================
-// Data Generators
+// Mock Data
 // ============================================================================
 
 const COMMODITY_UNITS: Record<string, string> = {
-  "crude-oil": "/barrel",
+  "crude-oil": "/bbl",
   "natural-gas": "/MMBtu",
   gold: "/oz",
   silver: "/oz",
   copper: "/lb",
   platinum: "/oz",
-  wheat: "/bushel",
-  corn: "/bushel",
-  soybean: "/bushel",
-  bitcoin: "",
+  wheat: "/bu",
+  corn: "/bu",
+  soybean: "/bu",
 };
 
-function getProcurementMetrics(signal: SignalData): ProcurementMetrics {
-  const isBullish = signal.direction === "bullish";
-  const isBearish = signal.direction === "bearish";
-  const highConfidence = signal.confidence >= 70;
-
-  // Determine buy window
-  let buyWindow: ProcurementMetrics["buyWindow"] = "acceptable";
-  if (isBearish && highConfidence) {
-    buyWindow = "optimal"; // Prices expected to fall - wait
-  } else if (isBullish && highConfidence) {
-    buyWindow = "urgent"; // Prices expected to rise - buy now
-  } else if (signal.direction === "neutral") {
-    buyWindow = "acceptable";
-  } else {
-    buyWindow = isBullish ? "acceptable" : "wait";
-  }
-
-  // Price outlook
-  const priceOutlook: ProcurementMetrics["priceOutlook"] = isBullish
-    ? "rising"
-    : isBearish
-    ? "falling"
-    : "stable";
-
-  // Supply risk (derived from volatility/confidence)
-  const supplyRisk: ProcurementMetrics["supplyRisk"] =
-    signal.confidence < 55 ? "high" : signal.confidence < 70 ? "medium" : "low";
-
-  // Recommended action
-  const actions = {
-    optimal: "Hold off purchasing - prices may decline further",
-    urgent: "Lock in prices now before expected increase",
-    consider: "Good time to fulfill near-term requirements",
-    acceptable: "Standard purchasing conditions apply",
-    wait: "Monitor closely, better opportunities may arise",
-  };
-
-  // Savings opportunity
-  const savingsOpportunity = isBearish
-    ? Math.round(5 + Math.random() * 10)
-    : isBullish
-    ? -Math.round(3 + Math.random() * 8)
-    : Math.round(-2 + Math.random() * 4);
-
-  // Contract timing
-  const contractTiming = isBullish
-    ? "Consider longer-term contracts to lock current rates"
-    : isBearish
-    ? "Short-term contracts recommended - better prices ahead"
-    : "Standard contract terms appropriate";
-
-  // Volatility
-  const volatilityLevel: ProcurementMetrics["volatilityLevel"] =
-    signal.sharpeRatio > 2.5 ? "high" : signal.sharpeRatio > 1.5 ? "medium" : "low";
-
-  // Hedge recommendation
-  const hedgeRecommendation = isBullish
-    ? "Consider hedging against price increases"
-    : isBearish
-    ? "Hedging may not be necessary short-term"
-    : "Monitor market for hedging opportunities";
-
-  return {
-    buyWindow,
-    priceOutlook,
-    supplyRisk,
-    recommendedAction: actions[buyWindow],
-    savingsOpportunity,
-    contractTiming,
-    volatilityLevel,
-    hedgeRecommendation,
-  };
-}
-
-function getCommodityData(): CommodityData[] {
-  const commodities: CommodityData[] = [];
-
-  // Filter out bitcoin for procurement (not a physical commodity)
+function generateForecasts(): CommodityForecast[] {
+  const forecasts: CommodityForecast[] = [];
   const procurementAssets = Object.entries(MOCK_ASSETS).filter(
     ([id]) => id !== "bitcoin"
   );
 
   procurementAssets.forEach(([assetId, asset]) => {
-    const signal = MOCK_SIGNALS[assetId as AssetId]?.["D+5"]; // Use 5-day outlook for procurement
+    const signal = MOCK_SIGNALS[assetId as AssetId]?.["D+5"];
     if (signal) {
-      commodities.push({
+      const volatility = 0.05 + Math.random() * 0.1;
+      const direction = signal.direction === "bullish" ? "up" : signal.direction === "bearish" ? "down" : "flat";
+      const change = direction === "up" ? Math.random() * 8 : direction === "down" ? -Math.random() * 8 : (Math.random() - 0.5) * 3;
+      const point = asset.currentPrice * (1 + change / 100);
+
+      forecasts.push({
         assetId: assetId as AssetId,
         name: asset.name,
         symbol: asset.symbol,
         currentPrice: asset.currentPrice,
         unit: COMMODITY_UNITS[assetId] || "",
-        change24h: asset.change24h,
-        changePercent24h: asset.changePercent24h,
-        signal,
-        procurement: getProcurementMetrics(signal),
+        forecast: {
+          point: Number(point.toFixed(2)),
+          low: Number((point * (1 - volatility)).toFixed(2)),
+          high: Number((point * (1 + volatility)).toFixed(2)),
+          confidence: signal.confidence,
+        },
+        change: Number(change.toFixed(2)),
+        direction,
       });
     }
   });
 
-  // Sort by buy window urgency
-  const urgencyOrder = { urgent: 0, optimal: 1, consider: 2, acceptable: 3, wait: 4 };
-  return commodities.sort(
-    (a, b) => urgencyOrder[a.procurement.buyWindow] - urgencyOrder[b.procurement.buyWindow]
-  );
+  return forecasts;
 }
 
-function getBuyingOpportunities(commodities: CommodityData[]): BuyingOpportunity[] {
-  return commodities
-    .filter((c) => c.procurement.buyWindow === "optimal" || c.procurement.buyWindow === "urgent")
-    .map((c) => {
-      const urgency: BuyingOpportunity["urgency"] =
-        c.procurement.buyWindow === "urgent"
-          ? "buy-now"
-          : c.procurement.buyWindow === "optimal"
-          ? "consider"
-          : "monitor";
+function generateCostBasis(): CostBasis[] {
+  return [
+    { commodity: "Crude Oil", avgCost: 71.25, currentPrice: 73.45, variance: 3.1, ytdSpend: 12400000, ytdVolume: 173850 },
+    { commodity: "Natural Gas", avgCost: 2.85, currentPrice: 2.72, variance: -4.6, ytdSpend: 4200000, ytdVolume: 1545455 },
+    { commodity: "Gold", avgCost: 2285.00, currentPrice: 2312.50, variance: 1.2, ytdSpend: 8900000, ytdVolume: 3850 },
+    { commodity: "Copper", avgCost: 4.15, currentPrice: 4.08, variance: -1.7, ytdSpend: 6100000, ytdVolume: 1493902 },
+    { commodity: "Wheat", avgCost: 5.82, currentPrice: 5.95, variance: 2.2, ytdSpend: 2800000, ytdVolume: 470790 },
+  ];
+}
 
-      return {
-        assetId: c.assetId,
-        name: c.name,
-        symbol: c.symbol,
-        currentPrice: c.currentPrice,
-        unit: c.unit,
-        urgency,
-        expectedMove: c.signal.direction === "bullish" ? 5 + Math.random() * 8 : -(3 + Math.random() * 6),
-        timeframe: c.signal.horizon === "D+1" ? "1 day" : c.signal.horizon === "D+5" ? "5 days" : "10 days",
-        savingsPotential: Math.abs(c.procurement.savingsOpportunity),
-        confidence: c.signal.confidence,
-        reasoning:
-          c.signal.direction === "bullish"
-            ? `Prices expected to rise ${(5 + Math.random() * 5).toFixed(1)}% - secure supply now`
-            : `Potential ${(3 + Math.random() * 5).toFixed(1)}% savings if you wait for price dip`,
-      };
-    })
-    .slice(0, 4);
+function generateSupplierExposure(): SupplierExposure[] {
+  return [
+    { supplier: "GlobalPetro Inc", region: "Middle East", commodities: ["Crude Oil"], riskScore: 65, spend: 8500000, contracts: 4 },
+    { supplier: "MetalWorks Ltd", region: "South America", commodities: ["Copper", "Silver"], riskScore: 42, spend: 4200000, contracts: 3 },
+    { supplier: "EuroGas GmbH", region: "Europe", commodities: ["Natural Gas"], riskScore: 28, spend: 3100000, contracts: 2 },
+    { supplier: "Pacific Grains", region: "Asia Pacific", commodities: ["Wheat", "Corn", "Soybean"], riskScore: 35, spend: 2800000, contracts: 5 },
+    { supplier: "NorthAm Energy", region: "North America", commodities: ["Crude Oil", "Natural Gas"], riskScore: 22, spend: 5600000, contracts: 3 },
+    { supplier: "Precious Metals Co", region: "Africa", commodities: ["Gold", "Platinum"], riskScore: 55, spend: 6200000, contracts: 2 },
+  ];
+}
+
+function generateComplianceItems(): ComplianceItem[] {
+  return [
+    { id: "1", category: "Supplier Audit", item: "Annual supplier compliance audit - GlobalPetro", status: "complete", assignee: "J. Smith" },
+    { id: "2", category: "Documentation", item: "Update commodity sourcing policy", status: "pending", dueDate: "2024-02-15", assignee: "M. Johnson" },
+    { id: "3", category: "Certification", item: "ISO 14001 recertification", status: "pending", dueDate: "2024-03-01", assignee: "R. Williams" },
+    { id: "4", category: "Reporting", item: "Q4 sustainability report submission", status: "overdue", dueDate: "2024-01-31", assignee: "A. Davis" },
+    { id: "5", category: "Training", item: "Anti-bribery compliance training", status: "complete", assignee: "All Staff" },
+    { id: "6", category: "Contract Review", item: "Force majeure clause review", status: "pending", dueDate: "2024-02-28", assignee: "Legal Team" },
+    { id: "7", category: "Risk Assessment", item: "Quarterly supplier risk assessment", status: "complete", assignee: "K. Brown" },
+    { id: "8", category: "ESG", item: "Scope 3 emissions baseline", status: "pending", dueDate: "2024-04-15", assignee: "Sustainability" },
+  ];
+}
+
+function generateBudgetItems(): BudgetItem[] {
+  return [
+    { category: "Energy", budget: 18000000, actual: 16700000, variance: -7.2, trend: "down" },
+    { category: "Precious Metals", budget: 12000000, actual: 15100000, variance: 25.8, trend: "up" },
+    { category: "Base Metals", budget: 8000000, actual: 6100000, variance: -23.8, trend: "down" },
+    { category: "Agriculture", budget: 5000000, actual: 5300000, variance: 6.0, trend: "up" },
+    { category: "Logistics", budget: 3500000, actual: 3200000, variance: -8.6, trend: "down" },
+  ];
+}
+
+function generateContractExpirations(): ContractExpiration[] {
+  return [
+    { id: "1", supplier: "GlobalPetro Inc", commodity: "Crude Oil", expiryDate: "2024-02-28", value: 4200000, status: "expiring" },
+    { id: "2", supplier: "EuroGas GmbH", commodity: "Natural Gas", expiryDate: "2024-04-15", value: 1800000, status: "active" },
+    { id: "3", supplier: "MetalWorks Ltd", commodity: "Copper", expiryDate: "2024-01-31", value: 2100000, status: "renewal" },
+    { id: "4", supplier: "Pacific Grains", commodity: "Wheat", expiryDate: "2024-06-30", value: 950000, status: "active" },
+    { id: "5", supplier: "NorthAm Energy", commodity: "Natural Gas", expiryDate: "2024-03-15", value: 2800000, status: "expiring" },
+    { id: "6", supplier: "Precious Metals Co", commodity: "Gold", expiryDate: "2024-05-20", value: 3500000, status: "active" },
+  ];
 }
 
 // ============================================================================
-// Components
+// Enterprise Light Theme Wrapper
+// ============================================================================
+
+function LightModeWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen -m-6 bg-slate-50 text-slate-900">
+      {children}
+    </div>
+  );
+}
+
+// ============================================================================
+// Header Component
 // ============================================================================
 
 function DashboardHeader() {
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
-    <div className="flex items-center justify-between mb-6">
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl">
-          <Truck className="w-6 h-6 text-white" />
+    <div className="bg-white border-b border-slate-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="p-2.5 bg-blue-600 rounded-lg">
+            <Building2 className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-semibold text-slate-900">Procurement Dashboard</h1>
+            <p className="text-sm text-slate-500">{today}</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-xl font-bold text-neutral-100">Procurement Command Center</h1>
-          <p className="text-sm text-neutral-400">Strategic sourcing & supply chain intelligence</p>
+        <div className="flex items-center gap-3">
+          <Badge className="bg-green-100 text-green-700 border-green-200 hover:bg-green-100">
+            <Activity className="w-3.5 h-3.5 mr-1.5" />
+            Markets Open
+          </Badge>
+          <Badge className="bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100">
+            <Clock className="w-3.5 h-3.5 mr-1.5" />
+            Last Updated: {new Date().toLocaleTimeString()}
+          </Badge>
         </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 px-3 py-1">
-          <Activity className="w-3.5 h-3.5 mr-1.5" />
-          Live Pricing
-        </Badge>
       </div>
     </div>
   );
 }
 
-// Market Overview Stats
-function MarketOverview({ commodities }: { commodities: CommodityData[] }) {
-  const urgentBuys = commodities.filter((c) => c.procurement.buyWindow === "urgent").length;
-  const optimalWindows = commodities.filter((c) => c.procurement.buyWindow === "optimal").length;
-  const highRisk = commodities.filter((c) => c.procurement.supplyRisk === "high").length;
-  const avgSavings =
-    commodities.reduce((sum, c) => sum + Math.max(0, c.procurement.savingsOpportunity), 0) /
-    commodities.length;
+// ============================================================================
+// Summary Cards
+// ============================================================================
 
-  const stats = [
+function SummaryCards() {
+  const cards = [
     {
-      label: "Action Required",
-      value: urgentBuys,
-      subtext: "commodities",
-      icon: Bell,
-      color: "text-red-400",
-      bgColor: "bg-red-500/10",
+      title: "Total YTD Spend",
+      value: "$34.4M",
+      change: "+8.2%",
+      trend: "up" as const,
+      icon: DollarSign,
+      color: "blue",
     },
     {
-      label: "Buying Windows",
-      value: optimalWindows,
-      subtext: "optimal now",
-      icon: Target,
-      color: "text-emerald-400",
-      bgColor: "bg-emerald-500/10",
+      title: "Active Contracts",
+      value: "19",
+      change: "3 expiring",
+      trend: "warning" as const,
+      icon: FileText,
+      color: "amber",
     },
     {
-      label: "Supply Risk",
-      value: highRisk,
-      subtext: "elevated",
-      icon: AlertTriangle,
-      color: "text-amber-400",
-      bgColor: "bg-amber-500/10",
+      title: "Supplier Risk Score",
+      value: "Low",
+      change: "Avg: 38/100",
+      trend: "down" as const,
+      icon: Shield,
+      color: "green",
     },
     {
-      label: "Avg Savings",
-      value: `${avgSavings.toFixed(1)}%`,
-      subtext: "potential",
-      icon: PiggyBank,
-      color: "text-cyan-400",
-      bgColor: "bg-cyan-500/10",
+      title: "Compliance Status",
+      value: "87%",
+      change: "1 overdue",
+      trend: "warning" as const,
+      icon: ClipboardCheck,
+      color: "purple",
     },
   ];
 
+  const colorMap = {
+    blue: { bg: "bg-blue-50", icon: "text-blue-600", border: "border-blue-200" },
+    amber: { bg: "bg-amber-50", icon: "text-amber-600", border: "border-amber-200" },
+    green: { bg: "bg-green-50", icon: "text-green-600", border: "border-green-200" },
+    purple: { bg: "bg-purple-50", icon: "text-purple-600", border: "border-purple-200" },
+  };
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      {stats.map((stat) => (
-        <Card key={stat.label} className="bg-neutral-900/50 border-neutral-800">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className={cn("p-2 rounded-lg", stat.bgColor)}>
-                <stat.icon className={cn("w-5 h-5", stat.color)} />
+    <div className="grid grid-cols-4 gap-4 p-6">
+      {cards.map((card) => {
+        const colors = colorMap[card.color as keyof typeof colorMap];
+        return (
+          <Card key={card.title} className={cn("bg-white border shadow-sm", colors.border)}>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">{card.title}</p>
+                  <p className="text-2xl font-semibold text-slate-900">{card.value}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    {card.trend === "up" && <ArrowUpRight className="w-3.5 h-3.5 text-green-600" />}
+                    {card.trend === "down" && <ArrowDownRight className="w-3.5 h-3.5 text-green-600" />}
+                    {card.trend === "warning" && <AlertCircle className="w-3.5 h-3.5 text-amber-600" />}
+                    <span className={cn(
+                      "text-xs",
+                      card.trend === "warning" ? "text-amber-600" : "text-green-600"
+                    )}>
+                      {card.change}
+                    </span>
+                  </div>
+                </div>
+                <div className={cn("p-2 rounded-lg", colors.bg)}>
+                  <card.icon className={cn("w-5 h-5", colors.icon)} />
+                </div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-neutral-100">{stat.value}</div>
-                <div className="text-xs text-neutral-500">{stat.subtext}</div>
-              </div>
-            </div>
-            <div className="text-xs text-neutral-400 mt-2">{stat.label}</div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
 
-// Priority Actions Panel
-function PriorityActions({ opportunities }: { opportunities: BuyingOpportunity[] }) {
-  if (opportunities.length === 0) {
-    return (
-      <Card className="bg-neutral-900/50 border-neutral-800 mb-6">
-        <CardContent className="p-6 text-center">
-          <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-          <p className="text-neutral-300 font-medium">No Urgent Actions Required</p>
-          <p className="text-sm text-neutral-500">Market conditions are stable for purchasing</p>
-        </CardContent>
-      </Card>
-    );
-  }
+// ============================================================================
+// Price Forecasts with Confidence Intervals
+// ============================================================================
 
+function PriceForecastPanel({ forecasts }: { forecasts: CommodityForecast[] }) {
   return (
-    <Card className="bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-emerald-500/5 border-emerald-500/20 mb-6">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Zap className="w-5 h-5 text-emerald-400" />
-          Priority Buying Opportunities
+    <Card className="bg-white border border-slate-200 shadow-sm">
+      <CardHeader className="border-b border-slate-100 pb-3">
+        <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-blue-600" />
+          5-Day Price Forecasts
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {opportunities.map((opp) => (
-            <div
-              key={opp.assetId}
-              className={cn(
-                "p-4 rounded-xl border transition-all",
-                opp.urgency === "buy-now"
-                  ? "bg-red-500/5 border-red-500/20"
-                  : "bg-emerald-500/5 border-emerald-500/20"
-              )}
-            >
-              <div className="flex items-center justify-between mb-3">
+      <CardContent className="p-0">
+        <div className="divide-y divide-slate-100">
+          {forecasts.slice(0, 6).map((item) => (
+            <div key={item.assetId} className="p-4 hover:bg-slate-50 transition-colors">
+              <div className="flex items-center justify-between mb-2">
                 <div>
-                  <h4 className="font-semibold text-neutral-100">{opp.name}</h4>
-                  <span className="text-sm text-neutral-400">
-                    ${opp.currentPrice.toLocaleString()}{opp.unit}
+                  <span className="font-medium text-slate-900">{item.name}</span>
+                  <span className="text-slate-400 text-sm ml-2">{item.symbol}</span>
+                </div>
+                <div className="text-right">
+                  <span className="font-semibold text-slate-900">
+                    ${item.currentPrice.toLocaleString()}{item.unit}
                   </span>
                 </div>
-                <Badge
-                  className={cn(
-                    opp.urgency === "buy-now"
-                      ? "bg-red-500/20 text-red-400 border-red-500/30"
-                      : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                  )}
-                >
-                  {opp.urgency === "buy-now" ? "ACT NOW" : "OPPORTUNITY"}
-                </Badge>
               </div>
 
-              <p className="text-sm text-neutral-400 mb-3">{opp.reasoning}</p>
+              {/* Confidence Interval Visualization */}
+              <div className="relative h-8 bg-slate-100 rounded-lg overflow-hidden">
+                {/* Range bar */}
+                <div
+                  className="absolute h-full bg-blue-100 rounded"
+                  style={{
+                    left: `${((item.forecast.low - item.currentPrice * 0.85) / (item.currentPrice * 0.3)) * 100}%`,
+                    width: `${((item.forecast.high - item.forecast.low) / (item.currentPrice * 0.3)) * 100}%`,
+                  }}
+                />
+                {/* Point estimate marker */}
+                <div
+                  className="absolute top-0 bottom-0 w-0.5 bg-blue-600"
+                  style={{
+                    left: `${((item.forecast.point - item.currentPrice * 0.85) / (item.currentPrice * 0.3)) * 100}%`,
+                  }}
+                />
+                {/* Current price marker */}
+                <div
+                  className="absolute top-0 bottom-0 w-0.5 bg-slate-400"
+                  style={{
+                    left: `${((item.currentPrice - item.currentPrice * 0.85) / (item.currentPrice * 0.3)) * 100}%`,
+                  }}
+                />
+              </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4">
-                  <span className="text-neutral-500">
-                    <Clock className="w-3.5 h-3.5 inline mr-1" />
-                    {opp.timeframe}
+              <div className="flex items-center justify-between mt-2 text-xs">
+                <div className="flex items-center gap-3">
+                  <span className="text-slate-500">
+                    Low: <span className="text-slate-700">${item.forecast.low.toLocaleString()}</span>
                   </span>
-                  <span className="text-neutral-500">
-                    <Target className="w-3.5 h-3.5 inline mr-1" />
-                    {opp.confidence}% conf.
+                  <span className="text-blue-600 font-medium">
+                    Est: ${item.forecast.point.toLocaleString()}
+                  </span>
+                  <span className="text-slate-500">
+                    High: <span className="text-slate-700">${item.forecast.high.toLocaleString()}</span>
                   </span>
                 </div>
-                {opp.urgency !== "buy-now" && (
-                  <span className="text-emerald-400 font-medium">
-                    Save up to {opp.savingsPotential}%
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {item.direction === "up" && (
+                    <span className="text-red-600 flex items-center">
+                      <TrendingUp className="w-3.5 h-3.5 mr-1" />
+                      +{item.change}%
+                    </span>
+                  )}
+                  {item.direction === "down" && (
+                    <span className="text-green-600 flex items-center">
+                      <TrendingDown className="w-3.5 h-3.5 mr-1" />
+                      {item.change}%
+                    </span>
+                  )}
+                  {item.direction === "flat" && (
+                    <span className="text-slate-500 flex items-center">
+                      <Minus className="w-3.5 h-3.5 mr-1" />
+                      {item.change}%
+                    </span>
+                  )}
+                  <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-[10px]">
+                    {item.forecast.confidence}% conf
+                  </Badge>
+                </div>
               </div>
             </div>
           ))}
@@ -398,203 +435,305 @@ function PriorityActions({ opportunities }: { opportunities: BuyingOpportunity[]
   );
 }
 
-// Commodity Card for Procurement
-function CommodityCard({ commodity }: { commodity: CommodityData }) {
-  const { procurement } = commodity;
+// ============================================================================
+// Cost Basis Analysis
+// ============================================================================
 
-  const windowConfig = {
-    optimal: {
-      color: "text-emerald-400",
-      bg: "bg-emerald-500/10",
-      border: "border-emerald-500/20",
-      label: "Optimal Window",
-      icon: CheckCircle2,
-    },
-    urgent: {
-      color: "text-red-400",
-      bg: "bg-red-500/10",
-      border: "border-red-500/20",
-      label: "Buy Now",
-      icon: AlertTriangle,
-    },
-    consider: {
-      color: "text-blue-400",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
-      label: "Consider",
-      icon: Target,
-    },
-    acceptable: {
-      color: "text-neutral-400",
-      bg: "bg-neutral-500/10",
-      border: "border-neutral-500/20",
-      label: "Standard",
-      icon: CircleDot,
-    },
-    wait: {
-      color: "text-amber-400",
-      bg: "bg-amber-500/10",
-      border: "border-amber-500/20",
-      label: "Wait",
-      icon: Clock,
-    },
+function CostBasisPanel({ data }: { data: CostBasis[] }) {
+  return (
+    <Card className="bg-white border border-slate-200 shadow-sm">
+      <CardHeader className="border-b border-slate-100 pb-3">
+        <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
+          <Calculator className="w-5 h-5 text-purple-600" />
+          Cost Basis Analysis
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <table className="w-full">
+          <thead className="bg-slate-50">
+            <tr className="text-xs text-slate-500 uppercase tracking-wider">
+              <th className="text-left p-3 font-medium">Commodity</th>
+              <th className="text-right p-3 font-medium">Avg Cost</th>
+              <th className="text-right p-3 font-medium">Current</th>
+              <th className="text-right p-3 font-medium">Variance</th>
+              <th className="text-right p-3 font-medium">YTD Spend</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {data.map((item) => (
+              <tr key={item.commodity} className="hover:bg-slate-50 transition-colors">
+                <td className="p-3 font-medium text-slate-900">{item.commodity}</td>
+                <td className="p-3 text-right text-slate-600">${item.avgCost.toFixed(2)}</td>
+                <td className="p-3 text-right text-slate-900">${item.currentPrice.toFixed(2)}</td>
+                <td className={cn(
+                  "p-3 text-right font-medium",
+                  item.variance >= 0 ? "text-red-600" : "text-green-600"
+                )}>
+                  {item.variance >= 0 ? "+" : ""}{item.variance.toFixed(1)}%
+                </td>
+                <td className="p-3 text-right text-slate-600">
+                  ${(item.ytdSpend / 1000000).toFixed(1)}M
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// Supplier Exposure Heatmap
+// ============================================================================
+
+function SupplierExposureHeatmap({ data }: { data: SupplierExposure[] }) {
+  const getRiskColor = (score: number) => {
+    if (score >= 60) return "bg-red-100 text-red-700 border-red-200";
+    if (score >= 40) return "bg-amber-100 text-amber-700 border-amber-200";
+    return "bg-green-100 text-green-700 border-green-200";
   };
 
-  const config = windowConfig[procurement.buyWindow];
-  const WindowIcon = config.icon;
-
-  const outlookConfig = {
-    rising: { icon: TrendingUp, color: "text-red-400", label: "Rising" },
-    falling: { icon: TrendingDown, color: "text-emerald-400", label: "Falling" },
-    stable: { icon: Minus, color: "text-neutral-400", label: "Stable" },
+  const getRiskBg = (score: number) => {
+    if (score >= 60) return "bg-red-500";
+    if (score >= 40) return "bg-amber-500";
+    return "bg-green-500";
   };
-
-  const outlook = outlookConfig[procurement.priceOutlook];
-  const OutlookIcon = outlook.icon;
 
   return (
-    <Card className={cn("border transition-all hover:border-neutral-600", config.bg, config.border)}>
+    <Card className="bg-white border border-slate-200 shadow-sm">
+      <CardHeader className="border-b border-slate-100 pb-3">
+        <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
+          <Globe className="w-5 h-5 text-amber-600" />
+          Supplier Exposure & Risk
+        </CardTitle>
+      </CardHeader>
       <CardContent className="p-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="font-semibold text-neutral-100">{commodity.name}</h3>
-            <div className="flex items-center gap-2 text-sm text-neutral-400">
-              <span>{commodity.symbol}</span>
-              <span>•</span>
-              <span className={commodity.changePercent24h >= 0 ? "text-emerald-400" : "text-red-400"}>
-                {commodity.changePercent24h >= 0 ? "+" : ""}
-                {commodity.changePercent24h.toFixed(2)}%
-              </span>
+        <div className="grid grid-cols-2 gap-3">
+          {data.map((supplier) => (
+            <div
+              key={supplier.supplier}
+              className="p-3 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <p className="font-medium text-slate-900 text-sm">{supplier.supplier}</p>
+                  <p className="text-xs text-slate-500">{supplier.region}</p>
+                </div>
+                <Badge className={cn("text-[10px]", getRiskColor(supplier.riskScore))}>
+                  Risk: {supplier.riskScore}
+                </Badge>
+              </div>
+
+              {/* Risk bar */}
+              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mb-2">
+                <div
+                  className={cn("h-full rounded-full transition-all", getRiskBg(supplier.riskScore))}
+                  style={{ width: `${supplier.riskScore}%` }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500">
+                  {supplier.commodities.length} commodities
+                </span>
+                <span className="text-slate-700">
+                  ${(supplier.spend / 1000000).toFixed(1)}M spend
+                </span>
+              </div>
             </div>
-          </div>
-          <div className="text-right">
-            <div className="text-lg font-bold text-neutral-100">
-              ${commodity.currentPrice.toLocaleString()}
-            </div>
-            <div className="text-xs text-neutral-500">{commodity.unit}</div>
-          </div>
+          ))}
         </div>
 
-        {/* Buy Window Badge */}
-        <div className={cn("flex items-center gap-2 p-2 rounded-lg mb-4", config.bg)}>
-          <WindowIcon className={cn("w-4 h-4", config.color)} />
-          <span className={cn("text-sm font-medium", config.color)}>{config.label}</span>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="p-2 bg-neutral-800/50 rounded-lg">
-            <div className="flex items-center gap-1.5 mb-1">
-              <OutlookIcon className={cn("w-3.5 h-3.5", outlook.color)} />
-              <span className="text-xs text-neutral-500">Price Outlook</span>
-            </div>
-            <span className={cn("text-sm font-medium", outlook.color)}>{outlook.label}</span>
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-slate-100">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500" />
+            <span className="text-xs text-slate-500">Low Risk (0-39)</span>
           </div>
-          <div className="p-2 bg-neutral-800/50 rounded-lg">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Shield className="w-3.5 h-3.5 text-neutral-400" />
-              <span className="text-xs text-neutral-500">Supply Risk</span>
-            </div>
-            <span
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-amber-500" />
+            <span className="text-xs text-slate-500">Medium (40-59)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500" />
+            <span className="text-xs text-slate-500">High Risk (60+)</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// Compliance Checklist
+// ============================================================================
+
+function ComplianceChecklist({ items }: { items: ComplianceItem[] }) {
+  const complete = items.filter((i) => i.status === "complete").length;
+  const pending = items.filter((i) => i.status === "pending").length;
+  const overdue = items.filter((i) => i.status === "overdue").length;
+
+  const getStatusBadge = (status: ComplianceItem["status"]) => {
+    switch (status) {
+      case "complete":
+        return <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">Complete</Badge>;
+      case "pending":
+        return <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-[10px]">Pending</Badge>;
+      case "overdue":
+        return <Badge className="bg-red-100 text-red-700 border-red-200 text-[10px]">Overdue</Badge>;
+      default:
+        return <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-[10px]">N/A</Badge>;
+    }
+  };
+
+  const getStatusIcon = (status: ComplianceItem["status"]) => {
+    switch (status) {
+      case "complete":
+        return <CheckSquare className="w-4 h-4 text-green-600" />;
+      case "overdue":
+        return <AlertTriangle className="w-4 h-4 text-red-600" />;
+      default:
+        return <Square className="w-4 h-4 text-slate-400" />;
+    }
+  };
+
+  return (
+    <Card className="bg-white border border-slate-200 shadow-sm">
+      <CardHeader className="border-b border-slate-100 pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
+            <ClipboardCheck className="w-5 h-5 text-green-600" />
+            Compliance Status
+          </CardTitle>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-green-600">{complete} complete</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-blue-600">{pending} pending</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-red-600">{overdue} overdue</span>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0 max-h-80 overflow-y-auto">
+        <div className="divide-y divide-slate-100">
+          {items.map((item) => (
+            <div
+              key={item.id}
               className={cn(
-                "text-sm font-medium capitalize",
-                procurement.supplyRisk === "high"
-                  ? "text-red-400"
-                  : procurement.supplyRisk === "medium"
-                  ? "text-amber-400"
-                  : "text-emerald-400"
+                "p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors",
+                item.status === "overdue" && "bg-red-50/50"
               )}
             >
-              {procurement.supplyRisk}
-            </span>
-          </div>
-        </div>
-
-        {/* Recommendation */}
-        <div className="p-3 bg-neutral-800/30 rounded-lg">
-          <div className="flex items-start gap-2">
-            <FileText className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div>
-              <span className="text-xs text-neutral-500">Recommendation</span>
-              <p className="text-sm text-neutral-300 mt-0.5">{procurement.recommendedAction}</p>
+              {getStatusIcon(item.status)}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-slate-900 truncate">{item.item}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-slate-500">{item.category}</span>
+                  {item.dueDate && (
+                    <>
+                      <span className="text-slate-300">•</span>
+                      <span className={cn(
+                        "text-xs",
+                        item.status === "overdue" ? "text-red-600" : "text-slate-500"
+                      )}>
+                        Due: {item.dueDate}
+                      </span>
+                    </>
+                  )}
+                  {item.assignee && (
+                    <>
+                      <span className="text-slate-300">•</span>
+                      <span className="text-xs text-slate-500">{item.assignee}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              {getStatusBadge(item.status)}
             </div>
-          </div>
+          ))}
         </div>
-
-        {/* Savings Badge */}
-        {procurement.savingsOpportunity > 0 && (
-          <div className="mt-3 flex items-center justify-between">
-            <span className="text-xs text-neutral-500">Potential Savings</span>
-            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-              <PiggyBank className="w-3 h-3 mr-1" />
-              Up to {procurement.savingsOpportunity}%
-            </Badge>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
 }
 
-// Contract Timing Guidance
-function ContractGuidance({ commodities }: { commodities: CommodityData[] }) {
-  const shortTermBuys = commodities.filter((c) => c.procurement.priceOutlook === "falling");
-  const lockInNow = commodities.filter((c) => c.procurement.priceOutlook === "rising");
+// ============================================================================
+// Budget vs Actual
+// ============================================================================
+
+function BudgetVsActualPanel({ data }: { data: BudgetItem[] }) {
+  const totalBudget = data.reduce((sum, item) => sum + item.budget, 0);
+  const totalActual = data.reduce((sum, item) => sum + item.actual, 0);
+  const totalVariance = ((totalActual - totalBudget) / totalBudget) * 100;
 
   return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-emerald-400" />
-          Contract Timing Guidance
-        </CardTitle>
+    <Card className="bg-white border border-slate-200 shadow-sm">
+      <CardHeader className="border-b border-slate-100 pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
+            <PieChart className="w-5 h-5 text-blue-600" />
+            Budget vs Actual (YTD)
+          </CardTitle>
+          <Badge className={cn(
+            "text-xs",
+            totalVariance > 0 ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+          )}>
+            {totalVariance > 0 ? "+" : ""}{totalVariance.toFixed(1)}% variance
+          </Badge>
+        </div>
       </CardHeader>
-      <CardContent className="pt-0 space-y-4">
-        {lockInNow.length > 0 && (
-          <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-4 h-4 text-red-400" />
-              <span className="text-sm font-medium text-red-400">Lock In Long-Term</span>
+      <CardContent className="p-4">
+        <div className="space-y-4">
+          {data.map((item) => (
+            <div key={item.category}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-slate-900">{item.category}</span>
+                <div className="flex items-center gap-3 text-xs">
+                  <span className="text-slate-500">
+                    Budget: ${(item.budget / 1000000).toFixed(1)}M
+                  </span>
+                  <span className={cn(
+                    "font-medium",
+                    item.variance > 0 ? "text-red-600" : "text-green-600"
+                  )}>
+                    {item.variance > 0 ? "+" : ""}{item.variance.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+              <div className="relative h-6 bg-slate-100 rounded overflow-hidden">
+                {/* Budget line */}
+                <div className="absolute inset-0 border-r-2 border-slate-400 border-dashed" style={{ width: "100%" }} />
+                {/* Actual bar */}
+                <div
+                  className={cn(
+                    "h-full rounded transition-all",
+                    item.variance > 10 ? "bg-red-500" : item.variance > 0 ? "bg-amber-500" : "bg-green-500"
+                  )}
+                  style={{ width: `${Math.min((item.actual / item.budget) * 100, 150)}%` }}
+                />
+                {/* Actual value label */}
+                <div className="absolute inset-0 flex items-center px-2">
+                  <span className="text-xs font-medium text-white drop-shadow">
+                    ${(item.actual / 1000000).toFixed(1)}M
+                  </span>
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-neutral-400 mb-2">
-              Consider longer-term contracts for these commodities before prices rise:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {lockInNow.map((c) => (
-                <Badge key={c.assetId} variant="outline" className="text-neutral-300 border-neutral-600">
-                  {c.symbol}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
+          ))}
+        </div>
 
-        {shortTermBuys.length > 0 && (
-          <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingDown className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm font-medium text-emerald-400">Short-Term Contracts</span>
-            </div>
-            <p className="text-xs text-neutral-400 mb-2">
-              Use short-term contracts - better prices may be ahead:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {shortTermBuys.map((c) => (
-                <Badge key={c.assetId} variant="outline" className="text-neutral-300 border-neutral-600">
-                  {c.symbol}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="p-3 bg-neutral-800/50 rounded-lg">
-          <div className="flex items-start gap-2">
-            <Calculator className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-            <div className="text-xs text-neutral-400">
-              <strong className="text-neutral-300">Pro Tip:</strong> Review contract terms quarterly
-              and align procurement cycles with seasonal patterns for maximum savings.
+        {/* Totals */}
+        <div className="mt-4 pt-4 border-t border-slate-200">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-slate-900">Total</span>
+            <div className="text-right">
+              <p className="text-lg font-semibold text-slate-900">
+                ${(totalActual / 1000000).toFixed(1)}M
+                <span className="text-sm text-slate-500 font-normal ml-2">
+                  of ${(totalBudget / 1000000).toFixed(1)}M
+                </span>
+              </p>
             </div>
           </div>
         </div>
@@ -603,178 +742,303 @@ function ContractGuidance({ commodities }: { commodities: CommodityData[] }) {
   );
 }
 
-// Supply Chain Risk Monitor
-function SupplyRiskMonitor({ commodities }: { commodities: CommodityData[] }) {
-  const highRisk = commodities.filter((c) => c.procurement.supplyRisk === "high");
-  const mediumRisk = commodities.filter((c) => c.procurement.supplyRisk === "medium");
+// ============================================================================
+// Contract Expiration Calendar
+// ============================================================================
+
+function ContractCalendar({ contracts }: { contracts: ContractExpiration[] }) {
+  const sortedContracts = [...contracts].sort(
+    (a, b) => new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime()
+  );
+
+  const getStatusStyle = (status: ContractExpiration["status"]) => {
+    switch (status) {
+      case "expiring":
+        return "bg-amber-50 border-amber-200 text-amber-700";
+      case "expired":
+        return "bg-red-50 border-red-200 text-red-700";
+      case "renewal":
+        return "bg-blue-50 border-blue-200 text-blue-700";
+      default:
+        return "bg-green-50 border-green-200 text-green-700";
+    }
+  };
+
+  const getStatusLabel = (status: ContractExpiration["status"]) => {
+    switch (status) {
+      case "expiring":
+        return "Expiring Soon";
+      case "expired":
+        return "Expired";
+      case "renewal":
+        return "In Renewal";
+      default:
+        return "Active";
+    }
+  };
 
   return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Globe className="w-5 h-5 text-amber-400" />
-          Supply Chain Risk Monitor
+    <Card className="bg-white border border-slate-200 shadow-sm">
+      <CardHeader className="border-b border-slate-100 pb-3">
+        <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-indigo-600" />
+          Contract Expiration Calendar
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 space-y-3">
-        {highRisk.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <span className="text-sm text-red-400 font-medium">Elevated Risk</span>
-            </div>
-            {highRisk.map((c) => (
-              <div key={c.assetId} className="flex items-center justify-between p-2 bg-red-500/5 rounded-lg">
-                <span className="text-sm text-neutral-300">{c.name}</span>
-                <span className="text-xs text-neutral-500">Monitor closely</span>
+      <CardContent className="p-0">
+        <div className="divide-y divide-slate-100">
+          {sortedContracts.map((contract) => (
+            <div
+              key={contract.id}
+              className={cn(
+                "p-4 flex items-center justify-between hover:bg-slate-50 transition-colors",
+                contract.status === "expiring" && "bg-amber-50/30",
+                contract.status === "renewal" && "bg-blue-50/30"
+              )}
+            >
+              <div className="flex items-center gap-4">
+                <div className="text-center min-w-[60px]">
+                  <p className="text-2xl font-bold text-slate-900">
+                    {new Date(contract.expiryDate).getDate()}
+                  </p>
+                  <p className="text-xs text-slate-500 uppercase">
+                    {new Date(contract.expiryDate).toLocaleDateString("en-US", { month: "short" })}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900">{contract.supplier}</p>
+                  <p className="text-sm text-slate-500">{contract.commodity}</p>
+                </div>
               </div>
-            ))}
-          </div>
-        )}
-
-        {mediumRisk.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-amber-500" />
-              <span className="text-sm text-amber-400 font-medium">Moderate Risk</span>
-            </div>
-            {mediumRisk.map((c) => (
-              <div key={c.assetId} className="flex items-center justify-between p-2 bg-amber-500/5 rounded-lg">
-                <span className="text-sm text-neutral-300">{c.name}</span>
-                <span className="text-xs text-neutral-500">Standard monitoring</span>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="font-semibold text-slate-900">
+                    ${(contract.value / 1000000).toFixed(1)}M
+                  </p>
+                  <p className="text-xs text-slate-500">Contract Value</p>
+                </div>
+                <Badge className={cn("text-xs min-w-[90px] justify-center", getStatusStyle(contract.status))}>
+                  {getStatusLabel(contract.status)}
+                </Badge>
               </div>
-            ))}
-          </div>
-        )}
-
-        {highRisk.length === 0 && mediumRisk.length === 0 && (
-          <div className="p-4 text-center">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
-            <p className="text-sm text-neutral-400">All supply chains operating normally</p>
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
 }
 
-// Category Filter
-function CategoryFilter({
-  selected,
-  onChange,
-}: {
-  selected: string;
-  onChange: (category: string) => void;
-}) {
-  const categories = [
-    { id: "all", label: "All", icon: Layers },
-    { id: "energy", label: "Energy", icon: Zap },
-    { id: "metals", label: "Metals", icon: Factory },
-    { id: "agriculture", label: "Agriculture", icon: Warehouse },
+// ============================================================================
+// Risk Summary Cards
+// ============================================================================
+
+function RiskSummaryCards() {
+  const risks = [
+    {
+      title: "Price Volatility Risk",
+      level: "Medium",
+      score: 45,
+      description: "Energy commodities showing elevated volatility",
+      icon: TrendingUp,
+      color: "amber",
+    },
+    {
+      title: "Supply Chain Risk",
+      level: "Low",
+      score: 28,
+      description: "All major supply routes operational",
+      icon: Truck,
+      color: "green",
+    },
+    {
+      title: "Geopolitical Risk",
+      level: "Medium",
+      score: 52,
+      description: "Monitor Middle East developments",
+      icon: Globe,
+      color: "amber",
+    },
+    {
+      title: "Counterparty Risk",
+      level: "Low",
+      score: 22,
+      description: "All suppliers meeting obligations",
+      icon: Users,
+      color: "green",
+    },
   ];
 
+  const colorMap = {
+    green: { bg: "bg-green-50", bar: "bg-green-500", text: "text-green-700", border: "border-green-200" },
+    amber: { bg: "bg-amber-50", bar: "bg-amber-500", text: "text-amber-700", border: "border-amber-200" },
+    red: { bg: "bg-red-50", bar: "bg-red-500", text: "text-red-700", border: "border-red-200" },
+  };
+
   return (
-    <div className="flex items-center gap-2 mb-4">
-      {categories.map((cat) => (
-        <button
-          key={cat.id}
-          onClick={() => onChange(cat.id)}
-          className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
-            selected === cat.id
-              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-              : "bg-neutral-800/50 text-neutral-400 hover:text-neutral-200 border border-transparent"
-          )}
-        >
-          <cat.icon className="w-4 h-4" />
-          {cat.label}
-        </button>
-      ))}
+    <div className="grid grid-cols-4 gap-4">
+      {risks.map((risk) => {
+        const colors = colorMap[risk.color as keyof typeof colorMap];
+        return (
+          <Card key={risk.title} className={cn("border shadow-sm", colors.border, colors.bg)}>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between mb-3">
+                <risk.icon className={cn("w-5 h-5", colors.text)} />
+                <Badge className={cn("text-[10px]", colors.bg, colors.text, colors.border)}>
+                  {risk.level}
+                </Badge>
+              </div>
+              <p className="font-medium text-slate-900 text-sm mb-1">{risk.title}</p>
+              <div className="h-1.5 bg-white rounded-full overflow-hidden mb-2">
+                <div
+                  className={cn("h-full rounded-full", colors.bar)}
+                  style={{ width: `${risk.score}%` }}
+                />
+              </div>
+              <p className="text-xs text-slate-600">{risk.description}</p>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-const ASSET_CATEGORIES: Record<string, string> = {
-  "crude-oil": "energy",
-  "natural-gas": "energy",
-  gold: "metals",
-  silver: "metals",
-  copper: "metals",
-  platinum: "metals",
-  wheat: "agriculture",
-  corn: "agriculture",
-  soybean: "agriculture",
-};
 
 // ============================================================================
 // Main Dashboard
 // ============================================================================
 
 export function ProcurementDashboard() {
-  const commodities = useMemo(() => getCommodityData(), []);
-  const opportunities = useMemo(() => getBuyingOpportunities(commodities), [commodities]);
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("overview");
 
-  const filteredCommodities = useMemo(() => {
-    if (categoryFilter === "all") return commodities;
-    return commodities.filter((c) => ASSET_CATEGORIES[c.assetId] === categoryFilter);
-  }, [commodities, categoryFilter]);
+  const forecasts = useMemo(() => generateForecasts(), []);
+  const costBasis = useMemo(() => generateCostBasis(), []);
+  const suppliers = useMemo(() => generateSupplierExposure(), []);
+  const compliance = useMemo(() => generateComplianceItems(), []);
+  const budget = useMemo(() => generateBudgetItems(), []);
+  const contracts = useMemo(() => generateContractExpirations(), []);
 
   return (
-    <div className="space-y-6 pb-8">
+    <LightModeWrapper>
       {/* Header */}
       <DashboardHeader />
 
-      {/* Market Overview */}
-      <MarketOverview commodities={commodities} />
+      {/* Summary Cards */}
+      <SummaryCards />
 
-      {/* Priority Actions */}
-      <PriorityActions opportunities={opportunities} />
+      {/* Risk Summary */}
+      <div className="px-6 mb-6">
+        <RiskSummaryCards />
+      </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Commodity Cards - Main Content */}
-        <div className="lg:col-span-3">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-neutral-200 flex items-center gap-2">
-              <Package className="w-5 h-5 text-emerald-400" />
-              Commodity Procurement Status
-            </h2>
-          </div>
+      {/* Main Content Tabs */}
+      <div className="px-6 pb-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="bg-white border border-slate-200 p-1 mb-6">
+            <TabsTrigger
+              value="overview"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Overview
+            </TabsTrigger>
+            <TabsTrigger
+              value="forecasts"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Price Forecasts
+            </TabsTrigger>
+            <TabsTrigger
+              value="suppliers"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Suppliers
+            </TabsTrigger>
+            <TabsTrigger
+              value="compliance"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Compliance
+            </TabsTrigger>
+            <TabsTrigger
+              value="budget"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              Budget
+            </TabsTrigger>
+          </TabsList>
 
-          <CategoryFilter selected={categoryFilter} onChange={setCategoryFilter} />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {filteredCommodities.map((commodity) => (
-              <CommodityCard key={commodity.assetId} commodity={commodity} />
-            ))}
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-4">
-          <ContractGuidance commodities={commodities} />
-          <SupplyRiskMonitor commodities={commodities} />
-
-          {/* Procurement Tips */}
-          <Card className="bg-emerald-500/5 border-emerald-500/20">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <Scale className="w-5 h-5 text-emerald-400 shrink-0" />
-                <div className="text-xs text-neutral-400">
-                  <strong className="text-emerald-400">Smart Procurement:</strong> AI signals help
-                  time your purchases. Combine with supplier relationships and inventory levels for
-                  best results.
-                </div>
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6 mt-0">
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-7">
+                <PriceForecastPanel forecasts={forecasts} />
               </div>
-            </CardContent>
-          </Card>
+              <div className="col-span-5">
+                <ContractCalendar contracts={contracts} />
+              </div>
+            </div>
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-6">
+                <CostBasisPanel data={costBasis} />
+              </div>
+              <div className="col-span-6">
+                <ComplianceChecklist items={compliance} />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Forecasts Tab */}
+          <TabsContent value="forecasts" className="space-y-6 mt-0">
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-8">
+                <PriceForecastPanel forecasts={forecasts} />
+              </div>
+              <div className="col-span-4">
+                <CostBasisPanel data={costBasis} />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Suppliers Tab */}
+          <TabsContent value="suppliers" className="space-y-6 mt-0">
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-7">
+                <SupplierExposureHeatmap data={suppliers} />
+              </div>
+              <div className="col-span-5">
+                <ContractCalendar contracts={contracts} />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Compliance Tab */}
+          <TabsContent value="compliance" className="space-y-6 mt-0">
+            <ComplianceChecklist items={compliance} />
+          </TabsContent>
+
+          {/* Budget Tab */}
+          <TabsContent value="budget" className="space-y-6 mt-0">
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-7">
+                <BudgetVsActualPanel data={budget} />
+              </div>
+              <div className="col-span-5">
+                <CostBasisPanel data={costBasis} />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-slate-200 bg-white px-6 py-3">
+        <div className="flex items-center justify-between text-xs text-slate-500">
+          <span>QDT Nexus Procurement Module v2.1</span>
+          <span>Data refreshes every 5 minutes</span>
         </div>
       </div>
-    </div>
+    </LightModeWrapper>
   );
 }
+
+export default ProcurementDashboard;

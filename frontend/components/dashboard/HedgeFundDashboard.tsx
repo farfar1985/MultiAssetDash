@@ -3,9 +3,11 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
+import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
+import { CorrelationMatrix } from "@/components/dashboard/CorrelationMatrix";
 import {
   TrendingUp,
   TrendingDown,
@@ -14,178 +16,199 @@ import {
   Zap,
   PieChart,
   Shield,
-  ChevronRight,
   Layers,
   Brain,
   Gauge,
-  Trophy,
   Briefcase,
   GitBranch,
-  Crosshair,
-  Star,
+  Activity,
+  BarChart3,
+  ArrowUpRight,
+  ArrowDownRight,
+  DollarSign,
+  Percent,
+  Scale,
+  LineChart,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  TrendingUp as ChartUp,
 } from "lucide-react";
 
 // ============================================================================
 // Types
 // ============================================================================
 
-interface AlphaOpportunity {
+interface PortfolioMetrics {
+  totalAUM: number;
+  dailyPnL: number;
+  dailyPnLPercent: number;
+  mtdReturn: number;
+  ytdReturn: number;
+  maxDrawdown: number;
+  currentDrawdown: number;
+  sharpeRatio: number;
+  sortinoRatio: number;
+  calmarRatio: number;
+}
+
+interface AssetPosition {
   assetId: AssetId;
   name: string;
   symbol: string;
   currentPrice: number;
-  signal: SignalData;
-  alphaMetrics: AlphaMetrics;
-  rank: number;
+  weight: number;
+  targetWeight: number;
+  marketValue: number;
+  dailyPnL: number;
+  dailyPnLPercent: number;
+  mtdReturn: number;
+  signal: "long" | "short" | "neutral";
+  beta: number;
+  sharpe: number;
+  contribution: number;
 }
 
-interface AlphaMetrics {
-  expectedReturn: number; // annualized %
-  expectedAlpha: number; // vs benchmark %
+interface PerformanceAttribution {
+  factor: string;
+  contribution: number;
+  exposure: number;
+  benchmark: number;
+  active: number;
+}
+
+interface BenchmarkComparison {
+  name: string;
+  symbol: string;
+  portfolioReturn: number;
+  benchmarkReturn: number;
+  alpha: number;
+  trackingError: number;
   informationRatio: number;
-  betaToMarket: number;
-  volatility: number;
-  convictionScore: number; // 0-100
-  factorExposures: FactorExposure[];
-  riskContribution: number; // % of portfolio risk
+}
+
+interface PositionSizing {
+  assetId: AssetId;
+  symbol: string;
+  currentWeight: number;
+  recommendedWeight: number;
+  action: "increase" | "decrease" | "hold";
+  reason: string;
+  confidence: number;
 }
 
 interface FactorExposure {
   factor: string;
-  exposure: number; // -1 to 1
-  contribution: number; // % of return
-}
-
-interface PortfolioAllocation {
-  assetId: AssetId;
-  name: string;
-  symbol: string;
-  weight: number;
-  targetWeight: number;
-  drift: number;
-  signal: "long" | "short" | "neutral";
-  pnl: number;
-  pnlPercent: number;
-}
-
-interface RiskMetric {
-  name: string;
-  value: number;
-  threshold: number;
-  status: "safe" | "warning" | "critical";
-  unit: string;
+  portfolioExposure: number;
+  benchmarkExposure: number;
+  activeExposure: number;
+  targetRange: [number, number];
+  status: "in-range" | "overweight" | "underweight";
 }
 
 // ============================================================================
-// Data Generators
+// Mock Data Generators
 // ============================================================================
 
-function generateAlphaMetrics(signal: SignalData): AlphaMetrics {
-  const baseReturn = signal.direction === "bullish" ? 15 + Math.random() * 20 :
-                     signal.direction === "bearish" ? -10 - Math.random() * 15 : Math.random() * 10 - 5;
-
-  const alpha = baseReturn - 8; // Assuming 8% benchmark return
-  const volatility = 15 + Math.random() * 25;
-  const informationRatio = alpha / volatility * Math.sqrt(252 / 30); // Annualized
-
+function generatePortfolioMetrics(): PortfolioMetrics {
   return {
-    expectedReturn: baseReturn,
-    expectedAlpha: alpha,
-    informationRatio: Math.max(-2, Math.min(3, informationRatio)),
-    betaToMarket: 0.3 + Math.random() * 1.2,
-    volatility,
-    convictionScore: signal.confidence,
-    factorExposures: [
-      { factor: "Momentum", exposure: signal.direction === "bullish" ? 0.6 : -0.4, contribution: 30 },
-      { factor: "Value", exposure: 0.2 + Math.random() * 0.3, contribution: 20 },
-      { factor: "Quality", exposure: 0.3 + Math.random() * 0.4, contribution: 25 },
-      { factor: "Low Vol", exposure: -0.2 + Math.random() * 0.4, contribution: 15 },
-      { factor: "Size", exposure: Math.random() * 0.4 - 0.2, contribution: 10 },
-    ],
-    riskContribution: 5 + Math.random() * 15,
+    totalAUM: 2847500000,
+    dailyPnL: 12450000,
+    dailyPnLPercent: 0.44,
+    mtdReturn: 2.87,
+    ytdReturn: 18.42,
+    maxDrawdown: -8.2,
+    currentDrawdown: -1.4,
+    sharpeRatio: 2.14,
+    sortinoRatio: 2.89,
+    calmarRatio: 2.24,
   };
 }
 
-function getAlphaOpportunities(): AlphaOpportunity[] {
-  const opportunities: AlphaOpportunity[] = [];
+function generateAssetPositions(): AssetPosition[] {
+  const positions: AssetPosition[] = [];
+  const baseAUM = 2847500000;
 
-  Object.entries(MOCK_ASSETS).forEach(([assetId, asset]) => {
-    // Get best signal across horizons
-    const horizons: Horizon[] = ["D+1", "D+5", "D+10"];
-    let bestSignal: SignalData | null = null;
-
-    for (const horizon of horizons) {
-      const signal = MOCK_SIGNALS[assetId as AssetId]?.[horizon];
-      if (signal && (!bestSignal || signal.sharpeRatio > bestSignal.sharpeRatio)) {
-        bestSignal = signal;
-      }
-    }
-
-    if (bestSignal) {
-      opportunities.push({
-        assetId: assetId as AssetId,
-        name: asset.name,
-        symbol: asset.symbol,
-        currentPrice: asset.currentPrice,
-        signal: bestSignal,
-        alphaMetrics: generateAlphaMetrics(bestSignal),
-        rank: 0,
-      });
-    }
-  });
-
-  // Rank by information ratio
-  return opportunities
-    .sort((a, b) => b.alphaMetrics.informationRatio - a.alphaMetrics.informationRatio)
-    .map((opp, idx) => ({ ...opp, rank: idx + 1 }));
-}
-
-function getPortfolioAllocations(): PortfolioAllocation[] {
-  const allocations: PortfolioAllocation[] = [];
-
-  const targetWeights: Record<string, number> = {
-    "crude-oil": 15,
-    "natural-gas": 10,
-    gold: 20,
-    bitcoin: 8,
-    silver: 7,
-    copper: 12,
-    wheat: 8,
-    corn: 10,
-    soybean: 5,
-    platinum: 5,
+  const weights: Record<string, number> = {
+    "crude-oil": 18.5,
+    "natural-gas": 8.2,
+    gold: 22.4,
+    bitcoin: 12.8,
+    silver: 6.5,
+    copper: 10.2,
+    wheat: 7.4,
+    corn: 5.8,
+    soybean: 4.2,
+    platinum: 4.0,
   };
 
   Object.entries(MOCK_ASSETS).forEach(([assetId, asset]) => {
     const signal = MOCK_SIGNALS[assetId as AssetId]?.["D+5"];
-    const target = targetWeights[assetId] || 5;
-    const drift = (Math.random() - 0.5) * 4;
-    const pnlPercent = (Math.random() - 0.3) * 20;
+    const weight = weights[assetId] || 5;
+    const targetWeight = weight + (Math.random() - 0.5) * 2;
+    const dailyPnLPercent = (Math.random() - 0.4) * 4;
+    const marketValue = baseAUM * (weight / 100);
 
-    allocations.push({
+    positions.push({
       assetId: assetId as AssetId,
       name: asset.name,
       symbol: asset.symbol,
-      weight: target + drift,
-      targetWeight: target,
-      drift,
+      currentPrice: asset.currentPrice,
+      weight,
+      targetWeight,
+      marketValue,
+      dailyPnL: marketValue * (dailyPnLPercent / 100),
+      dailyPnLPercent,
+      mtdReturn: (Math.random() - 0.3) * 10,
       signal: signal?.direction === "bullish" ? "long" : signal?.direction === "bearish" ? "short" : "neutral",
-      pnl: asset.currentPrice * (target / 100) * 1000000 * (pnlPercent / 100),
-      pnlPercent,
+      beta: 0.3 + Math.random() * 0.9,
+      sharpe: (Math.random() - 0.2) * 3,
+      contribution: weight * (dailyPnLPercent / 100) / 0.44 * 100,
     });
   });
 
-  return allocations.sort((a, b) => b.weight - a.weight);
+  return positions.sort((a, b) => b.weight - a.weight);
 }
 
-function getRiskMetrics(): RiskMetric[] {
+function generatePerformanceAttribution(): PerformanceAttribution[] {
   return [
-    { name: "Portfolio VaR (95%)", value: 2.8, threshold: 5.0, status: "safe", unit: "%" },
-    { name: "Max Drawdown", value: 8.2, threshold: 15.0, status: "safe", unit: "%" },
-    { name: "Gross Exposure", value: 145, threshold: 200, status: "warning", unit: "%" },
-    { name: "Net Exposure", value: 42, threshold: 80, status: "safe", unit: "%" },
-    { name: "Sector Concentration", value: 28, threshold: 35, status: "warning", unit: "%" },
-    { name: "Beta to S&P", value: 0.65, threshold: 1.0, status: "safe", unit: "" },
+    { factor: "Market Beta", contribution: 8.2, exposure: 0.65, benchmark: 1.0, active: -0.35 },
+    { factor: "Momentum", contribution: 4.8, exposure: 0.42, benchmark: 0.15, active: 0.27 },
+    { factor: "Value", contribution: 2.1, exposure: 0.28, benchmark: 0.20, active: 0.08 },
+    { factor: "Quality", contribution: 1.9, exposure: 0.35, benchmark: 0.25, active: 0.10 },
+    { factor: "Low Volatility", contribution: 0.8, exposure: 0.18, benchmark: 0.30, active: -0.12 },
+    { factor: "Size", contribution: -0.4, exposure: -0.15, benchmark: 0.10, active: -0.25 },
+    { factor: "Residual Alpha", contribution: 1.0, exposure: 0, benchmark: 0, active: 0 },
+  ];
+}
+
+function generateBenchmarkComparisons(): BenchmarkComparison[] {
+  return [
+    { name: "S&P 500", symbol: "SPY", portfolioReturn: 18.42, benchmarkReturn: 12.15, alpha: 6.27, trackingError: 8.4, informationRatio: 0.75 },
+    { name: "Bloomberg Commodity", symbol: "BCOM", portfolioReturn: 18.42, benchmarkReturn: 5.82, alpha: 12.60, trackingError: 12.1, informationRatio: 1.04 },
+    { name: "60/40 Portfolio", symbol: "60/40", portfolioReturn: 18.42, benchmarkReturn: 9.24, alpha: 9.18, trackingError: 10.2, informationRatio: 0.90 },
+    { name: "Risk Parity", symbol: "RPAR", portfolioReturn: 18.42, benchmarkReturn: 7.45, alpha: 10.97, trackingError: 9.8, informationRatio: 1.12 },
+  ];
+}
+
+function generatePositionSizing(): PositionSizing[] {
+  return [
+    { assetId: "gold" as AssetId, symbol: "GC", currentWeight: 22.4, recommendedWeight: 25.0, action: "increase", reason: "Strong momentum, low correlation to risk assets", confidence: 82 },
+    { assetId: "crude-oil" as AssetId, symbol: "CL", currentWeight: 18.5, recommendedWeight: 15.0, action: "decrease", reason: "Elevated volatility, approaching resistance", confidence: 74 },
+    { assetId: "bitcoin" as AssetId, symbol: "BTC", currentWeight: 12.8, recommendedWeight: 12.8, action: "hold", reason: "Neutral signal, maintain current exposure", confidence: 68 },
+    { assetId: "copper" as AssetId, symbol: "HG", currentWeight: 10.2, recommendedWeight: 12.0, action: "increase", reason: "Positive macro outlook, underweight vs target", confidence: 76 },
+    { assetId: "natural-gas" as AssetId, symbol: "NG", currentWeight: 8.2, recommendedWeight: 6.0, action: "decrease", reason: "Bearish seasonal pattern, high inventory", confidence: 71 },
+  ];
+}
+
+function generateFactorExposures(): FactorExposure[] {
+  return [
+    { factor: "Market Beta", portfolioExposure: 0.65, benchmarkExposure: 1.0, activeExposure: -0.35, targetRange: [0.4, 0.8], status: "in-range" },
+    { factor: "Momentum", portfolioExposure: 0.42, benchmarkExposure: 0.15, activeExposure: 0.27, targetRange: [0.2, 0.5], status: "in-range" },
+    { factor: "Value", portfolioExposure: 0.28, benchmarkExposure: 0.20, activeExposure: 0.08, targetRange: [0.1, 0.4], status: "in-range" },
+    { factor: "Volatility", portfolioExposure: 0.18, benchmarkExposure: 0.30, activeExposure: -0.12, targetRange: [0.1, 0.3], status: "in-range" },
+    { factor: "Carry", portfolioExposure: 0.55, benchmarkExposure: 0.25, activeExposure: 0.30, targetRange: [0.2, 0.4], status: "overweight" },
+    { factor: "Liquidity", portfolioExposure: -0.08, benchmarkExposure: 0.05, activeExposure: -0.13, targetRange: [-0.1, 0.1], status: "in-range" },
   ];
 }
 
@@ -193,56 +216,102 @@ function getRiskMetrics(): RiskMetric[] {
 // Components
 // ============================================================================
 
-function DashboardHeader() {
+function DashboardHeader({ metrics }: { metrics: PortfolioMetrics }) {
   return (
     <div className="flex items-center justify-between mb-6">
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl">
-          <Briefcase className="w-6 h-6 text-white" />
+      <div className="flex items-center gap-4">
+        <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl">
+          <Briefcase className="w-7 h-7 text-white" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-neutral-100">Hedge Fund Alpha Console</h1>
-          <p className="text-sm text-neutral-400">Alpha generation & portfolio optimization</p>
+          <h1 className="text-2xl font-bold text-neutral-100">Hedge Fund Portfolio</h1>
+          <p className="text-sm text-neutral-400">Multi-Asset Institutional Dashboard</p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 px-3 py-1">
-          <Zap className="w-3.5 h-3.5 mr-1.5" />
-          Live Alpha
+      <div className="flex items-center gap-3">
+        <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 px-3 py-1.5">
+          <Activity className="w-3.5 h-3.5 mr-1.5 animate-pulse" />
+          Live
         </Badge>
-        <Badge variant="outline" className="text-neutral-400 border-neutral-600">
-          AUM: $2.4B
-        </Badge>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-neutral-100">
+            ${(metrics.totalAUM / 1000000000).toFixed(2)}B
+          </div>
+          <div className="text-xs text-neutral-500">Total AUM</div>
+        </div>
       </div>
     </div>
   );
 }
 
-// Portfolio Performance Summary
-function PortfolioSummary() {
-  const metrics = [
-    { label: "YTD Return", value: "+18.4%", change: "+2.1%", positive: true, icon: TrendingUp },
-    { label: "Alpha (vs SPY)", value: "+6.2%", change: "+0.8%", positive: true, icon: Star },
-    { label: "Sharpe Ratio", value: "2.14", change: "+0.12", positive: true, icon: Gauge },
-    { label: "Information Ratio", value: "1.87", change: "-0.05", positive: false, icon: Target },
+// ============================================================================
+// Portfolio Metrics Cards
+// ============================================================================
+
+function PortfolioMetricsCards({ metrics }: { metrics: PortfolioMetrics }) {
+  const cards = [
+    {
+      label: "Daily P&L",
+      value: `$${(metrics.dailyPnL / 1000000).toFixed(2)}M`,
+      change: `${metrics.dailyPnLPercent >= 0 ? "+" : ""}${metrics.dailyPnLPercent.toFixed(2)}%`,
+      positive: metrics.dailyPnLPercent >= 0,
+      icon: DollarSign,
+    },
+    {
+      label: "MTD Return",
+      value: `${metrics.mtdReturn >= 0 ? "+" : ""}${metrics.mtdReturn.toFixed(2)}%`,
+      change: "vs +1.8% benchmark",
+      positive: metrics.mtdReturn > 1.8,
+      icon: TrendingUp,
+    },
+    {
+      label: "YTD Return",
+      value: `${metrics.ytdReturn >= 0 ? "+" : ""}${metrics.ytdReturn.toFixed(2)}%`,
+      change: "+6.27% alpha",
+      positive: true,
+      icon: ChartUp,
+    },
+    {
+      label: "Current Drawdown",
+      value: `${metrics.currentDrawdown.toFixed(1)}%`,
+      change: `Max: ${metrics.maxDrawdown.toFixed(1)}%`,
+      positive: Math.abs(metrics.currentDrawdown) < 5,
+      icon: ArrowDownRight,
+    },
+    {
+      label: "Sharpe Ratio",
+      value: metrics.sharpeRatio.toFixed(2),
+      change: "Sortino: " + metrics.sortinoRatio.toFixed(2),
+      positive: metrics.sharpeRatio > 1.5,
+      icon: Gauge,
+    },
+    {
+      label: "Calmar Ratio",
+      value: metrics.calmarRatio.toFixed(2),
+      change: "Risk-adjusted",
+      positive: metrics.calmarRatio > 1.5,
+      icon: Scale,
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      {metrics.map((metric) => (
-        <Card key={metric.label} className="bg-gradient-to-br from-neutral-900 to-neutral-900/50 border-neutral-800">
-          <CardContent className="p-4">
+    <div className="grid grid-cols-6 gap-3 mb-6">
+      {cards.map((card) => (
+        <Card key={card.label} className="bg-neutral-900/60 border-neutral-800">
+          <CardContent className="p-3">
             <div className="flex items-center justify-between mb-2">
-              <metric.icon className={cn("w-5 h-5", metric.positive ? "text-emerald-400" : "text-amber-400")} />
-              <span className={cn(
-                "text-xs font-medium",
-                metric.positive ? "text-emerald-400" : "text-red-400"
-              )}>
-                {metric.change}
-              </span>
+              <card.icon className={cn("w-4 h-4", card.positive ? "text-emerald-400" : "text-red-400")} />
+              {card.positive ? (
+                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <ArrowDownRight className="w-3.5 h-3.5 text-red-400" />
+              )}
             </div>
-            <div className="text-2xl font-bold text-neutral-100 mb-1">{metric.value}</div>
-            <div className="text-xs text-neutral-500">{metric.label}</div>
+            <div className="text-xl font-bold text-neutral-100 mb-0.5">{card.value}</div>
+            <div className="text-[10px] text-neutral-500 mb-1">{card.label}</div>
+            <div className={cn("text-[10px]", card.positive ? "text-emerald-400" : "text-neutral-500")}>
+              {card.change}
+            </div>
           </CardContent>
         </Card>
       ))}
@@ -250,140 +319,80 @@ function PortfolioSummary() {
   );
 }
 
-// Alpha Opportunity Card - Premium Design
-function AlphaCard({ opportunity }: { opportunity: AlphaOpportunity }) {
-  const { alphaMetrics, signal } = opportunity;
+// ============================================================================
+// Asset Allocation Donut Chart
+// ============================================================================
 
-  const directionConfig = {
-    bullish: {
-      icon: TrendingUp,
-      color: "text-emerald-400",
-      bg: "bg-emerald-500/10",
-      border: "border-emerald-500/20",
-      label: "LONG",
-    },
-    bearish: {
-      icon: TrendingDown,
-      color: "text-red-400",
-      bg: "bg-red-500/10",
-      border: "border-red-500/20",
-      label: "SHORT",
-    },
-    neutral: {
-      icon: Minus,
-      color: "text-neutral-400",
-      bg: "bg-neutral-500/10",
-      border: "border-neutral-500/20",
-      label: "NEUTRAL",
-    },
-  };
+function AssetAllocationChart({ positions }: { positions: AssetPosition[] }) {
+  const total = positions.reduce((sum, p) => sum + p.weight, 0);
+  let cumulativePercent = 0;
 
-  const config = directionConfig[signal.direction];
-  const DirectionIcon = config.icon;
+  const colors = [
+    "#8b5cf6", "#6366f1", "#3b82f6", "#0ea5e9", "#14b8a6",
+    "#22c55e", "#eab308", "#f97316", "#ef4444", "#ec4899"
+  ];
 
-  const rankColors = {
-    1: "from-amber-500 to-yellow-600",
-    2: "from-neutral-400 to-neutral-500",
-    3: "from-amber-700 to-amber-800",
-  };
+  const segments = positions.map((pos, idx) => {
+    const percent = pos.weight / total;
+    const startPercent = cumulativePercent;
+    cumulativePercent += percent;
+    return {
+      ...pos,
+      color: colors[idx % colors.length],
+      startPercent,
+      percent,
+    };
+  });
 
   return (
-    <Card className={cn("border relative overflow-hidden transition-all hover:border-amber-500/30", config.bg, config.border)}>
-      {/* Rank Badge */}
-      {opportunity.rank <= 3 && (
-        <div className={cn(
-          "absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center",
-          "bg-gradient-to-br text-white font-bold text-sm",
-          rankColors[opportunity.rank as 1 | 2 | 3] || "from-neutral-600 to-neutral-700"
-        )}>
-          {opportunity.rank}
-        </div>
-      )}
+    <Card className="bg-neutral-900/60 border-neutral-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
+          <PieChart className="w-4 h-4 text-indigo-400" />
+          Asset Allocation
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="flex items-center gap-4">
+          {/* SVG Donut Chart */}
+          <div className="relative w-32 h-32">
+            <svg viewBox="0 0 100 100" className="transform -rotate-90">
+              {segments.map((seg, idx) => {
+                const circumference = 2 * Math.PI * 40;
+                const strokeDasharray = `${seg.percent * circumference} ${circumference}`;
+                const strokeDashoffset = -seg.startPercent * circumference;
 
-      <CardContent className="p-4">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className={cn("p-2 rounded-lg", config.bg)}>
-            <DirectionIcon className={cn("w-5 h-5", config.color)} />
-          </div>
-          <div>
-            <h3 className="font-semibold text-neutral-100">{opportunity.name}</h3>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-neutral-400">{opportunity.symbol}</span>
-              <Badge className={cn("text-xs", config.bg, config.color)}>{config.label}</Badge>
+                return (
+                  <circle
+                    key={seg.assetId}
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    fill="none"
+                    stroke={seg.color}
+                    strokeWidth="12"
+                    strokeDasharray={strokeDasharray}
+                    strokeDashoffset={strokeDashoffset}
+                    className="transition-all duration-500"
+                  />
+                );
+              })}
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center flex-col">
+              <div className="text-lg font-bold text-neutral-100">100%</div>
+              <div className="text-[9px] text-neutral-500">Allocated</div>
             </div>
           </div>
-        </div>
 
-        {/* Alpha Metrics */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="p-2 bg-neutral-800/50 rounded-lg">
-            <div className="text-xs text-neutral-500 mb-1">Expected Alpha</div>
-            <div className={cn(
-              "text-lg font-bold font-mono",
-              alphaMetrics.expectedAlpha > 0 ? "text-emerald-400" : "text-red-400"
-            )}>
-              {alphaMetrics.expectedAlpha > 0 ? "+" : ""}{alphaMetrics.expectedAlpha.toFixed(1)}%
-            </div>
-          </div>
-          <div className="p-2 bg-neutral-800/50 rounded-lg">
-            <div className="text-xs text-neutral-500 mb-1">Info Ratio</div>
-            <div className={cn(
-              "text-lg font-bold font-mono",
-              alphaMetrics.informationRatio > 1 ? "text-emerald-400" :
-              alphaMetrics.informationRatio > 0 ? "text-amber-400" : "text-red-400"
-            )}>
-              {alphaMetrics.informationRatio.toFixed(2)}
-            </div>
-          </div>
-        </div>
-
-        {/* Conviction & Risk */}
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-neutral-500">Conviction</span>
-            <span className="text-neutral-200 font-medium">{alphaMetrics.convictionScore}%</span>
-          </div>
-          <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-            <div
-              className={cn(
-                "h-full rounded-full",
-                alphaMetrics.convictionScore > 75 ? "bg-emerald-500" :
-                alphaMetrics.convictionScore > 60 ? "bg-amber-500" : "bg-neutral-500"
-              )}
-              style={{ width: `${alphaMetrics.convictionScore}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Factor Exposures Mini */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {alphaMetrics.factorExposures.slice(0, 3).map((factor) => (
-            <Badge
-              key={factor.factor}
-              variant="outline"
-              className={cn(
-                "text-xs",
-                factor.exposure > 0.3 ? "border-emerald-500/30 text-emerald-400" :
-                factor.exposure < -0.3 ? "border-red-500/30 text-red-400" :
-                "border-neutral-600 text-neutral-400"
-              )}
-            >
-              {factor.factor}: {factor.exposure > 0 ? "+" : ""}{(factor.exposure * 100).toFixed(0)}%
-            </Badge>
-          ))}
-        </div>
-
-        {/* Bottom Stats */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-neutral-800">
-          <div className="text-xs text-neutral-500">
-            <span className="text-neutral-400">β:</span> {alphaMetrics.betaToMarket.toFixed(2)}
-          </div>
-          <div className="text-xs text-neutral-500">
-            <span className="text-neutral-400">Vol:</span> {alphaMetrics.volatility.toFixed(1)}%
-          </div>
-          <div className="text-xs text-neutral-500">
-            <span className="text-neutral-400">Risk:</span> {alphaMetrics.riskContribution.toFixed(1)}%
+          {/* Legend */}
+          <div className="flex-1 grid grid-cols-2 gap-1">
+            {segments.slice(0, 8).map((seg) => (
+              <div key={seg.assetId} className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: seg.color }} />
+                <span className="text-[10px] text-neutral-400 truncate">{seg.symbol}</span>
+                <span className="text-[10px] font-mono text-neutral-300">{seg.weight.toFixed(1)}%</span>
+              </div>
+            ))}
           </div>
         </div>
       </CardContent>
@@ -391,268 +400,415 @@ function AlphaCard({ opportunity }: { opportunity: AlphaOpportunity }) {
   );
 }
 
-// Portfolio Allocation Table
-function PortfolioAllocations({ allocations }: { allocations: PortfolioAllocation[] }) {
+// ============================================================================
+// Multi-Asset Portfolio Table
+// ============================================================================
+
+function PortfolioTable({ positions }: { positions: AssetPosition[] }) {
   return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <PieChart className="w-5 h-5 text-amber-400" />
-          Portfolio Allocation
+    <Card className="bg-neutral-900/60 border-neutral-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
+          <Layers className="w-4 h-4 text-indigo-400" />
+          Portfolio Positions
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-[10px] text-neutral-500 uppercase tracking-wider border-b border-neutral-800">
+                <th className="text-left py-2 px-2">Asset</th>
+                <th className="text-right py-2 px-2">Weight</th>
+                <th className="text-right py-2 px-2">Value</th>
+                <th className="text-right py-2 px-2">Daily P&L</th>
+                <th className="text-right py-2 px-2">MTD</th>
+                <th className="text-right py-2 px-2">Beta</th>
+                <th className="text-right py-2 px-2">Sharpe</th>
+                <th className="text-center py-2 px-2">Signal</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-800/50">
+              {positions.map((pos) => (
+                <tr key={pos.assetId} className="hover:bg-neutral-800/30 transition-colors">
+                  <td className="py-2 px-2">
+                    <div className="flex items-center gap-2">
+                      <div className={cn(
+                        "w-1.5 h-6 rounded-full",
+                        pos.signal === "long" ? "bg-emerald-500" :
+                        pos.signal === "short" ? "bg-red-500" : "bg-neutral-600"
+                      )} />
+                      <div>
+                        <div className="font-medium text-neutral-200">{pos.symbol}</div>
+                        <div className="text-[10px] text-neutral-500">{pos.name}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-2 px-2 text-right">
+                    <div className="font-mono text-neutral-200">{pos.weight.toFixed(1)}%</div>
+                    <div className={cn(
+                      "text-[10px] font-mono",
+                      pos.weight > pos.targetWeight ? "text-emerald-400" : "text-red-400"
+                    )}>
+                      {pos.weight > pos.targetWeight ? "+" : ""}{(pos.weight - pos.targetWeight).toFixed(1)}
+                    </div>
+                  </td>
+                  <td className="py-2 px-2 text-right font-mono text-neutral-300">
+                    ${(pos.marketValue / 1000000).toFixed(1)}M
+                  </td>
+                  <td className={cn(
+                    "py-2 px-2 text-right font-mono",
+                    pos.dailyPnLPercent >= 0 ? "text-emerald-400" : "text-red-400"
+                  )}>
+                    {pos.dailyPnLPercent >= 0 ? "+" : ""}{pos.dailyPnLPercent.toFixed(2)}%
+                  </td>
+                  <td className={cn(
+                    "py-2 px-2 text-right font-mono",
+                    pos.mtdReturn >= 0 ? "text-emerald-400" : "text-red-400"
+                  )}>
+                    {pos.mtdReturn >= 0 ? "+" : ""}{pos.mtdReturn.toFixed(2)}%
+                  </td>
+                  <td className="py-2 px-2 text-right font-mono text-neutral-400">
+                    {pos.beta.toFixed(2)}
+                  </td>
+                  <td className={cn(
+                    "py-2 px-2 text-right font-mono",
+                    pos.sharpe > 1 ? "text-emerald-400" : pos.sharpe > 0 ? "text-amber-400" : "text-red-400"
+                  )}>
+                    {pos.sharpe.toFixed(2)}
+                  </td>
+                  <td className="py-2 px-2 text-center">
+                    <Badge className={cn(
+                      "text-[9px]",
+                      pos.signal === "long" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" :
+                      pos.signal === "short" ? "bg-red-500/20 text-red-400 border-red-500/30" :
+                      "bg-neutral-700 text-neutral-400 border-neutral-600"
+                    )}>
+                      {pos.signal.toUpperCase()}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// Performance Attribution Panel
+// ============================================================================
+
+function PerformanceAttributionPanel({ data }: { data: PerformanceAttribution[] }) {
+  const totalContribution = data.reduce((sum, d) => sum + d.contribution, 0);
+
+  return (
+    <Card className="bg-neutral-900/60 border-neutral-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
+          <BarChart3 className="w-4 h-4 text-indigo-400" />
+          Performance Attribution
+          <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/30 text-[9px] ml-auto">
+            YTD: +{totalContribution.toFixed(1)}%
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="space-y-3">
+          {data.map((item) => (
+            <div key={item.factor}>
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span className="text-neutral-400">{item.factor}</span>
+                <div className="flex items-center gap-3">
+                  <span className={cn(
+                    "font-mono",
+                    item.contribution >= 0 ? "text-emerald-400" : "text-red-400"
+                  )}>
+                    {item.contribution >= 0 ? "+" : ""}{item.contribution.toFixed(1)}%
+                  </span>
+                  <span className="text-neutral-600 font-mono text-[10px]">
+                    Active: {item.active >= 0 ? "+" : ""}{item.active.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden relative">
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-neutral-600" />
+                {item.contribution !== 0 && (
+                  <div
+                    className={cn(
+                      "absolute h-full rounded-full",
+                      item.contribution > 0 ? "bg-emerald-500" : "bg-red-500"
+                    )}
+                    style={{
+                      left: item.contribution > 0 ? "50%" : `${50 + (item.contribution / totalContribution) * 50}%`,
+                      width: `${Math.abs(item.contribution / totalContribution) * 50}%`,
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// Benchmark Comparison Panel
+// ============================================================================
+
+function BenchmarkComparisonPanel({ data }: { data: BenchmarkComparison[] }) {
+  return (
+    <Card className="bg-neutral-900/60 border-neutral-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
+          <Target className="w-4 h-4 text-indigo-400" />
+          Benchmark Comparison
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="space-y-3">
+          {data.map((bench) => (
+            <div key={bench.symbol} className="p-2 bg-neutral-800/30 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <span className="text-sm font-medium text-neutral-200">{bench.name}</span>
+                  <span className="text-xs text-neutral-500 ml-2">({bench.symbol})</span>
+                </div>
+                <Badge className={cn(
+                  "text-[9px]",
+                  bench.alpha > 5 ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
+                )}>
+                  α: +{bench.alpha.toFixed(2)}%
+                </Badge>
+              </div>
+              <div className="grid grid-cols-4 gap-2 text-[10px]">
+                <div>
+                  <div className="text-neutral-500">Portfolio</div>
+                  <div className="text-emerald-400 font-mono">+{bench.portfolioReturn.toFixed(2)}%</div>
+                </div>
+                <div>
+                  <div className="text-neutral-500">Benchmark</div>
+                  <div className="text-neutral-300 font-mono">+{bench.benchmarkReturn.toFixed(2)}%</div>
+                </div>
+                <div>
+                  <div className="text-neutral-500">Track Err</div>
+                  <div className="text-neutral-400 font-mono">{bench.trackingError.toFixed(1)}%</div>
+                </div>
+                <div>
+                  <div className="text-neutral-500">Info Ratio</div>
+                  <div className={cn(
+                    "font-mono",
+                    bench.informationRatio > 0.5 ? "text-emerald-400" : "text-amber-400"
+                  )}>
+                    {bench.informationRatio.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// Position Sizing Recommendations
+// ============================================================================
+
+function PositionSizingPanel({ data }: { data: PositionSizing[] }) {
+  const getActionColor = (action: PositionSizing["action"]) => {
+    switch (action) {
+      case "increase": return "text-emerald-400 bg-emerald-500/20 border-emerald-500/30";
+      case "decrease": return "text-red-400 bg-red-500/20 border-red-500/30";
+      default: return "text-neutral-400 bg-neutral-700 border-neutral-600";
+    }
+  };
+
+  const getActionIcon = (action: PositionSizing["action"]) => {
+    switch (action) {
+      case "increase": return TrendingUp;
+      case "decrease": return TrendingDown;
+      default: return Minus;
+    }
+  };
+
+  return (
+    <Card className="bg-neutral-900/60 border-neutral-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
+          <Scale className="w-4 h-4 text-indigo-400" />
+          Position Sizing Recommendations
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="space-y-2">
-          {allocations.slice(0, 6).map((alloc) => (
-            <div key={alloc.assetId} className="flex items-center gap-3 p-2 hover:bg-neutral-800/50 rounded-lg transition-colors">
-              {/* Signal Indicator */}
-              <div className={cn(
-                "w-1.5 h-8 rounded-full",
-                alloc.signal === "long" ? "bg-emerald-500" :
-                alloc.signal === "short" ? "bg-red-500" : "bg-neutral-600"
-              )} />
+          {data.map((item) => {
+            const ActionIcon = getActionIcon(item.action);
+            return (
+              <div key={item.assetId} className="p-2 bg-neutral-800/30 rounded-lg">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-neutral-200">{item.symbol}</span>
+                    <Badge className={cn("text-[9px]", getActionColor(item.action))}>
+                      <ActionIcon className="w-3 h-3 mr-1" />
+                      {item.action.toUpperCase()}
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-neutral-500">
+                    {item.confidence}% confidence
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-xs mb-1">
+                  <span className="text-neutral-500">Current: <span className="text-neutral-300 font-mono">{item.currentWeight.toFixed(1)}%</span></span>
+                  <span className="text-neutral-600">→</span>
+                  <span className="text-neutral-500">Target: <span className={cn(
+                    "font-mono",
+                    item.action === "increase" ? "text-emerald-400" :
+                    item.action === "decrease" ? "text-red-400" : "text-neutral-300"
+                  )}>{item.recommendedWeight.toFixed(1)}%</span></span>
+                </div>
+                <p className="text-[10px] text-neutral-500">{item.reason}</p>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-              {/* Asset Info */}
-              <div className="flex-1 min-w-0">
+// ============================================================================
+// Factor Exposure Summary
+// ============================================================================
+
+function FactorExposurePanel({ data }: { data: FactorExposure[] }) {
+  const getStatusBadge = (status: FactorExposure["status"]) => {
+    switch (status) {
+      case "in-range": return <CheckCircle2 className="w-3 h-3 text-emerald-400" />;
+      case "overweight": return <AlertTriangle className="w-3 h-3 text-amber-400" />;
+      case "underweight": return <AlertTriangle className="w-3 h-3 text-blue-400" />;
+    }
+  };
+
+  return (
+    <Card className="bg-neutral-900/60 border-neutral-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
+          <GitBranch className="w-4 h-4 text-indigo-400" />
+          Factor Exposure Summary
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="space-y-3">
+          {data.map((factor) => (
+            <div key={factor.factor}>
+              <div className="flex items-center justify-between text-xs mb-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-neutral-200">{alloc.symbol}</span>
-                  <Badge variant="outline" className="text-xs text-neutral-500 border-neutral-700">
-                    {alloc.signal.toUpperCase()}
-                  </Badge>
+                  {getStatusBadge(factor.status)}
+                  <span className="text-neutral-400">{factor.factor}</span>
                 </div>
-                <div className="text-xs text-neutral-500">{alloc.name}</div>
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    "font-mono",
+                    factor.activeExposure > 0 ? "text-emerald-400" :
+                    factor.activeExposure < 0 ? "text-red-400" : "text-neutral-400"
+                  )}>
+                    {factor.activeExposure >= 0 ? "+" : ""}{factor.activeExposure.toFixed(2)}
+                  </span>
+                  <span className="text-neutral-600 text-[10px]">active</span>
+                </div>
               </div>
-
-              {/* Weight Bar */}
-              <div className="w-20">
-                <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-amber-500 rounded-full"
-                    style={{ width: `${(alloc.weight / 25) * 100}%` }}
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xs mt-1">
-                  <span className="text-neutral-400">{alloc.weight.toFixed(1)}%</span>
-                  {Math.abs(alloc.drift) > 1 && (
-                    <span className={alloc.drift > 0 ? "text-emerald-400" : "text-red-400"}>
-                      {alloc.drift > 0 ? "+" : ""}{alloc.drift.toFixed(1)}
-                    </span>
+              <div className="relative h-2 bg-neutral-800 rounded-full overflow-hidden">
+                {/* Target range */}
+                <div
+                  className="absolute h-full bg-neutral-700/50"
+                  style={{
+                    left: `${(factor.targetRange[0] + 1) * 50}%`,
+                    width: `${(factor.targetRange[1] - factor.targetRange[0]) * 50}%`,
+                  }}
+                />
+                {/* Portfolio exposure marker */}
+                <div
+                  className={cn(
+                    "absolute top-0 bottom-0 w-1 rounded-full",
+                    factor.status === "in-range" ? "bg-emerald-500" : "bg-amber-500"
                   )}
-                </div>
+                  style={{ left: `${(factor.portfolioExposure + 1) * 50}%` }}
+                />
+                {/* Benchmark marker */}
+                <div
+                  className="absolute top-0 bottom-0 w-0.5 bg-neutral-500"
+                  style={{ left: `${(factor.benchmarkExposure + 1) * 50}%` }}
+                />
               </div>
-
-              {/* PnL */}
-              <div className="text-right w-20">
-                <div className={cn(
-                  "text-sm font-mono font-medium",
-                  alloc.pnlPercent > 0 ? "text-emerald-400" : "text-red-400"
-                )}>
-                  {alloc.pnlPercent > 0 ? "+" : ""}{alloc.pnlPercent.toFixed(1)}%
-                </div>
-                <div className="text-xs text-neutral-500">
-                  ${(alloc.pnl / 1000).toFixed(0)}k
-                </div>
+              <div className="flex justify-between text-[9px] text-neutral-600 mt-0.5">
+                <span>-1</span>
+                <span>0</span>
+                <span>+1</span>
               </div>
             </div>
           ))}
         </div>
-
-        <button className="w-full mt-3 p-2 text-sm text-amber-400 hover:text-amber-300
-                           bg-amber-500/5 hover:bg-amber-500/10 rounded-lg transition-all
-                           flex items-center justify-center gap-2">
-          View All Positions
-          <ChevronRight className="w-4 h-4" />
-        </button>
       </CardContent>
     </Card>
   );
 }
 
-// Risk Monitor Panel
-function RiskMonitor({ metrics }: { metrics: RiskMetric[] }) {
-  return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Shield className="w-5 h-5 text-amber-400" />
-          Risk Monitor
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-3">
-        {metrics.map((metric) => (
-          <div key={metric.name} className="space-y-1.5">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-neutral-400">{metric.name}</span>
-              <div className="flex items-center gap-2">
-                <span className={cn(
-                  "font-mono font-medium",
-                  metric.status === "safe" ? "text-emerald-400" :
-                  metric.status === "warning" ? "text-amber-400" : "text-red-400"
-                )}>
-                  {metric.value}{metric.unit}
-                </span>
-                <span className="text-xs text-neutral-600">/ {metric.threshold}{metric.unit}</span>
-              </div>
-            </div>
-            <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-              <div
-                className={cn(
-                  "h-full rounded-full transition-all",
-                  metric.status === "safe" ? "bg-emerald-500" :
-                  metric.status === "warning" ? "bg-amber-500" : "bg-red-500"
-                )}
-                style={{ width: `${Math.min(100, (metric.value / metric.threshold) * 100)}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
+// ============================================================================
+// Risk Adjusted Returns Comparison
+// ============================================================================
 
-// Factor Exposure Chart
-function FactorExposures({ opportunities }: { opportunities: AlphaOpportunity[] }) {
-  // Aggregate factor exposures across portfolio
-  const aggregatedFactors = useMemo(() => {
-    const factors: Record<string, { total: number; count: number }> = {};
-
-    opportunities.forEach((opp) => {
-      opp.alphaMetrics.factorExposures.forEach((f) => {
-        if (!factors[f.factor]) {
-          factors[f.factor] = { total: 0, count: 0 };
-        }
-        factors[f.factor].total += f.exposure;
-        factors[f.factor].count += 1;
-      });
-    });
-
-    return Object.entries(factors).map(([factor, data]) => ({
-      factor,
-      exposure: data.total / data.count,
-    })).sort((a, b) => Math.abs(b.exposure) - Math.abs(a.exposure));
-  }, [opportunities]);
+function RiskAdjustedReturnsPanel({ positions }: { positions: AssetPosition[] }) {
+  const sortedBySharpe = [...positions].sort((a, b) => b.sharpe - a.sharpe);
 
   return (
-    <Card className="bg-neutral-900/50 border-neutral-800">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <GitBranch className="w-5 h-5 text-amber-400" />
-          Factor Tilts
+    <Card className="bg-neutral-900/60 border-neutral-800">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-neutral-300 flex items-center gap-2">
+          <Gauge className="w-4 h-4 text-indigo-400" />
+          Risk-Adjusted Returns
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 space-y-3">
-        {aggregatedFactors.map((factor) => (
-          <div key={factor.factor} className="space-y-1">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-neutral-400">{factor.factor}</span>
-              <span className={cn(
-                "font-mono font-medium",
-                factor.exposure > 0.2 ? "text-emerald-400" :
-                factor.exposure < -0.2 ? "text-red-400" : "text-neutral-400"
+      <CardContent className="pt-0">
+        <div className="space-y-2">
+          {sortedBySharpe.slice(0, 6).map((pos, idx) => (
+            <div key={pos.assetId} className="flex items-center gap-3">
+              <div className={cn(
+                "w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold",
+                idx === 0 ? "bg-amber-500 text-neutral-900" :
+                idx === 1 ? "bg-neutral-400 text-neutral-900" :
+                idx === 2 ? "bg-amber-700 text-neutral-100" :
+                "bg-neutral-700 text-neutral-400"
               )}>
-                {factor.exposure > 0 ? "+" : ""}{(factor.exposure * 100).toFixed(0)}%
-              </span>
-            </div>
-            <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden relative">
-              {/* Center marker */}
-              <div className="absolute left-1/2 top-0 bottom-0 w-px bg-neutral-600" />
-              {/* Exposure bar */}
-              <div
-                className={cn(
-                  "absolute h-full rounded-full",
-                  factor.exposure > 0 ? "bg-emerald-500" : "bg-red-500"
-                )}
-                style={{
-                  left: factor.exposure > 0 ? "50%" : `${50 + factor.exposure * 50}%`,
-                  width: `${Math.abs(factor.exposure) * 50}%`,
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-
-// Signal Strength Filter
-function SignalFilter({
-  selected,
-  onChange,
-}: {
-  selected: string;
-  onChange: (filter: string) => void;
-}) {
-  const filters = [
-    { id: "all", label: "All", icon: Layers },
-    { id: "high-alpha", label: "High Alpha", icon: Star },
-    { id: "high-ir", label: "High IR", icon: Target },
-    { id: "low-vol", label: "Low Vol", icon: Shield },
-  ];
-
-  return (
-    <div className="flex items-center gap-2 mb-4">
-      {filters.map((filter) => (
-        <button
-          key={filter.id}
-          onClick={() => onChange(filter.id)}
-          className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
-            selected === filter.id
-              ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-              : "bg-neutral-800/50 text-neutral-400 hover:text-neutral-200 border border-transparent"
-          )}
-        >
-          <filter.icon className="w-4 h-4" />
-          {filter.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// Top Picks Banner
-function TopPicksBanner({ opportunities }: { opportunities: AlphaOpportunity[] }) {
-  const topPicks = opportunities.slice(0, 3);
-
-  return (
-    <Card className="bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border-amber-500/20 mb-6">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-500/20 rounded-lg">
-              <Trophy className="w-5 h-5 text-amber-400" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-neutral-100">Top Alpha Opportunities</h3>
-              <p className="text-sm text-neutral-400">Highest risk-adjusted return potential</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            {topPicks.map((pick, idx) => (
-              <div key={pick.assetId} className="flex items-center gap-2">
-                <div className={cn(
-                  "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
-                  idx === 0 ? "bg-amber-500 text-neutral-900" :
-                  idx === 1 ? "bg-neutral-400 text-neutral-900" :
-                  "bg-amber-700 text-neutral-100"
-                )}>
-                  {idx + 1}
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-neutral-200">{pick.symbol}</div>
-                  <div className={cn(
-                    "text-xs font-mono",
-                    pick.alphaMetrics.expectedAlpha > 0 ? "text-emerald-400" : "text-red-400"
+                {idx + 1}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-neutral-200">{pos.symbol}</span>
+                  <span className={cn(
+                    "text-sm font-mono font-medium",
+                    pos.sharpe > 1 ? "text-emerald-400" : pos.sharpe > 0 ? "text-amber-400" : "text-red-400"
                   )}>
-                    {pick.alphaMetrics.expectedAlpha > 0 ? "+" : ""}
-                    {pick.alphaMetrics.expectedAlpha.toFixed(1)}%α
-                  </div>
+                    {pos.sharpe.toFixed(2)}
+                  </span>
+                </div>
+                <div className="h-1 bg-neutral-800 rounded-full overflow-hidden mt-1">
+                  <div
+                    className={cn(
+                      "h-full rounded-full",
+                      pos.sharpe > 1 ? "bg-emerald-500" : pos.sharpe > 0 ? "bg-amber-500" : "bg-red-500"
+                    )}
+                    style={{ width: `${Math.max(0, Math.min(100, (pos.sharpe + 1) * 33))}%` }}
+                  />
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>
@@ -664,77 +820,126 @@ function TopPicksBanner({ opportunities }: { opportunities: AlphaOpportunity[] }
 // ============================================================================
 
 export function HedgeFundDashboard() {
-  const opportunities = useMemo(() => getAlphaOpportunities(), []);
-  const allocations = useMemo(() => getPortfolioAllocations(), []);
-  const riskMetrics = useMemo(() => getRiskMetrics(), []);
-  const [signalFilter, setSignalFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("overview");
 
-  const filteredOpportunities = useMemo(() => {
-    switch (signalFilter) {
-      case "high-alpha":
-        return opportunities.filter((o) => o.alphaMetrics.expectedAlpha > 5);
-      case "high-ir":
-        return opportunities.filter((o) => o.alphaMetrics.informationRatio > 1);
-      case "low-vol":
-        return opportunities.filter((o) => o.alphaMetrics.volatility < 20);
-      default:
-        return opportunities;
-    }
-  }, [opportunities, signalFilter]);
+  const metrics = useMemo(() => generatePortfolioMetrics(), []);
+  const positions = useMemo(() => generateAssetPositions(), []);
+  const attribution = useMemo(() => generatePerformanceAttribution(), []);
+  const benchmarks = useMemo(() => generateBenchmarkComparisons(), []);
+  const sizing = useMemo(() => generatePositionSizing(), []);
+  const factors = useMemo(() => generateFactorExposures(), []);
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-4 pb-8 -m-6 p-6 bg-neutral-950 min-h-screen">
       {/* Header */}
-      <DashboardHeader />
+      <DashboardHeader metrics={metrics} />
 
-      {/* Portfolio Summary */}
-      <PortfolioSummary />
+      {/* Portfolio Metrics */}
+      <PortfolioMetricsCards metrics={metrics} />
 
-      {/* Top Picks Banner */}
-      <TopPicksBanner opportunities={opportunities} />
+      {/* Tab Navigation */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-neutral-900 border border-neutral-800 p-0.5">
+          <TabsTrigger value="overview" className="text-xs data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="positions" className="text-xs data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400">
+            Positions
+          </TabsTrigger>
+          <TabsTrigger value="attribution" className="text-xs data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400">
+            Attribution
+          </TabsTrigger>
+          <TabsTrigger value="risk" className="text-xs data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-400">
+            Risk & Factors
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Alpha Opportunities - Main Content */}
-        <div className="lg:col-span-3">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-neutral-200 flex items-center gap-2">
-              <Crosshair className="w-5 h-5 text-amber-400" />
-              Alpha Opportunities
-              <Badge variant="outline" className="text-neutral-400 border-neutral-700">
-                {filteredOpportunities.length} signals
-              </Badge>
-            </h2>
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="mt-4 space-y-4">
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-3">
+              <AssetAllocationChart positions={positions} />
+            </div>
+            <div className="col-span-5">
+              <PerformanceAttributionPanel data={attribution} />
+            </div>
+            <div className="col-span-4">
+              <BenchmarkComparisonPanel data={benchmarks} />
+            </div>
           </div>
-
-          <SignalFilter selected={signalFilter} onChange={setSignalFilter} />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {filteredOpportunities.map((opportunity) => (
-              <AlphaCard key={opportunity.assetId} opportunity={opportunity} />
-            ))}
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-8">
+              <PortfolioTable positions={positions} />
+            </div>
+            <div className="col-span-4">
+              <RiskAdjustedReturnsPanel positions={positions} />
+            </div>
           </div>
-        </div>
+        </TabsContent>
 
-        {/* Sidebar */}
-        <div className="space-y-4">
-          <RiskMonitor metrics={riskMetrics} />
-          <PortfolioAllocations allocations={allocations} />
-          <FactorExposures opportunities={opportunities} />
+        {/* Positions Tab */}
+        <TabsContent value="positions" className="mt-4 space-y-4">
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-9">
+              <PortfolioTable positions={positions} />
+            </div>
+            <div className="col-span-3">
+              <PositionSizingPanel data={sizing} />
+            </div>
+          </div>
+        </TabsContent>
 
-          {/* Performance Note */}
-          <Card className="bg-amber-500/5 border-amber-500/20">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <Brain className="w-5 h-5 text-amber-400 shrink-0" />
-                <div className="text-xs text-neutral-400">
-                  <strong className="text-amber-400">AI-Powered Alpha:</strong> Signals combine 10,000+ model predictions with factor analysis for optimal risk-adjusted returns.
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Attribution Tab */}
+        <TabsContent value="attribution" className="mt-4 space-y-4">
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-6">
+              <PerformanceAttributionPanel data={attribution} />
+            </div>
+            <div className="col-span-6">
+              <BenchmarkComparisonPanel data={benchmarks} />
+            </div>
+          </div>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-4">
+              <AssetAllocationChart positions={positions} />
+            </div>
+            <div className="col-span-8">
+              <RiskAdjustedReturnsPanel positions={positions} />
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Risk & Factors Tab */}
+        <TabsContent value="risk" className="mt-4 space-y-4">
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-4">
+              <FactorExposurePanel data={factors} />
+            </div>
+            <div className="col-span-8">
+              <CorrelationMatrix size="md" showLabels={true} interactive={true} />
+            </div>
+          </div>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-6">
+              <PositionSizingPanel data={sizing} />
+            </div>
+            <div className="col-span-6">
+              <RiskAdjustedReturnsPanel positions={positions} />
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between text-[10px] text-neutral-600 pt-4 border-t border-neutral-800">
+        <div className="flex items-center gap-2">
+          <Brain className="w-3 h-3" />
+          <span>QDT Nexus Institutional • AI-Powered Portfolio Analytics</span>
         </div>
+        <span>Last Updated: {new Date().toLocaleTimeString()}</span>
       </div>
     </div>
   );
 }
+
+export default HedgeFundDashboard;

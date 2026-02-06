@@ -23,6 +23,7 @@ import api, {
   type BackendForecast,
   type EnsembleConfig,
   type HealthStatus,
+  type QuantumDashboard,
 } from "@/lib/api-client";
 
 // Query keys factory for consistent cache management
@@ -76,6 +77,8 @@ export const queryKeys = {
   backendConfig: (asset: string, strategy: string) =>
     [...queryKeys.backend(), "config", asset, strategy] as const,
   backendConfigs: () => [...queryKeys.backend(), "configs"] as const,
+  // Quantum API keys
+  quantumDashboard: () => [...queryKeys.backend(), "quantum", "dashboard"] as const,
 };
 
 // ============================================================================
@@ -263,6 +266,21 @@ export function useBackendConfigs(
   return useQuery({
     queryKey: queryKeys.backendConfigs(),
     queryFn: () => backendApi.listConfigs(),
+    ...options,
+  });
+}
+
+/**
+ * Fetch quantum dashboard with regime status and contagion analysis
+ */
+export function useQuantumDashboard(
+  options?: Omit<UseQueryOptions<QuantumDashboard, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.quantumDashboard(),
+    queryFn: () => backendApi.getQuantumDashboard(),
+    refetchInterval: 60000, // Refresh every minute
+    retry: 2,
     ...options,
   });
 }
