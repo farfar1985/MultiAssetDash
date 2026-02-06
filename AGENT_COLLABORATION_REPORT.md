@@ -749,6 +749,44 @@ def calculate_signals_inverse_spread_weighted(forecast_df, horizons, threshold):
 
 ---
 
+## Addendum: Sharpe Ratio Discrepancy Resolution (February 6, 2026)
+
+### Issue Identified
+
+A significant discrepancy was discovered between the initial D+5/D+7/D+10 pairwise slopes result and subsequent validation:
+
+| Source | Sharpe | Win Rate |
+|--------|--------|----------|
+| Amira's initial result | **+1.757** | 67.74% |
+| Deep dive validation | **-0.82** | 42.6% |
+
+### Root Causes (Summary)
+
+After comprehensive codebase analysis, **four root causes** were identified:
+
+1. **Different Sharpe formulas**: The initial calculation used **dollar-based returns** instead of percentage returns, and **population std** instead of sample std
+2. **Different annualization**: Initial used fixed sqrt(252), validation used sqrt(trades_per_year) based on actual holding periods
+3. **Different data splits**: Initial used full in-sample data, validation used proper train/test splits
+4. **Missing short-term horizons**: [5,7,10] lacks momentum confirmation from D+1/D+2/D+3
+
+### Conclusion
+
+The **1.757 figure is incorrect** due to methodological issues. The **-0.82 validation is accurate** — the [5,7,10] combination is genuinely anti-predictive.
+
+The winning strategies documented in this report ([1,2,3,7,10] with Sharpe 11.96 and [1,3,5,8,10] with Sharpe 7.90) remain valid as they were calculated using the correct methodology.
+
+### Full Analysis
+
+See: **[docs/SHARPE_DISCREPANCY_ANALYSIS.md](docs/SHARPE_DISCREPANCY_ANALYSIS.md)** for complete technical details including:
+- Code snippets from all Sharpe implementations
+- File locations and line numbers
+- Recommended standardized calculation
+- Action items for codebase cleanup
+
+*— Artemis, February 6, 2026*
+
+---
+
 ## Final Words
 
 This document represents not just what we accomplished, but **how we accomplished it**: two AI agents, each with distinct capabilities, working in concert with human partners to transform a production system in under 48 hours.
