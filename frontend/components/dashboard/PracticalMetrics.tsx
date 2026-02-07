@@ -306,7 +306,7 @@ export function PracticalMetrics({
           <MetricBox
             label="Forecast Size"
             value={formatMoveSize(signal.magnitude.predictedMove, asset)}
-            subtext={`Target: >${formatMoveSize(ASSET_MOVE_THRESHOLDS[asset], asset)}`}
+            subtext={`Target: >${formatMoveSize(ASSET_MOVE_THRESHOLDS[asset] ?? 1, asset)}`}
             valueColor={
               signal.magnitude.isActionable ? "text-green-500" : "text-red-500"
             }
@@ -317,7 +317,7 @@ export function PracticalMetrics({
           <MetricBox
             label="Big Move Win Rate"
             value={`${signal.bigMoveWinRate.toFixed(1)}%`}
-            subtext={`On moves >${formatMoveSize(ASSET_MOVE_THRESHOLDS[asset], asset)}`}
+            subtext={`On moves >${formatMoveSize(ASSET_MOVE_THRESHOLDS[asset] ?? 1, asset)}`}
             valueColor={
               signal.bigMoveWinRate >= 60
                 ? "text-green-500"

@@ -50,11 +50,11 @@ function generateInsight(
 
   if (magnitude.isActionable) {
     explanationParts.push(
-      `This exceeds the ${formatMoveSize(ASSET_MOVE_THRESHOLDS[asset], asset)} threshold for ${assetName} by ${magnitude.thresholdMultiple.toFixed(1)}x.`
+      `This exceeds the ${formatMoveSize(ASSET_MOVE_THRESHOLDS[asset] ?? 1, asset)} threshold for ${assetName} by ${magnitude.thresholdMultiple.toFixed(1)}x.`
     );
   } else {
     explanationParts.push(
-      `This is below the ${formatMoveSize(ASSET_MOVE_THRESHOLDS[asset], asset)} threshold needed for actionability.`
+      `This is below the ${formatMoveSize(ASSET_MOVE_THRESHOLDS[asset] ?? 1, asset)} threshold needed for actionability.`
     );
   }
 

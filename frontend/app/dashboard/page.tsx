@@ -90,7 +90,7 @@ function getHorizonCategory(horizon: Horizon): "short" | "medium" | "long" {
 
 function generateForecastMove(assetId: AssetId, signal: SignalData): number {
   // Simulate forecast move based on threshold and confidence
-  const threshold = ASSET_MOVE_THRESHOLDS[assetId];
+  const threshold = ASSET_MOVE_THRESHOLDS[assetId] ?? 1;
   const multiplier = 0.8 + (signal.confidence / 100) * 1.5;
   const move = threshold * multiplier;
   return signal.direction === "bearish" ? -move : move;

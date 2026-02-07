@@ -50,7 +50,7 @@ function generateForecastMagnitude(
   currentPrice: number,
   seed: number
 ): ForecastMagnitude {
-  const threshold = ASSET_THRESHOLDS[assetId];
+  const threshold = ASSET_THRESHOLDS[assetId] ?? 1;
   const random = seededRandom(seed);
 
   // Generate a move that could be above or below threshold
@@ -123,7 +123,7 @@ function generateHorizonCoverage(assetId: AssetId, seed: number): HorizonCoverag
     hasShortTerm,
     hasMediumTerm,
     hasLongTerm,
-    optimalHorizon: optimalHorizons[assetId],
+    optimalHorizon: optimalHorizons[assetId] ?? null,
   };
 }
 
@@ -343,5 +343,5 @@ export const MOCK_PRACTICAL_METRICS: Partial<Record<AssetId, PracticalMetricsDat
  * Get practical metrics for an asset
  */
 export function getPracticalMetrics(assetId: AssetId): PracticalMetricsData {
-  return MOCK_PRACTICAL_METRICS[assetId];
+  return MOCK_PRACTICAL_METRICS[assetId] ?? generatePracticalMetrics(assetId);
 }
