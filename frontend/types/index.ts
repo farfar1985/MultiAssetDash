@@ -67,7 +67,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
   },
 };
 
-// Asset types
+// Asset types - includes all QDL assets
 export type AssetId =
   | "crude-oil"
   | "bitcoin"
@@ -81,7 +81,12 @@ export type AssetId =
   | "platinum"
   | "sp500"
   | "nasdaq"
-  | "ethereum";
+  | "ethereum"
+  | "dow-jones"
+  | "russell-2000"
+  | "nikkei"
+  | "usd-index"
+  | "brent-oil";
 
 export interface Asset {
   id: AssetId;
@@ -168,6 +173,36 @@ export const ASSETS: Record<AssetId, Asset> = {
     name: "Ethereum",
     symbol: "ETH",
     category: "crypto",
+  },
+  "dow-jones": {
+    id: "dow-jones",
+    name: "Dow Jones",
+    symbol: "YM",
+    category: "indices",
+  },
+  "russell-2000": {
+    id: "russell-2000",
+    name: "Russell 2000",
+    symbol: "RTY",
+    category: "indices",
+  },
+  nikkei: {
+    id: "nikkei",
+    name: "Nikkei 225",
+    symbol: "NKD",
+    category: "indices",
+  },
+  "usd-index": {
+    id: "usd-index",
+    name: "US Dollar Index",
+    symbol: "DX",
+    category: "indices",
+  },
+  "brent-oil": {
+    id: "brent-oil",
+    name: "Brent Crude",
+    symbol: "BZ",
+    category: "energy",
   },
 };
 

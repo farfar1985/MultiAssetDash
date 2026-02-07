@@ -23,6 +23,14 @@ export const ASSET_MOVE_THRESHOLDS: Partial<Record<AssetId, number>> = {
   corn: 3, // 3 cents minimum for ZC
   soybean: 8, // 8 cents minimum for ZS
   platinum: 15, // $15 minimum for PL
+  sp500: 25, // 25 points minimum for ES
+  nasdaq: 100, // 100 points minimum for NQ
+  ethereum: 50, // $50 minimum for ETH
+  "dow-jones": 200, // 200 points minimum for YM
+  "russell-2000": 15, // 15 points minimum for RTY
+  nikkei: 500, // 500 points minimum for NKD
+  "usd-index": 0.5, // 0.5 points minimum for DX
+  "brent-oil": 1.0, // $1.00 minimum for BZ
 };
 
 /**
@@ -352,18 +360,26 @@ export function formatMoveSize(move: number, asset: AssetId): string {
   const sign = move >= 0 ? "+" : "-";
 
   // Different formatting based on asset
-  if (asset === "bitcoin") {
+  if (asset === "bitcoin" || asset === "ethereum") {
     return `${sign}$${absMove.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
   }
-  if (asset === "crude-oil" || asset === "natural-gas") {
+  if (asset === "crude-oil" || asset === "natural-gas" || asset === "brent-oil") {
     return `${sign}$${absMove.toFixed(2)}`;
   }
-  if (asset === "gold" || asset === "platinum") {
+  if (asset === "gold" || asset === "platinum" || asset === "silver" || asset === "copper") {
     return `${sign}$${absMove.toFixed(2)}`;
   }
   // Agricultural - cents
   if (["wheat", "corn", "soybean"].includes(asset)) {
     return `${sign}${absMove.toFixed(1)}¢`;
+  }
+  // Indices - points
+  if (["sp500", "nasdaq", "dow-jones", "russell-2000", "nikkei"].includes(asset)) {
+    return `${sign}${absMove.toFixed(1)} pts`;
+  }
+  // USD Index
+  if (asset === "usd-index") {
+    return `${sign}${absMove.toFixed(2)}`;
   }
   // Default
   return `${sign}$${absMove.toFixed(2)}`;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,7 @@ import { ActionableSummary } from "@/components/dashboard/ActionableSummary";
 import { LiveSignalCard } from "@/components/dashboard/LiveSignalCard";
 import { ApiHealthIndicator } from "@/components/dashboard/ApiHealthIndicator";
 import { DataSourceBadge } from "@/components/ui/DataSourceBadge";
-// useRealData is used via DataSourceBadge and will be used directly when we migrate components
+import { useRealData } from "@/contexts/RealDataContext";
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import {
   type ActionabilityLevel,
@@ -64,12 +64,12 @@ interface EnrichedSignal {
 }
 
 // ============================================================================
-// Mock Data Enrichment (simulates API data)
+// Data Enrichment (uses real data from QDL, falls back to mock)
 // ============================================================================
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function calculateActionability(signal: SignalData, _assetId: AssetId): { score: number; level: ActionabilityLevel } {
-  // Simulate actionability calculation based on confidence, direction strength, etc.
+  // Calculate actionability based on confidence, direction strength, etc.
   const confidenceScore = signal.confidence;
   const modelAgreement = (signal.modelsAgreeing / signal.modelsTotal) * 100;
   const sharpeBonus = Math.min(signal.sharpeRatio * 10, 30);
@@ -91,15 +91,50 @@ function getHorizonCategory(horizon: Horizon): "short" | "medium" | "long" {
 }
 
 function generateForecastMove(assetId: AssetId, signal: SignalData): number {
-  // Simulate forecast move based on threshold and confidence
+  // Calculate forecast move based on threshold and confidence
   const threshold = ASSET_MOVE_THRESHOLDS[assetId] ?? 1;
   const multiplier = 0.8 + (signal.confidence / 100) * 1.5;
   const move = threshold * multiplier;
   return signal.direction === "bearish" ? -move : move;
 }
 
-// Get all enriched signals across assets and horizons
-function getEnrichedSignals(): EnrichedSignal[] {
+// Build enriched signals from context data (real or mock)
+function buildEnrichedSignals(
+  getAsset: (id: AssetId) => { name: string; symbol: string; currentPrice: number } | null,
+  getSignal: (id: AssetId, horizon: string) => SignalData | null,
+  assetIds: AssetId[]
+): EnrichedSignal[] {
+  const signals: EnrichedSignal[] = [];
+  const horizons: Horizon[] = ["D+1", "D+5", "D+10"];
+
+  assetIds.forEach((assetId) => {
+    const asset = getAsset(assetId);
+    if (!asset) return;
+
+    horizons.forEach((horizon) => {
+      const signal = getSignal(assetId, horizon);
+      if (signal) {
+        const { score, level } = calculateActionability(signal, assetId);
+        signals.push({
+          assetId,
+          assetName: asset.name,
+          symbol: asset.symbol,
+          currentPrice: asset.currentPrice,
+          signal,
+          actionabilityScore: score,
+          actionabilityLevel: level,
+          forecastMove: generateForecastMove(assetId, signal),
+          horizonCategory: getHorizonCategory(horizon),
+        });
+      }
+    });
+  });
+
+  return signals;
+}
+
+// Fallback: Get enriched signals from mock data only
+function getEnrichedSignalsFromMock(): EnrichedSignal[] {
   const signals: EnrichedSignal[] = [];
   const horizons: Horizon[] = ["D+1", "D+5", "D+10"];
 
@@ -760,14 +795,34 @@ function FilterBar({
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { getAsset, getSignal, dataSource, loading, refreshAll } = useRealData();
 
   // Filter state
   const [actionabilityFilter, setActionabilityFilter] = useState<ActionabilityFilter>("all");
   const [directionFilter, setDirectionFilter] = useState<DirectionFilter>("all");
   const [horizonFilter, setHorizonFilter] = useState<HorizonFilter>("all");
 
-  // Get all enriched signals
-  const allSignals = useMemo(() => getEnrichedSignals(), []);
+  // Define asset IDs (same as mock for now, will expand with real data)
+  const assetIds: AssetId[] = useMemo(() => 
+    Object.keys(MOCK_ASSETS) as AssetId[], 
+    []
+  );
+
+  // Refresh signals for all assets on mount
+  useEffect(() => {
+    if (dataSource !== "mock") {
+      refreshAll();
+    }
+  }, [dataSource, refreshAll]);
+
+  // Get all enriched signals using real data with mock fallback
+  const allSignals = useMemo(() => {
+    if (loading) {
+      // While loading, use mock data to prevent flash
+      return getEnrichedSignalsFromMock();
+    }
+    return buildEnrichedSignals(getAsset, getSignal, assetIds);
+  }, [getAsset, getSignal, assetIds, loading]);
 
   // Filter signals
   const filteredSignals = useMemo(() => {
