@@ -204,16 +204,16 @@ function generateModelAgreement(assetId: AssetId): ModelAgreement {
 const DAYS = 90;
 
 export const MOCK_OHLC_DATA: Partial<Record<AssetId, OHLCData[]>> = {
-  "crude-oil": generateOHLCData("crude-oil", DAYS, MOCK_ASSETS["crude-oil"].currentPrice),
-  bitcoin: generateOHLCData("bitcoin", DAYS, MOCK_ASSETS.bitcoin.currentPrice),
-  gold: generateOHLCData("gold", DAYS, MOCK_ASSETS.gold.currentPrice),
-  silver: generateOHLCData("silver", DAYS, MOCK_ASSETS.silver.currentPrice),
-  "natural-gas": generateOHLCData("natural-gas", DAYS, MOCK_ASSETS["natural-gas"].currentPrice),
-  copper: generateOHLCData("copper", DAYS, MOCK_ASSETS.copper.currentPrice),
-  wheat: generateOHLCData("wheat", DAYS, MOCK_ASSETS.wheat.currentPrice),
-  corn: generateOHLCData("corn", DAYS, MOCK_ASSETS.corn.currentPrice),
-  soybean: generateOHLCData("soybean", DAYS, MOCK_ASSETS.soybean.currentPrice),
-  platinum: generateOHLCData("platinum", DAYS, MOCK_ASSETS.platinum.currentPrice),
+  "crude-oil": generateOHLCData("crude-oil", DAYS, MOCK_ASSETS["crude-oil"]!.currentPrice),
+  bitcoin: generateOHLCData("bitcoin", DAYS, MOCK_ASSETS.bitcoin!.currentPrice),
+  gold: generateOHLCData("gold", DAYS, MOCK_ASSETS.gold!.currentPrice),
+  silver: generateOHLCData("silver", DAYS, MOCK_ASSETS.silver!.currentPrice),
+  "natural-gas": generateOHLCData("natural-gas", DAYS, MOCK_ASSETS["natural-gas"]!.currentPrice),
+  copper: generateOHLCData("copper", DAYS, MOCK_ASSETS.copper!.currentPrice),
+  wheat: generateOHLCData("wheat", DAYS, MOCK_ASSETS.wheat!.currentPrice),
+  corn: generateOHLCData("corn", DAYS, MOCK_ASSETS.corn!.currentPrice),
+  soybean: generateOHLCData("soybean", DAYS, MOCK_ASSETS.soybean!.currentPrice),
+  platinum: generateOHLCData("platinum", DAYS, MOCK_ASSETS.platinum!.currentPrice),
 };
 
 export const MOCK_SIGNAL_HISTORY: Partial<Record<AssetId, SignalHistoryData[]>> = {

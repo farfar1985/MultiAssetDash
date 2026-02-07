@@ -226,7 +226,7 @@ function calculateHorizonCoverage(assetId: AssetId): number {
   if (signals.length < 2) return 33;
   const firstDirection = signals[0]?.direction;
   for (const signal of signals) {
-    if (signal?.direction === firstDirection && signal.direction !== "neutral") {
+    if (signal?.direction === firstDirection && signal?.direction !== "neutral") {
       consistentDirection++;
     }
   }
