@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { EnsembleProvider } from "@/contexts/EnsembleContext";
+import { RealDataProvider } from "@/contexts/RealDataContext";
 import { CommandPaletteWrapper } from "@/components/ai";
 import "./globals.css";
 
@@ -32,9 +33,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-neutral-950 text-neutral-100`}
       >
         <QueryProvider>
-          <EnsembleProvider>
-            <CommandPaletteWrapper>{children}</CommandPaletteWrapper>
-          </EnsembleProvider>
+          <RealDataProvider>
+            <EnsembleProvider>
+              <CommandPaletteWrapper>{children}</CommandPaletteWrapper>
+            </EnsembleProvider>
+          </RealDataProvider>
         </QueryProvider>
       </body>
     </html>

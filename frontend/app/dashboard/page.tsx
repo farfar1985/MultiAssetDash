@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { ActionableSummary } from "@/components/dashboard/ActionableSummary";
 import { LiveSignalCard } from "@/components/dashboard/LiveSignalCard";
 import { ApiHealthIndicator } from "@/components/dashboard/ApiHealthIndicator";
+import { DataSourceBadge } from "@/components/ui/DataSourceBadge";
+import { useRealData } from "@/contexts/RealDataContext";
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import {
   type ActionabilityLevel,
@@ -182,8 +184,9 @@ function MorningBriefing({ date, time, highActionableCount, urgentSignals }: Mor
               </span>
             </div>
           )}
+          <DataSourceBadge />
           <div className="text-xs text-neutral-500 font-mono">
-            10,179 models · 10 assets
+            10,179 models · 12 assets
           </div>
         </div>
       </div>
