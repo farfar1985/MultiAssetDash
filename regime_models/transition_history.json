@@ -1,0 +1,132 @@
+{
+  "1387_Nifty_Bank": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.087,
+      "p_stay": 0.913,
+      "regime": "bear",
+      "confidence": 0.9987,
+      "duration": 35
+    }
+  ],
+  "1398_Nifty_50": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0123,
+      "p_stay": 0.9877,
+      "regime": "sideways",
+      "confidence": 1.0,
+      "duration": 9
+    }
+  ],
+  "1435_MCX_Copper": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.1002,
+      "p_stay": 0.8998,
+      "regime": "sideways",
+      "confidence": 1.0,
+      "duration": 14
+    }
+  ],
+  "1518_RUSSEL": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.069,
+      "p_stay": 0.931,
+      "regime": "bear",
+      "confidence": 0.9596,
+      "duration": 7
+    }
+  ],
+  "1625_SP500": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0,
+      "p_stay": 1.0,
+      "regime": "sideways",
+      "confidence": 1.0,
+      "duration": 262
+    }
+  ],
+  "1859_Brent_Oil": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0429,
+      "p_stay": 0.9571,
+      "regime": "bull",
+      "confidence": 1.0,
+      "duration": 25
+    }
+  ],
+  "256_USD_INR": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0225,
+      "p_stay": 0.9775,
+      "regime": "bull",
+      "confidence": 0.9997,
+      "duration": 17
+    }
+  ],
+  "269_NASDAQ": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0127,
+      "p_stay": 0.9873,
+      "regime": "bear",
+      "confidence": 1.0,
+      "duration": 120
+    }
+  ],
+  "291_SPDR_China_ETF": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0291,
+      "p_stay": 0.9709,
+      "regime": "low-volatility",
+      "confidence": 1.0,
+      "duration": 1
+    }
+  ],
+  "336_DOW_JONES_Mini": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.005,
+      "p_stay": 0.995,
+      "regime": "low-volatility",
+      "confidence": 1.0,
+      "duration": 95
+    }
+  ],
+  "358_Nikkei_225": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0774,
+      "p_stay": 0.9226,
+      "regime": "bear",
+      "confidence": 0.8116,
+      "duration": 18
+    }
+  ],
+  "477_GOLD": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0567,
+      "p_stay": 0.9433,
+      "regime": "bear",
+      "confidence": 1.0,
+      "duration": 3
+    }
+  ],
+  "655_US_DOLLAR_Index": [
+    {
+      "timestamp": "2026-02-06T22:11:05.389107",
+      "p_change": 0.0461,
+      "p_stay": 0.9539,
+      "regime": "bull",
+      "confidence": 1.0,
+      "duration": 11
+    }
+  ]
+}

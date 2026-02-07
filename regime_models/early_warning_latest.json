@@ -1,0 +1,355 @@
+{
+  "timestamp": "2026-02-06T22:10:07.284638",
+  "overall_risk": "LOW",
+  "summary": {
+    "stable": 12,
+    "moderate": 1,
+    "elevated": 0,
+    "high_risk": 0
+  },
+  "alerts": [],
+  "contagion_groups": {
+    "US_Equities": {
+      "assets": [
+        {
+          "asset": "1625_SP500",
+          "p_change": 0.0,
+          "regime": "sideways",
+          "alert_level": "normal"
+        },
+        {
+          "asset": "269_NASDAQ",
+          "p_change": 0.0127,
+          "regime": "bear",
+          "alert_level": "normal"
+        },
+        {
+          "asset": "1518_RUSSEL",
+          "p_change": 0.069,
+          "regime": "bear",
+          "alert_level": "normal"
+        },
+        {
+          "asset": "336_DOW_JONES_Mini",
+          "p_change": 0.005,
+          "regime": "low-volatility",
+          "alert_level": "normal"
+        }
+      ],
+      "avg_p_change": 0.0217,
+      "elevated_count": 0,
+      "total": 4,
+      "contagion_risk": "LOW"
+    },
+    "India": {
+      "assets": [
+        {
+          "asset": "1387_Nifty_Bank",
+          "p_change": 0.087,
+          "regime": "bear",
+          "alert_level": "normal"
+        },
+        {
+          "asset": "1398_Nifty_50",
+          "p_change": 0.0123,
+          "regime": "sideways",
+          "alert_level": "normal"
+        }
+      ],
+      "avg_p_change": 0.0496,
+      "elevated_count": 0,
+      "total": 2,
+      "contagion_risk": "LOW"
+    },
+    "Commodities": {
+      "assets": [
+        {
+          "asset": "477_GOLD",
+          "p_change": 0.0567,
+          "regime": "bear",
+          "alert_level": "normal"
+        },
+        {
+          "asset": "1435_MCX_Copper",
+          "p_change": 0.1002,
+          "regime": "sideways",
+          "alert_level": "normal"
+        },
+        {
+          "asset": "1859_Brent_Oil",
+          "p_change": 0.0429,
+          "regime": "bull",
+          "alert_level": "normal"
+        }
+      ],
+      "avg_p_change": 0.0666,
+      "elevated_count": 0,
+      "total": 3,
+      "contagion_risk": "LOW"
+    },
+    "FX": {
+      "assets": [
+        {
+          "asset": "256_USD_INR",
+          "p_change": 0.0225,
+          "regime": "bull",
+          "alert_level": "normal"
+        },
+        {
+          "asset": "655_US_DOLLAR_Index",
+          "p_change": 0.0461,
+          "regime": "bull",
+          "alert_level": "normal"
+        }
+      ],
+      "avg_p_change": 0.0343,
+      "elevated_count": 0,
+      "total": 2,
+      "contagion_risk": "LOW"
+    },
+    "International": {
+      "assets": [
+        {
+          "asset": "291_SPDR_China_ETF",
+          "p_change": 0.0291,
+          "regime": "low-volatility",
+          "alert_level": "normal"
+        },
+        {
+          "asset": "358_Nikkei_225",
+          "p_change": 0.0774,
+          "regime": "bear",
+          "alert_level": "normal"
+        }
+      ],
+      "avg_p_change": 0.0532,
+      "elevated_count": 0,
+      "total": 2,
+      "contagion_risk": "LOW"
+    }
+  },
+  "asset_details": {
+    "1387_Nifty_Bank": {
+      "asset": "1387_Nifty_Bank",
+      "current_regime": "bear",
+      "confidence": 0.9987,
+      "regime_duration_days": 35,
+      "p_stay": 0.913,
+      "p_change": 0.087,
+      "p_to_regimes": {
+        "bull": 0.0173,
+        "high-volatility": 0.0,
+        "sideways": 0.0346,
+        "low-volatility": 0.0351
+      },
+      "most_likely_next": "low-volatility",
+      "p_most_likely_next": 0.0351,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "1398_Nifty_50": {
+      "asset": "1398_Nifty_50",
+      "current_regime": "sideways",
+      "confidence": 1.0,
+      "regime_duration_days": 9,
+      "p_stay": 0.9877,
+      "p_change": 0.0123,
+      "p_to_regimes": {
+        "bear": 0.0123,
+        "bull": 0.0
+      },
+      "most_likely_next": "bear",
+      "p_most_likely_next": 0.0123,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "1435_MCX_Copper": {
+      "asset": "1435_MCX_Copper",
+      "current_regime": "sideways",
+      "confidence": 1.0,
+      "regime_duration_days": 14,
+      "p_stay": 0.8998,
+      "p_change": 0.1002,
+      "p_to_regimes": {
+        "sideways": 0.02,
+        "high-volatility": 0.02,
+        "low-volatility": 0.02
+      },
+      "most_likely_next": "low-volatility",
+      "p_most_likely_next": 0.02,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "1518_RUSSEL": {
+      "asset": "1518_RUSSEL",
+      "current_regime": "bear",
+      "confidence": 0.9596,
+      "regime_duration_days": 7,
+      "p_stay": 0.931,
+      "p_change": 0.069,
+      "p_to_regimes": {
+        "bull": 0.0,
+        "high-volatility": 0.0554,
+        "low-volatility": 0.0137
+      },
+      "most_likely_next": "high-volatility",
+      "p_most_likely_next": 0.0554,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "1625_SP500": {
+      "asset": "1625_SP500",
+      "current_regime": "sideways",
+      "confidence": 1.0,
+      "regime_duration_days": 262,
+      "p_stay": 1.0,
+      "p_change": 0.0,
+      "p_to_regimes": {
+        "bear": 0.0,
+        "bull": 0.0
+      },
+      "most_likely_next": "bear",
+      "p_most_likely_next": 0.0,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "1859_Brent_Oil": {
+      "asset": "1859_Brent_Oil",
+      "current_regime": "bull",
+      "confidence": 1.0,
+      "regime_duration_days": 25,
+      "p_stay": 0.9571,
+      "p_change": 0.0429,
+      "p_to_regimes": {
+        "sideways": 0.0429,
+        "low-volatility": 0.0,
+        "high-volatility": 0.0
+      },
+      "most_likely_next": "sideways",
+      "p_most_likely_next": 0.0429,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "256_USD_INR": {
+      "asset": "256_USD_INR",
+      "current_regime": "bull",
+      "confidence": 0.9997,
+      "regime_duration_days": 17,
+      "p_stay": 0.9775,
+      "p_change": 0.0225,
+      "p_to_regimes": {
+        "high-volatility": 0.0,
+        "low-volatility": 0.0225,
+        "bear": 0.0
+      },
+      "most_likely_next": "low-volatility",
+      "p_most_likely_next": 0.0225,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "269_NASDAQ": {
+      "asset": "269_NASDAQ",
+      "current_regime": "bear",
+      "confidence": 1.0,
+      "regime_duration_days": 120,
+      "p_stay": 0.9873,
+      "p_change": 0.0127,
+      "p_to_regimes": {
+        "high-volatility": 0.0,
+        "bull": 0.0042,
+        "low-volatility": 0.0085
+      },
+      "most_likely_next": "low-volatility",
+      "p_most_likely_next": 0.0085,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "291_SPDR_China_ETF": {
+      "asset": "291_SPDR_China_ETF",
+      "current_regime": "low-volatility",
+      "confidence": 1.0,
+      "regime_duration_days": 1,
+      "p_stay": 0.9709,
+      "p_change": 0.0291,
+      "p_to_regimes": {
+        "sideways": 0.0116,
+        "bear": 0.0115,
+        "high-volatility": 0.0059,
+        "bull": 0.0
+      },
+      "most_likely_next": "sideways",
+      "p_most_likely_next": 0.0116,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "336_DOW_JONES_Mini": {
+      "asset": "336_DOW_JONES_Mini",
+      "current_regime": "low-volatility",
+      "confidence": 1.0,
+      "regime_duration_days": 95,
+      "p_stay": 0.995,
+      "p_change": 0.005,
+      "p_to_regimes": {
+        "bull": 0.0,
+        "high-volatility": 0.005,
+        "bear": 0.0
+      },
+      "most_likely_next": "high-volatility",
+      "p_most_likely_next": 0.005,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "358_Nikkei_225": {
+      "asset": "358_Nikkei_225",
+      "current_regime": "bear",
+      "confidence": 0.8116,
+      "regime_duration_days": 18,
+      "p_stay": 0.9226,
+      "p_change": 0.0774,
+      "p_to_regimes": {
+        "sideways": 0.043,
+        "bull": 0.0344,
+        "high-volatility": 0.0,
+        "low-volatility": 0.0
+      },
+      "most_likely_next": "sideways",
+      "p_most_likely_next": 0.043,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "477_GOLD": {
+      "asset": "477_GOLD",
+      "current_regime": "bear",
+      "confidence": 1.0,
+      "regime_duration_days": 3,
+      "p_stay": 0.9433,
+      "p_change": 0.0567,
+      "p_to_regimes": {
+        "bull": 0.0283,
+        "high-volatility": 0.0284,
+        "low-volatility": 0.0
+      },
+      "most_likely_next": "high-volatility",
+      "p_most_likely_next": 0.0284,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    },
+    "655_US_DOLLAR_Index": {
+      "asset": "655_US_DOLLAR_Index",
+      "current_regime": "bull",
+      "confidence": 1.0,
+      "regime_duration_days": 11,
+      "p_stay": 0.9539,
+      "p_change": 0.0461,
+      "p_to_regimes": {
+        "sideways": 0.0,
+        "high-volatility": 0.0,
+        "low-volatility": 0.0
+      },
+      "most_likely_next": "low-volatility",
+      "p_most_likely_next": 0.0,
+      "alert_level": "normal",
+      "timestamp": "2026-02-06T22:10:07.284638"
+    }
+  }
+}
