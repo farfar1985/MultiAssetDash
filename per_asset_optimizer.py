@@ -59,7 +59,8 @@ def load_asset_data(asset_dir: str):
                 df['time'] = pd.to_datetime(df['time']).dt.tz_localize(None)
                 
                 # Filter to match horizon data dates
-                START_DATE = '2025-01-01'
+                # Use all available history for better model training
+                START_DATE = '2020-01-01'  # Extended from 2025-01-01 to use full history
                 df = df[df['time'] >= pd.to_datetime(START_DATE)]
                 
                 prices_series = df.groupby('time')['target_var_price'].first().sort_index()

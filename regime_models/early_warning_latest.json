@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-06T22:10:07.284638",
+  "timestamp": "2026-02-07T00:54:12.815056",
   "overall_risk": "LOW",
   "summary": {
     "stable": 12,
@@ -145,7 +145,7 @@
       "most_likely_next": "low-volatility",
       "p_most_likely_next": 0.0351,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.815056"
     },
     "1398_Nifty_50": {
       "asset": "1398_Nifty_50",
@@ -161,7 +161,7 @@
       "most_likely_next": "bear",
       "p_most_likely_next": 0.0123,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.815056"
     },
     "1435_MCX_Copper": {
       "asset": "1435_MCX_Copper",
@@ -178,7 +178,7 @@
       "most_likely_next": "low-volatility",
       "p_most_likely_next": 0.02,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.815056"
     },
     "1518_RUSSEL": {
       "asset": "1518_RUSSEL",
@@ -195,7 +195,7 @@
       "most_likely_next": "high-volatility",
       "p_most_likely_next": 0.0554,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.815056"
     },
     "1625_SP500": {
       "asset": "1625_SP500",
@@ -211,7 +211,7 @@
       "most_likely_next": "bear",
       "p_most_likely_next": 0.0,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.815056"
     },
     "1859_Brent_Oil": {
       "asset": "1859_Brent_Oil",
@@ -228,7 +228,7 @@
       "most_likely_next": "sideways",
       "p_most_likely_next": 0.0429,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.815056"
     },
     "256_USD_INR": {
       "asset": "256_USD_INR",
@@ -245,7 +245,7 @@
       "most_likely_next": "low-volatility",
       "p_most_likely_next": 0.0225,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.815056"
     },
     "269_NASDAQ": {
       "asset": "269_NASDAQ",
@@ -262,7 +262,7 @@
       "most_likely_next": "low-volatility",
       "p_most_likely_next": 0.0085,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.815056"
     },
     "291_SPDR_China_ETF": {
       "asset": "291_SPDR_China_ETF",
@@ -280,7 +280,7 @@
       "most_likely_next": "sideways",
       "p_most_likely_next": 0.0116,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.816059"
     },
     "336_DOW_JONES_Mini": {
       "asset": "336_DOW_JONES_Mini",
@@ -297,7 +297,7 @@
       "most_likely_next": "high-volatility",
       "p_most_likely_next": 0.005,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.816059"
     },
     "358_Nikkei_225": {
       "asset": "358_Nikkei_225",
@@ -315,7 +315,7 @@
       "most_likely_next": "sideways",
       "p_most_likely_next": 0.043,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.816059"
     },
     "477_GOLD": {
       "asset": "477_GOLD",
@@ -332,7 +332,7 @@
       "most_likely_next": "high-volatility",
       "p_most_likely_next": 0.0284,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.816059"
     },
     "655_US_DOLLAR_Index": {
       "asset": "655_US_DOLLAR_Index",
@@ -349,7 +349,7 @@
       "most_likely_next": "low-volatility",
       "p_most_likely_next": 0.0,
       "alert_level": "normal",
-      "timestamp": "2026-02-06T22:10:07.284638"
+      "timestamp": "2026-02-07T00:54:12.816059"
     }
   }
 }
