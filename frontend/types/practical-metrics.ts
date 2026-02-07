@@ -12,7 +12,7 @@ import type { Horizon } from "./horizon-pairs";
  * Asset-specific minimum move thresholds for actionability
  * These represent the minimum predicted move that justifies action
  */
-export const ASSET_MOVE_THRESHOLDS: Record<AssetId, number> = {
+export const ASSET_MOVE_THRESHOLDS: Partial<Record<AssetId, number>> = {
   "crude-oil": 1.0, // $1.00 minimum for CL
   bitcoin: 500, // $500 minimum for BTC
   gold: 10, // $10 minimum for GC

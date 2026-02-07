@@ -29,7 +29,7 @@ function seededRandom(seed: number): number {
 /**
  * Asset-specific move thresholds
  */
-const ASSET_THRESHOLDS: Record<AssetId, number> = {
+const ASSET_THRESHOLDS: Partial<Record<AssetId, number>> = {
   "crude-oil": 1.0,
   bitcoin: 500,
   gold: 10,
@@ -103,7 +103,7 @@ function generateHorizonCoverage(assetId: AssetId, seed: number): HorizonCoverag
   const hasLongTerm = coveredHorizons.some((h) => h === "D+7" || h === "D+10");
 
   // Optimal horizon based on asset
-  const optimalHorizons: Record<AssetId, Horizon> = {
+  const optimalHorizons: Partial<Record<AssetId, Horizon>> = {
     "crude-oil": "D+3",
     bitcoin: "D+5",
     gold: "D+3",
@@ -326,7 +326,7 @@ export function generatePracticalMetrics(assetId: AssetId): PracticalMetricsData
 /**
  * Pre-generated practical metrics for all assets
  */
-export const MOCK_PRACTICAL_METRICS: Record<AssetId, PracticalMetricsData> = {
+export const MOCK_PRACTICAL_METRICS: Partial<Record<AssetId, PracticalMetricsData>> = {
   "crude-oil": generatePracticalMetrics("crude-oil"),
   bitcoin: generatePracticalMetrics("bitcoin"),
   gold: generatePracticalMetrics("gold"),

@@ -197,7 +197,7 @@ export const NATURAL_GAS_HORIZON_DATA: HorizonPairMatrix = {
 /**
  * All mock data by asset
  */
-export const MOCK_HORIZON_DATA: Record<AssetId, HorizonPairMatrix> = {
+export const MOCK_HORIZON_DATA: Partial<Record<AssetId, HorizonPairMatrix>> = {
   "crude-oil": CRUDE_OIL_HORIZON_DATA,
   bitcoin: BITCOIN_HORIZON_DATA,
   gold: GOLD_HORIZON_DATA,
