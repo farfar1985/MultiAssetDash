@@ -220,6 +220,26 @@ def get_regime():
         }), 500
 
 
+@v2_bp.route('/regime/accurate', methods=['GET'])
+def get_regime_accurate():
+    """Get high-accuracy regime analysis with COT and yield curve data."""
+    try:
+        from quantum_regime_accurate import get_accurate_regime
+        result = get_accurate_regime()
+        return jsonify(result)
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Accurate regime module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Accurate regime error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
 # ============================================================================
 # REGISTRATION HELPER
 # ============================================================================
