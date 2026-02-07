@@ -18,7 +18,7 @@ import { ActionableSummary } from "@/components/dashboard/ActionableSummary";
 import { LiveSignalCard } from "@/components/dashboard/LiveSignalCard";
 import { ApiHealthIndicator } from "@/components/dashboard/ApiHealthIndicator";
 import { DataSourceBadge } from "@/components/ui/DataSourceBadge";
-import { useRealData } from "@/contexts/RealDataContext";
+// useRealData is used via DataSourceBadge and will be used directly when we migrate components
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import {
   type ActionabilityLevel,
