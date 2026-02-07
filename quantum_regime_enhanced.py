@@ -1,438 +1,630 @@
 """
-ENHANCED QUANTUM REGIME DETECTOR
-================================
-Incorporates additional data sources for improved regime detection:
+Enhanced Quantum Regime Detection using QDT Data Lake
+======================================================
+Multi-factor regime detection using:
+- Price data (momentum, volatility)
+- VIX (market fear index)
+- Cross-asset correlations (risk-on/risk-off)
+- Regime persistence and transition probabilities
 
-1. Implied Volatility (VIX-like forward-looking)
-2. Trader Positioning (CFTC COT sentiment)
-3. News Sentiment (if available)
-4. Cross-Asset Signals (contagion-aware)
-5. Macro Indicators (interest rates, credit spreads)
-
-Data Sources Available in quantum_ml:
-- ingest_cftc_cot.py - Commitments of Traders
-- ingest_cme_cvol.py - CME Volatility Index
-- ingest_cboe_indices.py - VIX and related
-- ingest_fred.py - Federal Reserve data
-- ingest_gdelt.py - News sentiment
-
-Created: 2026-02-05
-Author: AmiraB
+This provides a richer regime classification than single-asset analysis.
 """
 
-import numpy as np
+import os
+import logging
 import pandas as pd
-from pathlib import Path
-from datetime import datetime
-import json
-import warnings
-warnings.filterwarnings('ignore')
+import numpy as np
+from datetime import datetime, timedelta
+from typing import Dict, Optional, List, Tuple
+from dataclasses import dataclass
 
-from qiskit import QuantumCircuit
-from qiskit_aer import AerSimulator
-from qiskit.quantum_info import Statevector, entropy, DensityMatrix
+from qdl_client import qdl_get_data
 
-from per_asset_optimizer import load_asset_data
-from quantum_regime_v2 import QuantumRegimeDetectorV2
+log = logging.getLogger(__name__)
 
 
-class DataSourceManager:
+# ============================================================================
+# Configuration
+# ============================================================================
+
+DATA_DIR = "data/qdl_history"
+
+# VIX thresholds (historical percentiles)
+VIX_LOW = 15      # Below = Complacency
+VIX_NORMAL = 20   # Normal range
+VIX_ELEVATED = 25 # Elevated fear
+VIX_HIGH = 30     # High fear
+VIX_EXTREME = 40  # Extreme fear / crisis
+
+# Enhanced regime states
+REGIME_STATES = {
+    0: 'STRONG_BULL',     # Strong uptrend + low VIX
+    1: 'BULL',            # Uptrend
+    2: 'WEAK_BULL',       # Uptrend but elevated VIX
+    3: 'SIDEWAYS',        # Consolidation
+    4: 'WEAK_BEAR',       # Downtrend but VIX normalizing
+    5: 'BEAR',            # Downtrend
+    6: 'STRONG_BEAR',     # Strong downtrend + high VIX
+    7: 'CRISIS',          # Extreme volatility / capitulation
+    8: 'RECOVERY',        # Coming out of crisis
+}
+
+# Asset symbols for cross-correlation
+REGIME_ASSETS = {
+    'SP500': ('@ES#C', 'DTNIQ'),
+    'VIX': ('@VX#C', 'DTNIQ'),
+    'GOLD': ('QGC#', 'DTNIQ'),
+    'US_DOLLAR': ('@DX#C', 'DTNIQ'),
+    'Treasury_10Y': ('@TN#C', 'DTNIQ'),
+    'Crude_Oil': ('QCL#', 'DTNIQ'),
+    'Bitcoin': ('@BTC#C', 'DTNIQ'),
+}
+
+
+# ============================================================================
+# Data Classes
+# ============================================================================
+
+@dataclass
+class RegimeState:
+    """Enhanced regime state with multi-factor context."""
+    regime_id: int
+    regime_name: str
+    confidence: float          # 0-100 confidence in classification
+    vix_level: float
+    vix_regime: str            # 'low', 'normal', 'elevated', 'high', 'extreme'
+    momentum_20d: float
+    momentum_60d: float
+    volatility_20d: float
+    volatility_60d: float
+    risk_appetite: float       # -1 (risk-off) to +1 (risk-on)
+    regime_duration: int       # Days in current regime
+    transition_prob: Dict[str, float]  # Probabilities to other regimes
+
+
+@dataclass
+class MarketContext:
+    """Overall market context from multiple assets."""
+    timestamp: datetime
+    sp500_regime: RegimeState
+    cross_correlations: Dict[str, float]
+    risk_on_score: float       # -100 to +100
+    leading_indicator: str     # Which asset is leading
+    divergences: List[str]     # Any notable divergences
+
+
+# ============================================================================
+# Data Loading
+# ============================================================================
+
+def load_asset_data(asset_name: str, years: int = 5) -> Optional[pd.DataFrame]:
+    """Load asset data from CSV or fetch from QDL."""
+    csv_path = f"{DATA_DIR}/{asset_name}.csv"
+    
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path, parse_dates=['time'])
+        df = df.sort_values('time').set_index('time')
+        return df
+    
+    # Try to fetch from QDL
+    if asset_name in REGIME_ASSETS:
+        symbol, provider = REGIME_ASSETS[asset_name]
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=365 * years)
+        
+        try:
+            df = qdl_get_data(symbol, provider, start_date, end_date)
+            if not df.empty:
+                return df
+        except Exception as e:
+            log.warning(f"Failed to fetch {asset_name}: {e}")
+    
+    return None
+
+
+def load_vix_data(years: int = 5) -> Optional[pd.DataFrame]:
+    """Load VIX data, trying CSV first then QDL."""
+    csv_path = f"{DATA_DIR}/VIX.csv"
+    
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path, parse_dates=['time'])
+        df = df.sort_values('time').set_index('time')
+        return df
+    
+    # Fetch from QDL
+    symbol, provider = REGIME_ASSETS['VIX']
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=365 * years)
+    
+    try:
+        df = qdl_get_data(symbol, provider, start_date, end_date)
+        if not df.empty:
+            # Save for future use
+            os.makedirs(DATA_DIR, exist_ok=True)
+            df.to_csv(csv_path)
+            return df
+    except Exception as e:
+        log.warning(f"Failed to fetch VIX: {e}")
+    
+    return None
+
+
+# ============================================================================
+# Feature Engineering
+# ============================================================================
+
+def compute_enhanced_features(
+    price_df: pd.DataFrame,
+    vix_df: Optional[pd.DataFrame] = None
+) -> pd.DataFrame:
     """
-    Manages loading and caching of external data sources.
+    Compute enhanced features for regime detection.
     
-    Currently uses price-derived proxies. Can be extended to load
-    real data from quantum_ml ingestion pipeline.
+    Features:
+    - Multi-timeframe momentum (5d, 20d, 60d)
+    - Multi-timeframe volatility
+    - VIX levels and changes
+    - Price position relative to moving averages
+    - Trend strength (ADX-like)
     """
+    df = price_df.copy()
+    features = pd.DataFrame(index=df.index)
     
-    def __init__(self, asset_dir: str):
-        self.asset_dir = Path(asset_dir)
-        self.cache = {}
-        
-    def load_price_data(self) -> np.ndarray:
-        """Load price data from parquet or cache."""
-        if 'prices' not in self.cache:
-            parquet_path = self.asset_dir / 'training_data.parquet'
-            if parquet_path.exists():
-                df = pd.read_parquet(parquet_path)
-                df['time'] = pd.to_datetime(df['time']).dt.tz_localize(None)
-                df = df[df['time'] >= '2025-01-01']
-                prices = df.groupby('time')['target_var_price'].first().sort_index().values
-                self.cache['prices'] = prices
-            else:
-                self.cache['prices'] = None
-        return self.cache['prices']
+    # Returns at multiple timeframes
+    features['returns_1d'] = df['close'].pct_change()
+    features['returns_5d'] = df['close'].pct_change(5)
+    features['returns_20d'] = df['close'].pct_change(20)
+    features['returns_60d'] = df['close'].pct_change(60)
     
-    def calculate_implied_vol_proxy(self, prices: np.ndarray, t: int, 
-                                     lookback: int = 20) -> float:
-        """
-        Calculate implied volatility proxy.
-        
-        Real implementation would use:
-        - CME CVOL data (ingest_cme_cvol.py)
-        - VIX for equity indices (ingest_cboe_indices.py)
-        - Crypto vol indices for BTC
-        
-        Proxy: Uses realized vol with forward-looking adjustment based on
-        recent vol trend (if vol is rising, implied > realized).
-        """
-        if t < lookback:
-            return 0.2
-        
-        window = prices[t - lookback:t]
-        returns = np.diff(window) / (window[:-1] + 1e-10)
-        realized_vol = returns.std() * np.sqrt(252)
-        
-        # Vol trend adjustment (proxy for implied > realized during stress)
-        if t >= lookback * 2:
-            early_vol = np.diff(prices[t-lookback*2:t-lookback]) / (prices[t-lookback*2:t-lookback-1] + 1e-10)
-            early_vol = early_vol.std() * np.sqrt(252)
-            vol_trend = (realized_vol - early_vol) / (early_vol + 1e-10)
-            
-            # Implied vol tends to be higher when realized vol is rising
-            implied_premium = max(0, vol_trend * 0.2)
-            implied_vol = realized_vol * (1 + implied_premium)
+    # Volatility at multiple timeframes
+    features['vol_5d'] = features['returns_1d'].rolling(5).std() * np.sqrt(252)
+    features['vol_20d'] = features['returns_1d'].rolling(20).std() * np.sqrt(252)
+    features['vol_60d'] = features['returns_1d'].rolling(60).std() * np.sqrt(252)
+    
+    # Volatility trend (increasing or decreasing)
+    features['vol_trend'] = features['vol_20d'] / features['vol_60d'] - 1
+    
+    # Moving averages
+    features['ma_20'] = df['close'].rolling(20).mean()
+    features['ma_50'] = df['close'].rolling(50).mean()
+    features['ma_200'] = df['close'].rolling(200).mean()
+    
+    # Price relative to MAs
+    features['price_vs_ma20'] = df['close'] / features['ma_20'] - 1
+    features['price_vs_ma50'] = df['close'] / features['ma_50'] - 1
+    features['price_vs_ma200'] = df['close'] / features['ma_200'] - 1
+    
+    # MA alignment (trend strength)
+    features['ma_alignment'] = (
+        (features['ma_20'] > features['ma_50']).astype(int) +
+        (features['ma_50'] > features['ma_200']).astype(int)
+    ) / 2  # 0 = bearish, 0.5 = mixed, 1 = bullish
+    
+    # Trend strength (simplified ADX concept)
+    high_low = df['high'] - df['low']
+    high_close = abs(df['high'] - df['close'].shift(1))
+    low_close = abs(df['low'] - df['close'].shift(1))
+    true_range = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+    features['atr_20'] = true_range.rolling(20).mean()
+    features['atr_pct'] = features['atr_20'] / df['close']
+    
+    # Directional movement
+    plus_dm = df['high'].diff()
+    minus_dm = -df['low'].diff()
+    plus_dm[plus_dm < 0] = 0
+    minus_dm[minus_dm < 0] = 0
+    
+    features['trend_strength'] = abs(
+        plus_dm.rolling(20).sum() - minus_dm.rolling(20).sum()
+    ) / (plus_dm.rolling(20).sum() + minus_dm.rolling(20).sum() + 1e-8)
+    
+    # Add VIX features if available
+    if vix_df is not None and 'close' in vix_df.columns:
+        # Align VIX to price index
+        vix_aligned = vix_df['close'].reindex(df.index, method='ffill')
+        features['vix'] = vix_aligned
+        features['vix_ma20'] = vix_aligned.rolling(20).mean()
+        features['vix_change_5d'] = vix_aligned.pct_change(5)
+        features['vix_percentile'] = vix_aligned.rolling(252).apply(
+            lambda x: pd.Series(x).rank(pct=True).iloc[-1] * 100
+        )
+    
+    return features.dropna()
+
+
+def classify_vix_regime(vix: float) -> str:
+    """Classify VIX level into regime."""
+    if vix < VIX_LOW:
+        return 'low'
+    elif vix < VIX_NORMAL:
+        return 'normal'
+    elif vix < VIX_ELEVATED:
+        return 'elevated'
+    elif vix < VIX_HIGH:
+        return 'high'
+    else:
+        return 'extreme'
+
+
+# ============================================================================
+# Regime Classification
+# ============================================================================
+
+def classify_regime(features: pd.Series, history: pd.DataFrame = None) -> RegimeState:
+    """
+    Classify market regime using multi-factor analysis.
+    
+    Considers:
+    - Price momentum (multiple timeframes)
+    - Volatility level and trend
+    - VIX level (if available)
+    - MA alignment
+    """
+    momentum_20d = features.get('returns_20d', 0)
+    momentum_60d = features.get('returns_60d', 0)
+    vol_20d = features.get('vol_20d', 0.15)
+    vol_60d = features.get('vol_60d', 0.15)
+    vix = features.get('vix', 20)
+    ma_alignment = features.get('ma_alignment', 0.5)
+    trend_strength = features.get('trend_strength', 0.5)
+    
+    # Classify VIX regime
+    vix_regime = classify_vix_regime(vix) if not pd.isna(vix) else 'normal'
+    
+    # Determine base regime from momentum
+    if momentum_20d > 0.08:  # Strong up
+        base_regime = 0  # STRONG_BULL
+    elif momentum_20d > 0.03:
+        base_regime = 1  # BULL
+    elif momentum_20d > 0:
+        base_regime = 2  # WEAK_BULL
+    elif momentum_20d > -0.03:
+        base_regime = 3  # SIDEWAYS
+    elif momentum_20d > -0.08:
+        base_regime = 5  # BEAR
+    else:
+        base_regime = 6  # STRONG_BEAR
+    
+    # Adjust for VIX
+    if vix_regime == 'extreme':
+        if momentum_20d < -0.05:
+            base_regime = 7  # CRISIS
         else:
-            implied_vol = realized_vol * 1.1  # Default 10% premium
-        
-        return implied_vol
+            base_regime = 8  # RECOVERY
+    elif vix_regime == 'high' and momentum_20d > 0:
+        base_regime = 2  # WEAK_BULL (elevated risk)
+    elif vix_regime == 'low' and momentum_20d > 0.03:
+        base_regime = 0  # STRONG_BULL (complacency bull)
     
-    def calculate_positioning_proxy(self, prices: np.ndarray, t: int,
-                                     lookback: int = 20) -> float:
-        """
-        Calculate trader positioning proxy.
-        
-        Real implementation would use:
-        - CFTC COT data (ingest_cftc_cot.py)
-        - Long/short ratios from futures markets
-        
-        Proxy: Uses price momentum and mean reversion signals.
-        Extreme momentum = crowded positioning.
-        """
-        if t < lookback:
-            return 0
-        
-        window = prices[t - lookback:t]
-        
-        # Momentum as positioning proxy
-        momentum = (window[-1] - window[0]) / (window[0] + 1e-10)
-        
-        # Normalize to [-1, 1] (extreme long = 1, extreme short = -1)
-        positioning = np.tanh(momentum * 5)
-        
-        return positioning
+    # Confidence based on alignment of signals
+    signals_aligned = 0
+    if (momentum_20d > 0) == (momentum_60d > 0):
+        signals_aligned += 1
+    if ma_alignment > 0.75 or ma_alignment < 0.25:
+        signals_aligned += 1
+    if trend_strength > 0.6:
+        signals_aligned += 1
     
-    def calculate_sentiment_proxy(self, prices: np.ndarray, t: int,
-                                   lookback: int = 5) -> float:
-        """
-        Calculate news/market sentiment proxy.
-        
-        Real implementation would use:
-        - GDELT news sentiment (ingest_gdelt.py)
-        - Social media sentiment
-        - RSS news analysis (ingest_rss_news.py)
-        
-        Proxy: Short-term momentum direction and magnitude.
-        """
-        if t < lookback:
-            return 0
-        
-        window = prices[t - lookback:t]
-        
-        # Short-term trend as sentiment proxy
-        up_days = sum(np.diff(window) > 0)
-        sentiment = (up_days / (lookback - 1)) * 2 - 1  # Normalize to [-1, 1]
-        
-        return sentiment
+    confidence = 50 + signals_aligned * 15
     
-    def calculate_macro_proxy(self, prices: np.ndarray, t: int,
-                               lookback: int = 60) -> dict:
-        """
-        Calculate macro environment proxy.
-        
-        Real implementation would use:
-        - FRED data (ingest_fred.py): interest rates, credit spreads
-        - Treasury yields (ingest_us_treasury.py)
-        
-        Proxy: Long-term trend and volatility regime.
-        """
-        if t < lookback:
-            return {'trend': 0, 'stability': 0.5}
-        
-        window = prices[t - lookback:t]
-        
-        # Long-term trend
-        trend = (window[-1] - window[0]) / (window[0] + 1e-10)
-        
-        # Stability (inverse of long-term vol)
-        returns = np.diff(window) / (window[:-1] + 1e-10)
-        long_vol = returns.std()
-        stability = 1 / (1 + long_vol * 10)
+    # Risk appetite score
+    risk_appetite = 0.0
+    if vix_regime in ['low', 'normal']:
+        risk_appetite += 0.3
+    elif vix_regime in ['high', 'extreme']:
+        risk_appetite -= 0.5
+    if momentum_20d > 0:
+        risk_appetite += min(momentum_20d * 5, 0.5)
+    else:
+        risk_appetite += max(momentum_20d * 5, -0.5)
+    
+    risk_appetite = max(-1, min(1, risk_appetite))
+    
+    # Calculate regime duration (simplified - would need history)
+    regime_duration = 1
+    
+    # Transition probabilities (simplified - would compute from history)
+    transition_prob = {
+        REGIME_STATES[i]: 0.1 for i in range(9)
+    }
+    transition_prob[REGIME_STATES[base_regime]] = 0.5
+    
+    return RegimeState(
+        regime_id=base_regime,
+        regime_name=REGIME_STATES[base_regime],
+        confidence=confidence,
+        vix_level=vix if not pd.isna(vix) else 0,
+        vix_regime=vix_regime,
+        momentum_20d=momentum_20d,
+        momentum_60d=momentum_60d,
+        volatility_20d=vol_20d,
+        volatility_60d=vol_60d,
+        risk_appetite=risk_appetite,
+        regime_duration=regime_duration,
+        transition_prob=transition_prob,
+    )
+
+
+# ============================================================================
+# Cross-Asset Analysis
+# ============================================================================
+
+def compute_cross_correlations(
+    assets: Dict[str, pd.DataFrame],
+    window: int = 20
+) -> Dict[str, float]:
+    """
+    Compute rolling correlations between assets.
+    
+    Key relationships:
+    - SP500 vs VIX (should be negative)
+    - SP500 vs Gold (risk indicator)
+    - Gold vs USD (typically negative)
+    - Oil vs SP500 (demand indicator)
+    """
+    correlations = {}
+    
+    # Get returns for each asset
+    returns = {}
+    for name, df in assets.items():
+        if df is not None and 'close' in df.columns:
+            returns[name] = df['close'].pct_change()
+    
+    # Compute key correlations
+    pairs = [
+        ('SP500', 'VIX'),
+        ('SP500', 'GOLD'),
+        ('GOLD', 'US_DOLLAR'),
+        ('SP500', 'Crude_Oil'),
+        ('SP500', 'Bitcoin'),
+        ('VIX', 'GOLD'),
+    ]
+    
+    for asset1, asset2 in pairs:
+        if asset1 in returns and asset2 in returns:
+            # Align the series
+            combined = pd.concat([returns[asset1], returns[asset2]], axis=1).dropna()
+            if len(combined) >= window:
+                corr = combined.iloc[-window:].corr().iloc[0, 1]
+                correlations[f"{asset1}_vs_{asset2}"] = corr
+    
+    return correlations
+
+
+def compute_risk_on_score(
+    sp500_features: pd.Series,
+    correlations: Dict[str, float],
+    vix_level: float
+) -> float:
+    """
+    Compute overall risk-on/risk-off score.
+    
+    Positive = Risk-on (bullish)
+    Negative = Risk-off (defensive)
+    """
+    score = 0.0
+    
+    # VIX contribution (-30 to +20)
+    if vix_level < VIX_LOW:
+        score += 20  # Complacency = risk-on
+    elif vix_level < VIX_NORMAL:
+        score += 10
+    elif vix_level < VIX_ELEVATED:
+        score += 0
+    elif vix_level < VIX_HIGH:
+        score -= 15
+    else:
+        score -= 30  # Fear = risk-off
+    
+    # SP500 momentum contribution (-25 to +25)
+    momentum = sp500_features.get('returns_20d', 0)
+    score += min(max(momentum * 250, -25), 25)
+    
+    # Correlation contributions
+    # Normal: SP500 vs VIX should be negative
+    spx_vix = correlations.get('SP500_vs_VIX', -0.5)
+    if spx_vix > 0:  # Unusual - both rising = potential issue
+        score -= 10
+    
+    # Gold correlation (safe haven demand)
+    spx_gold = correlations.get('SP500_vs_GOLD', 0)
+    if spx_gold < -0.3:  # Negative = flight to safety
+        score -= 10
+    
+    # MA alignment contribution (-20 to +20)
+    ma_align = sp500_features.get('ma_alignment', 0.5)
+    score += (ma_align - 0.5) * 40
+    
+    return max(-100, min(100, score))
+
+
+def detect_divergences(
+    assets: Dict[str, pd.DataFrame],
+    window: int = 20
+) -> List[str]:
+    """Detect notable divergences between assets."""
+    divergences = []
+    
+    # Get recent returns
+    returns = {}
+    for name, df in assets.items():
+        if df is not None and 'close' in df.columns and len(df) >= window:
+            returns[name] = df['close'].iloc[-1] / df['close'].iloc[-window] - 1
+    
+    # Check for divergences
+    if 'SP500' in returns and 'VIX' in returns:
+        # Both rising = unusual
+        if returns['SP500'] > 0.02 and returns['VIX'] > 0.1:
+            divergences.append("SP500 rising but VIX rising too - caution")
+    
+    if 'GOLD' in returns and 'US_DOLLAR' in returns:
+        # Both rising = unusual (typically inverse)
+        if returns['GOLD'] > 0.02 and returns['US_DOLLAR'] > 0.01:
+            divergences.append("Gold and USD both rising - safe haven demand")
+    
+    if 'SP500' in returns and 'Bitcoin' in returns:
+        # Big divergence
+        diff = abs(returns['SP500'] - returns['Bitcoin'])
+        if diff > 0.1:
+            leader = 'Bitcoin' if returns['Bitcoin'] > returns['SP500'] else 'SP500'
+            divergences.append(f"Large SP500/BTC divergence - {leader} leading")
+    
+    return divergences
+
+
+# ============================================================================
+# Main Analysis
+# ============================================================================
+
+def analyze_market_regime(years: int = 5) -> MarketContext:
+    """
+    Perform comprehensive market regime analysis.
+    
+    Returns MarketContext with:
+    - Current regime classification
+    - Cross-asset correlations
+    - Risk-on/risk-off score
+    - Divergences and warnings
+    """
+    print("=" * 70)
+    print("ENHANCED QUANTUM REGIME ANALYSIS")
+    print("=" * 70)
+    
+    # Load all assets
+    assets = {}
+    for name in REGIME_ASSETS:
+        print(f"Loading {name}...", end=" ", flush=True)
+        df = load_asset_data(name, years)
+        if df is not None:
+            assets[name] = df
+            print(f"OK ({len(df)} rows)")
+        else:
+            print("MISSING")
+    
+    # Load VIX specifically
+    vix_df = assets.get('VIX')
+    
+    # Get SP500 data for primary analysis
+    sp500_df = assets.get('SP500')
+    if sp500_df is None:
+        raise ValueError("SP500 data required for regime analysis")
+    
+    # Compute features
+    print("\nComputing features...")
+    features = compute_enhanced_features(sp500_df, vix_df)
+    
+    # Classify current regime
+    current_features = features.iloc[-1]
+    sp500_regime = classify_regime(current_features)
+    
+    # Cross-asset correlations
+    print("Computing cross-correlations...")
+    correlations = compute_cross_correlations(assets)
+    
+    # Risk score
+    vix_level = current_features.get('vix', 20)
+    risk_score = compute_risk_on_score(current_features, correlations, vix_level)
+    
+    # Divergences
+    divergences = detect_divergences(assets)
+    
+    # Determine leading indicator
+    leading = "SP500"
+    if 'VIX' in assets and vix_level > VIX_ELEVATED:
+        leading = "VIX"
+    elif 'Bitcoin' in assets:
+        btc_mom = assets['Bitcoin']['close'].pct_change(5).iloc[-1]
+        sp_mom = sp500_df['close'].pct_change(5).iloc[-1]
+        if abs(btc_mom) > abs(sp_mom) * 2:
+            leading = "Bitcoin"
+    
+    context = MarketContext(
+        timestamp=datetime.now(),
+        sp500_regime=sp500_regime,
+        cross_correlations=correlations,
+        risk_on_score=risk_score,
+        leading_indicator=leading,
+        divergences=divergences,
+    )
+    
+    # Print results
+    print("\n" + "=" * 70)
+    print("CURRENT MARKET REGIME")
+    print("=" * 70)
+    print(f"  Regime:        {sp500_regime.regime_name}")
+    print(f"  Confidence:    {sp500_regime.confidence:.0f}%")
+    print(f"  VIX Level:     {sp500_regime.vix_level:.1f} ({sp500_regime.vix_regime})")
+    print(f"  Momentum 20d:  {sp500_regime.momentum_20d:+.1%}")
+    print(f"  Momentum 60d:  {sp500_regime.momentum_60d:+.1%}")
+    print(f"  Volatility:    {sp500_regime.volatility_20d:.1%}")
+    print(f"  Risk Appetite: {sp500_regime.risk_appetite:+.2f}")
+    
+    print(f"\n  Risk Score:    {risk_score:+.0f} ({'RISK-ON' if risk_score > 20 else 'RISK-OFF' if risk_score < -20 else 'NEUTRAL'})")
+    print(f"  Leading:       {leading}")
+    
+    print("\nCROSS-CORRELATIONS (20d rolling):")
+    for pair, corr in correlations.items():
+        print(f"  {pair}: {corr:+.2f}")
+    
+    if divergences:
+        print("\n[!] DIVERGENCES DETECTED:")
+        for div in divergences:
+            print(f"  - {div}")
+    
+    return context
+
+
+# ============================================================================
+# API for Dashboard
+# ============================================================================
+
+def get_current_regime() -> Dict:
+    """Get current regime state for API/dashboard."""
+    try:
+        context = analyze_market_regime(years=2)
+        regime = context.sp500_regime
         
         return {
-            'trend': np.tanh(trend * 3),
-            'stability': stability
+            "success": True,
+            "regime": {
+                "id": regime.regime_id,
+                "name": regime.regime_name,
+                "confidence": regime.confidence,
+                "vix_level": regime.vix_level,
+                "vix_regime": regime.vix_regime,
+                "momentum_20d": regime.momentum_20d,
+                "momentum_60d": regime.momentum_60d,
+                "volatility_20d": regime.volatility_20d,
+                "risk_appetite": regime.risk_appetite,
+            },
+            "context": {
+                "risk_score": context.risk_on_score,
+                "risk_label": 'RISK-ON' if context.risk_on_score > 20 else 'RISK-OFF' if context.risk_on_score < -20 else 'NEUTRAL',
+                "leading_indicator": context.leading_indicator,
+                "correlations": context.cross_correlations,
+                "divergences": context.divergences,
+            },
+            "timestamp": context.timestamp.isoformat(),
+        }
+    except Exception as e:
+        log.error(f"Error computing regime: {e}")
+        return {
+            "success": False,
+            "error": str(e),
         }
 
 
-class EnhancedQuantumRegimeDetector:
-    """
-    Enhanced regime detector incorporating multiple data sources.
-    
-    Quantum encoding:
-    - Qubit 0-1: Price/volatility features
-    - Qubit 2: Implied volatility
-    - Qubit 3: Positioning/sentiment
-    - Qubit 4: Macro environment
-    - Qubit 5: Cross-asset contagion
-    """
-    
-    def __init__(self, n_qubits: int = 6):
-        self.n_qubits = n_qubits
-        self.base_detector = QuantumRegimeDetectorV2()
-        self.data_manager = None
-        
-    def initialize(self, asset_dir: str, prices: np.ndarray):
-        """Initialize with asset data."""
-        self.data_manager = DataSourceManager(asset_dir)
-        self.base_detector.train(prices)
-        
-    def encode_enhanced_state(self, prices: np.ndarray, t: int,
-                               contagion_score: float = 0) -> QuantumCircuit:
-        """Encode all data sources into quantum state."""
-        qc = QuantumCircuit(self.n_qubits)
-        
-        # Feature extraction
-        implied_vol = self.data_manager.calculate_implied_vol_proxy(prices, t)
-        positioning = self.data_manager.calculate_positioning_proxy(prices, t)
-        sentiment = self.data_manager.calculate_sentiment_proxy(prices, t)
-        macro = self.data_manager.calculate_macro_proxy(prices, t)
-        
-        # Calculate realized vol
-        if t >= 20:
-            window = prices[t-20:t]
-            returns = np.diff(window) / (window[:-1] + 1e-10)
-            realized_vol = returns.std() * np.sqrt(252)
-        else:
-            realized_vol = 0.2
-        
-        # Qubit 0-1: Volatility state
-        vol_angle = np.clip(realized_vol, 0, 1) * np.pi
-        qc.ry(vol_angle, 0)
-        qc.ry(vol_angle * 0.8, 1)
-        qc.cx(0, 1)
-        
-        # Qubit 2: Implied volatility (forward-looking)
-        iv_angle = np.clip(implied_vol, 0, 1) * np.pi
-        qc.ry(iv_angle, 2)
-        
-        # Qubit 3: Positioning/Sentiment
-        pos_angle = (positioning + 1) / 2 * np.pi
-        sent_angle = (sentiment + 1) / 2 * np.pi
-        qc.ry(pos_angle, 3)
-        qc.rz(sent_angle, 3)
-        
-        # Qubit 4: Macro environment
-        macro_angle = (macro['trend'] + 1) / 2 * np.pi
-        stability_angle = macro['stability'] * np.pi
-        qc.ry(macro_angle, 4)
-        qc.rz(stability_angle, 4)
-        
-        # Qubit 5: Contagion
-        cont_angle = np.clip(contagion_score, 0, 1) * np.pi
-        qc.ry(cont_angle, 5)
-        
-        # Entangle all sources (market interconnection)
-        for i in range(self.n_qubits - 1):
-            qc.cx(i, i + 1)
-        qc.cx(self.n_qubits - 1, 0)  # Circular
-        
-        return qc
-    
-    def detect_enhanced(self, prices: np.ndarray, t: int,
-                        contagion_score: float = 0) -> dict:
-        """
-        Detect regime with enhanced data sources.
-        """
-        # Base detection
-        base_result = self.base_detector.detect(prices, t)
-        
-        # Enhanced quantum encoding
-        qc = self.encode_enhanced_state(prices, t, contagion_score)
-        sv = Statevector.from_instruction(qc)
-        
-        # Calculate quantum metrics
-        dm = DensityMatrix(sv)
-        total_entropy = entropy(dm, base=2)
-        
-        # Measure entanglement between price and external factors
-        from qiskit.quantum_info import partial_trace
-        
-        # Price qubits entropy
-        rho_price = partial_trace(sv, [2, 3, 4, 5])
-        price_entropy = entropy(rho_price, base=2)
-        
-        # External factors entropy
-        rho_external = partial_trace(sv, [0, 1])
-        external_entropy = entropy(rho_external, base=2)
-        
-        # Calculate additional features
-        implied_vol = self.data_manager.calculate_implied_vol_proxy(prices, t)
-        positioning = self.data_manager.calculate_positioning_proxy(prices, t)
-        sentiment = self.data_manager.calculate_sentiment_proxy(prices, t)
-        macro = self.data_manager.calculate_macro_proxy(prices, t)
-        
-        # Regime confidence adjustment based on external factors
-        # High implied vol premium = regime stress
-        if t >= 20:
-            window2 = prices[t-20:t]
-            returns2 = np.diff(window2) / (window2[:-1] + 1e-10)
-            realized_vol = returns2.std() * np.sqrt(252)
-        else:
-            realized_vol = 0.2
-        
-        vol_premium = (implied_vol - realized_vol) / (realized_vol + 1e-10)
-        
-        # Crowded positioning warning
-        crowded = abs(positioning) > 0.7
-        
-        # Enhanced regime assessment
-        enhanced_result = {
-            **base_result,
-            
-            # Enhanced features
-            'implied_volatility': round(implied_vol, 4),
-            'vol_premium': round(vol_premium, 4),
-            'positioning': round(positioning, 4),
-            'sentiment': round(sentiment, 4),
-            'macro_trend': round(macro['trend'], 4),
-            'macro_stability': round(macro['stability'], 4),
-            'contagion_score': round(contagion_score, 4),
-            
-            # Quantum metrics
-            'total_entropy': round(total_entropy, 4),
-            'price_entropy': round(price_entropy, 4),
-            'external_entropy': round(external_entropy, 4),
-            
-            # Warnings
-            'crowded_positioning': crowded,
-            'stress_indicator': vol_premium > 0.2,
-            
-            # Enhanced confidence
-            'enhanced_confidence': round(
-                base_result['confidence'] * (1 - abs(vol_premium) * 0.3) * 
-                (1 - contagion_score * 0.2),
-                3
-            )
-        }
-        
-        return enhanced_result
-
-
-def backtest_enhanced_detector():
-    """Backtest the enhanced quantum regime detector."""
-    print("=" * 60)
-    print("ENHANCED QUANTUM REGIME DETECTOR BACKTEST")
-    print("=" * 60)
-    
-    dirs = {
-        'SP500': 'data/1625_SP500',
-        'Bitcoin': 'data/1860_Bitcoin',
-        'Crude_Oil': 'data/1866_Crude_Oil'
-    }
-    
-    all_results = {}
-    
-    for asset_name, asset_dir in dirs.items():
-        print(f"\n{'-'*40}")
-        print(f"Testing: {asset_name}")
-        print(f"{'-'*40}")
-        
-        horizons, prices = load_asset_data(asset_dir)
-        if prices is None:
-            continue
-        
-        # Initialize detector
-        detector = EnhancedQuantumRegimeDetector()
-        detector.initialize(asset_dir, prices)
-        
-        # Run detection
-        results = []
-        
-        for t in range(60, len(prices) - 5):
-            if t % 50 == 0:
-                print(f"  Processing t={t}/{len(prices)}")
-            
-            # Simulate contagion score (would come from contagion detector in production)
-            contagion = np.random.uniform(0.1, 0.4)  # Placeholder
-            
-            result = detector.detect_enhanced(prices, t, contagion)
-            results.append(result)
-        
-        # Analyze
-        regimes = [r['regime'] for r in results]
-        vol_premiums = [r['vol_premium'] for r in results]
-        crowded = [r['crowded_positioning'] for r in results]
-        stress = [r['stress_indicator'] for r in results]
-        
-        regime_dist = pd.Series(regimes).value_counts()
-        
-        print(f"\n  REGIME DISTRIBUTION:")
-        for regime, count in regime_dist.items():
-            print(f"    {regime}: {count} ({count/len(regimes)*100:.1f}%)")
-        
-        print(f"\n  ENHANCED METRICS:")
-        print(f"    Avg Vol Premium: {np.mean(vol_premiums)*100:.1f}%")
-        print(f"    Crowded Positioning: {sum(crowded)} periods ({sum(crowded)/len(crowded)*100:.1f}%)")
-        print(f"    Stress Periods: {sum(stress)} ({sum(stress)/len(stress)*100:.1f}%)")
-        # Use price_entropy (subsystem entropy) which shows entanglement
-        # total_entropy is ~0 for pure states, but subsystem entropy reveals correlations
-        avg_price_entropy = np.mean([r['price_entropy'] for r in results])
-        avg_external_entropy = np.mean([r['external_entropy'] for r in results])
-        print(f"    Avg Price Entropy: {avg_price_entropy:.3f}")
-        print(f"    Avg External Entropy: {avg_external_entropy:.3f}")
-        
-        all_results[asset_name] = {
-            'regime_distribution': regime_dist.to_dict(),
-            'avg_vol_premium': round(np.mean(vol_premiums), 4),
-            'crowded_pct': round(sum(crowded)/len(crowded)*100, 1),
-            'stress_pct': round(sum(stress)/len(stress)*100, 1),
-            'avg_price_entropy': round(avg_price_entropy, 3),
-            'avg_external_entropy': round(avg_external_entropy, 3),
-            'avg_enhanced_confidence': round(np.mean([r['enhanced_confidence'] for r in results]), 3)
-        }
-    
-    # Save
-    output = {
-        'generated_at': datetime.now().isoformat(),
-        'version': 'enhanced',
-        'data_sources': [
-            'price_volatility',
-            'implied_vol_proxy',
-            'positioning_proxy',
-            'sentiment_proxy',
-            'macro_proxy',
-            'contagion_score'
-        ],
-        'potential_real_sources': [
-            'ingest_cme_cvol.py',
-            'ingest_cftc_cot.py',
-            'ingest_cboe_indices.py',
-            'ingest_fred.py',
-            'ingest_gdelt.py'
-        ],
-        'results': all_results
-    }
-    
-    output_path = Path('configs/quantum_regime_enhanced_results.json')
-    with open(output_path, 'w') as f:
-        json.dump(output, f, indent=2)
-    
-    print(f"\n{'='*60}")
-    print(f"Results saved to: {output_path}")
-    print("=" * 60)
-    
-    return all_results
-
+# ============================================================================
+# CLI
+# ============================================================================
 
 if __name__ == "__main__":
-    results = backtest_enhanced_detector()
+    import sys
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+    
+    years = int(sys.argv[1]) if len(sys.argv) > 1 else 5
+    context = analyze_market_regime(years)

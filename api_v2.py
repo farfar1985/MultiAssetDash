@@ -197,6 +197,30 @@ def get_summary():
 
 
 # ============================================================================
+# REGIME ENDPOINT
+# ============================================================================
+
+@v2_bp.route('/regime', methods=['GET'])
+def get_regime():
+    """Get current market regime analysis."""
+    try:
+        from quantum_regime_enhanced import get_current_regime
+        result = get_current_regime()
+        return jsonify(result)
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Regime analysis module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Regime analysis error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
 # REGISTRATION HELPER
 # ============================================================================
 
