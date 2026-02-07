@@ -3,7 +3,7 @@ import type { AssetId } from "@/types";
 import type { AssetData, ApiResponse } from "@/lib/api-client";
 
 // Mock asset data with full details
-const MOCK_ASSETS: Record<AssetId, AssetData> = {
+const MOCK_ASSETS: Partial<Record<AssetId, AssetData> = {
   "crude-oil": {
     id: "crude-oil",
     name: "Crude Oil",

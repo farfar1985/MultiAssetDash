@@ -121,7 +121,7 @@ export interface AssetSignals {
 // Mock Data
 // ============================================================================
 
-const MOCK_REGIMES: Record<AssetId, QuantumRegimeData> = {
+const MOCK_REGIMES: Partial<Record<AssetId, QuantumRegimeData> = {
   "crude-oil": {
     assetId: "crude-oil",
     regime: "ELEVATED",
@@ -534,7 +534,7 @@ export async function getSignals(assetId: AssetId): Promise<AssetSignals> {
 /**
  * Mock HMM regime data for fallback
  */
-const MOCK_HMM_REGIME: Record<AssetId, RegimeData> = {
+const MOCK_HMM_REGIME: Partial<Record<AssetId, RegimeData> = {
   "crude-oil": {
     regime: "bull",
     confidence: 0.78,

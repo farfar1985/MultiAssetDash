@@ -233,7 +233,7 @@
           0.9207079861158052
         ]
       ],
-      "timestamp": "2026-02-07T00:53:49.616868"
+      "timestamp": "2026-02-07T00:57:36.773078"
     },
     "model_path": "regime_models\\1387_Nifty_Bank_hmm.joblib",
     "history_path": "regime_models\\1387_Nifty_Bank_regime_history.csv"
@@ -444,7 +444,7 @@
           0.9863205890885878
         ]
       ],
-      "timestamp": "2026-02-07T00:53:50.445263"
+      "timestamp": "2026-02-07T00:57:37.561510"
     },
     "model_path": "regime_models\\1398_Nifty_50_hmm.joblib",
     "history_path": "regime_models\\1398_Nifty_50_regime_history.csv"
@@ -683,7 +683,7 @@
           0.9696620349826838
         ]
       ],
-      "timestamp": "2026-02-07T00:53:51.311812"
+      "timestamp": "2026-02-07T00:57:38.388400"
     },
     "model_path": "regime_models\\1435_MCX_Copper_hmm.joblib",
     "history_path": "regime_models\\1435_MCX_Copper_regime_history.csv"
@@ -907,7 +907,7 @@
           0.8260869565220181
         ]
       ],
-      "timestamp": "2026-02-07T00:53:52.077995"
+      "timestamp": "2026-02-07T00:57:39.136117"
     },
     "model_path": "regime_models\\1518_RUSSEL_hmm.joblib",
     "history_path": "regime_models\\1518_RUSSEL_regime_history.csv"
@@ -1118,7 +1118,7 @@
           0.9736862097903123
         ]
       ],
-      "timestamp": "2026-02-07T00:53:52.900805"
+      "timestamp": "2026-02-07T00:57:39.939586"
     },
     "model_path": "regime_models\\1625_SP500_hmm.joblib",
     "history_path": "regime_models\\1625_SP500_regime_history.csv"
@@ -1357,7 +1357,7 @@
           0.9300252491816298
         ]
       ],
-      "timestamp": "2026-02-07T00:53:53.784718"
+      "timestamp": "2026-02-07T00:57:40.854922"
     },
     "model_path": "regime_models\\1859_Brent_Oil_hmm.joblib",
     "history_path": "regime_models\\1859_Brent_Oil_regime_history.csv"
@@ -1587,7 +1587,7 @@
           0.9500000000000097
         ]
       ],
-      "timestamp": "2026-02-07T00:53:54.564400"
+      "timestamp": "2026-02-07T00:57:41.668085"
     },
     "model_path": "regime_models\\256_USD_INR_hmm.joblib",
     "history_path": "regime_models\\256_USD_INR_regime_history.csv"
@@ -1811,7 +1811,7 @@
           0.936182349886619
         ]
       ],
-      "timestamp": "2026-02-07T00:53:55.348273"
+      "timestamp": "2026-02-07T00:57:42.427770"
     },
     "model_path": "regime_models\\269_NASDAQ_hmm.joblib",
     "history_path": "regime_models\\269_NASDAQ_regime_history.csv"
@@ -2050,7 +2050,7 @@
           0.9708970751731056
         ]
       ],
-      "timestamp": "2026-02-07T00:53:56.231036"
+      "timestamp": "2026-02-07T00:57:43.302137"
     },
     "model_path": "regime_models\\291_SPDR_China_ETF_hmm.joblib",
     "history_path": "regime_models\\291_SPDR_China_ETF_regime_history.csv"
@@ -2274,7 +2274,7 @@
           0.9736842105263956
         ]
       ],
-      "timestamp": "2026-02-07T00:53:57.008358"
+      "timestamp": "2026-02-07T00:57:44.046107"
     },
     "model_path": "regime_models\\336_DOW_JONES_Mini_hmm.joblib",
     "history_path": "regime_models\\336_DOW_JONES_Mini_regime_history.csv"
@@ -2513,7 +2513,7 @@
           0.8867589054152697
         ]
       ],
-      "timestamp": "2026-02-07T00:53:57.948553"
+      "timestamp": "2026-02-07T00:57:44.982176"
     },
     "model_path": "regime_models\\358_Nikkei_225_hmm.joblib",
     "history_path": "regime_models\\358_Nikkei_225_regime_history.csv"
@@ -2737,7 +2737,7 @@
           0.8567527042229013
         ]
       ],
-      "timestamp": "2026-02-07T00:53:58.744521"
+      "timestamp": "2026-02-07T00:57:45.752510"
     },
     "model_path": "regime_models\\477_GOLD_hmm.joblib",
     "history_path": "regime_models\\477_GOLD_regime_history.csv"
@@ -2976,7 +2976,7 @@
           0.9089669968993687
         ]
       ],
-      "timestamp": "2026-02-07T00:53:59.832630"
+      "timestamp": "2026-02-07T00:57:46.850592"
     },
     "model_path": "regime_models\\655_US_DOLLAR_Index_hmm.joblib",
     "history_path": "regime_models\\655_US_DOLLAR_Index_regime_history.csv"

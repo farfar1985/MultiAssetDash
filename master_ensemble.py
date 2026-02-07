@@ -355,7 +355,7 @@ def main():
     print("The PROVEN approach that achieved 3.07 Sharpe")
     print("=" * 70)
     
-    horizons = load_all_horizons()
+    horizons, current_prices = load_all_horizons()
     
     if not horizons:
         print("ERROR: No data loaded")

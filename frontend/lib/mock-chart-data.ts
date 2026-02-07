@@ -203,7 +203,7 @@ function generateModelAgreement(assetId: AssetId): ModelAgreement {
 // Pre-generated data for all assets (90 days)
 const DAYS = 90;
 
-export const MOCK_OHLC_DATA: Record<AssetId, OHLCData[]> = {
+export const MOCK_OHLC_DATA: Partial<Record<AssetId, OHLCData[]> = {
   "crude-oil": generateOHLCData("crude-oil", DAYS, MOCK_ASSETS["crude-oil"].currentPrice),
   bitcoin: generateOHLCData("bitcoin", DAYS, MOCK_ASSETS.bitcoin.currentPrice),
   gold: generateOHLCData("gold", DAYS, MOCK_ASSETS.gold.currentPrice),
@@ -216,7 +216,7 @@ export const MOCK_OHLC_DATA: Record<AssetId, OHLCData[]> = {
   platinum: generateOHLCData("platinum", DAYS, MOCK_ASSETS.platinum.currentPrice),
 };
 
-export const MOCK_SIGNAL_HISTORY: Record<AssetId, SignalHistoryData[]> = {
+export const MOCK_SIGNAL_HISTORY: Partial<Record<AssetId, SignalHistoryData[]> = {
   "crude-oil": generateSignalHistory("crude-oil", DAYS),
   bitcoin: generateSignalHistory("bitcoin", DAYS),
   gold: generateSignalHistory("gold", DAYS),
@@ -229,7 +229,7 @@ export const MOCK_SIGNAL_HISTORY: Record<AssetId, SignalHistoryData[]> = {
   platinum: generateSignalHistory("platinum", DAYS),
 };
 
-export const MOCK_ACCURACY_HISTORY: Record<AssetId, AccuracyData[]> = {
+export const MOCK_ACCURACY_HISTORY: Partial<Record<AssetId, AccuracyData[]> = {
   "crude-oil": generateAccuracyHistory("crude-oil", DAYS),
   bitcoin: generateAccuracyHistory("bitcoin", DAYS),
   gold: generateAccuracyHistory("gold", DAYS),
@@ -242,7 +242,7 @@ export const MOCK_ACCURACY_HISTORY: Record<AssetId, AccuracyData[]> = {
   platinum: generateAccuracyHistory("platinum", DAYS),
 };
 
-export const MOCK_MODEL_AGREEMENT: Record<AssetId, ModelAgreement> = {
+export const MOCK_MODEL_AGREEMENT: Partial<Record<AssetId, ModelAgreement> = {
   "crude-oil": generateModelAgreement("crude-oil"),
   bitcoin: generateModelAgreement("bitcoin"),
   gold: generateModelAgreement("gold"),

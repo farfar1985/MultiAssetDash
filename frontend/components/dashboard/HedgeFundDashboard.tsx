@@ -15,6 +15,9 @@ import {
   APIPairwiseVotingChart,
   APIConfidenceIntervalBar,
 } from "@/components/ensemble";
+import type { EnsembleConfidenceData } from "@/components/ensemble/EnsembleConfidenceCard";
+import type { PairwiseVotingData } from "@/components/ensemble/PairwiseVotingChart";
+import type { ConfidenceInterval } from "@/components/ensemble/ConfidenceIntervalBar";
 import {
   TrendingUp,
   TrendingDown,

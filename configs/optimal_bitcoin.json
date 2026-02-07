@@ -1,18 +1,33 @@
 {
-  "viable_horizons": [1, 5, 7, 10],
-  "threshold": 0.1,
-  "avg_accuracy": 55.2,
-  "health_score": 72,
-  "optimized_total_return": 45.8,
-  "optimized_sharpe": 1.62,
-  "optimized_win_rate": 54.5,
-  "optimized_profit_factor": 1.78,
-  "optimized_max_drawdown": -22.3,
-  "optimized_total_trades": 72,
-  "raw_total_return": 28.4,
-  "raw_sharpe": 1.1,
-  "raw_win_rate": 50.5,
-  "raw_profit_factor": 1.35,
-  "raw_max_drawdown": -31.2,
-  "raw_total_trades": 95
+  "asset": "bitcoin",
+  "optimized_at": "2026-02-07T01:58:37.812929",
+  "available_horizons": [
+    1,
+    3,
+    5,
+    8,
+    10
+  ],
+  "best_config": {
+    "horizons": [
+      3,
+      5
+    ],
+    "aggregation": "median",
+    "threshold": 0.0,
+    "metrics": {
+      "sharpe": 0.359,
+      "win_rate": 55.56,
+      "da": 55.56,
+      "total_return": 18.14,
+      "n_trades": 117
+    }
+  },
+  "all_results_summary": {
+    "total_configs_tested": 208,
+    "positive_sharpe_configs": 4,
+    "best_sharpe": 0.359,
+    "best_win_rate": 55.56,
+    "best_da": 55.56
+  }
 }

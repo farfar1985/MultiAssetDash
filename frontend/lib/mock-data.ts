@@ -36,8 +36,8 @@ export interface PerformanceMetrics {
   modelCount: number;
 }
 
-// Mock asset data
-export const MOCK_ASSETS: Record<AssetId, AssetData> = {
+// Mock asset data (partial - not all assets have mock data)
+export const MOCK_ASSETS: Partial<Record<AssetId, AssetData>> = {
   "crude-oil": {
     id: "crude-oil",
     name: "Crude Oil",
@@ -121,7 +121,7 @@ export const MOCK_ASSETS: Record<AssetId, AssetData> = {
 };
 
 // Mock signals by asset and horizon
-export const MOCK_SIGNALS: Record<AssetId, Record<Horizon, SignalData>> = {
+export const MOCK_SIGNALS: Partial<Record<AssetId, Record<Horizon, SignalData>> = {
   "crude-oil": {
     "D+1": {
       assetId: "crude-oil",

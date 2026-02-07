@@ -38,7 +38,6 @@ import {
   APIPairwiseVotingChart,
   APIConfidenceIntervalBar,
 } from "@/components/ensemble";
-import type { AssetId } from "@/types";
 
 // API Hooks
 import {
