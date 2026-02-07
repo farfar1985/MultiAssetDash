@@ -76,6 +76,14 @@ else:
 
 CORS(app, origins=allowed_origins, supports_credentials=True)
 
+# Register V2 routes (real QDL data)
+try:
+    from api_v2 import register_v2_routes
+    register_v2_routes(app)
+    logger.info("Registered API v2 routes (QDL real data)")
+except ImportError as e:
+    logger.warning(f"Could not load API v2 routes: {e}")
+
 
 # Security Headers Middleware
 @app.after_request
