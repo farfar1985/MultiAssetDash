@@ -319,3 +319,6 @@ export interface TimeRange {
   start_date: string;
   end_date: string;
 }
+
+// Re-export backtest types
+export * from "./backtest";

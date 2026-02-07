@@ -5,6 +5,8 @@ Context:
 - Baseline: D+5+D+7+D+10 pairwise slopes = Sharpe 1.757
 - Single-horizon ensembles are anti-predictive
 - 10,179 models, 369 days data
+
+NOTE: Uses standardized Sharpe calculation from utils.metrics
 """
 
 import pandas as pd
@@ -13,6 +15,9 @@ import json
 import os
 from itertools import combinations
 from datetime import datetime
+
+# Use standardized metrics
+from utils.metrics import calculate_sharpe_ratio
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(SCRIPT_DIR, 'data')
@@ -363,16 +368,14 @@ def calculate_metrics(trades, prices):
     gross_loss = sum(abs(t['pnl']) for t in losses) if losses else 0
     profit_factor = gross_profit / gross_loss if gross_loss > 0 else (gross_profit if gross_profit > 0 else 0)
 
-    # Sharpe ratio (annualized)
-    trade_returns = [t['pnl'] / 100 for t in trades]
-    if len(trade_returns) > 1:
-        avg_return = np.mean(trade_returns)
-        std_return = np.std(trade_returns)
-        avg_hold_days = np.mean([t['holding_days'] for t in trades])
-        trades_per_year = 252 / avg_hold_days if avg_hold_days > 0 else 50
-        sharpe = (avg_return / std_return) * np.sqrt(trades_per_year) if std_return > 0 else 0
-    else:
-        sharpe = 0
+    # Sharpe ratio - use standardized calculation
+    trade_returns_pct = [t['pnl'] for t in trades]  # Already percentage
+    holding_days = [t['holding_days'] for t in trades]
+    sharpe = calculate_sharpe_ratio(
+        trade_returns_pct,
+        holding_days=holding_days,
+        annualize=True
+    )
 
     # Max drawdown
     equity = 100

@@ -23,7 +23,34 @@ import api, {
   type BackendForecast,
   type EnsembleConfig,
   type HealthStatus,
+  type QuantumDashboard,
 } from "@/lib/api-client";
+import {
+  getHMMRegime,
+  getAllHMMRegimes,
+  getEnsembleConfidence,
+  getPairwiseVoting,
+  getConfidenceInterval,
+  getEnsembleDashboard,
+  getTierComparison,
+  getTier1Ensemble,
+  getTier2Ensemble,
+  getTier3Ensemble,
+  getAllTiers,
+  type RegimeData,
+  type EnsembleConfidenceData,
+  type PairwiseVotingData,
+  type ConfidenceInterval,
+  type EnsembleDashboardData,
+  type TierComparisonData,
+  type Tier1Result,
+  type Tier2Result,
+  type Tier3Result,
+  type Tier1Method,
+  type Tier2Method,
+  type Tier3Method,
+} from "@/lib/api";
+import type { AssetId } from "@/types";
 
 // Query keys factory for consistent cache management
 export const queryKeys = {
@@ -76,6 +103,22 @@ export const queryKeys = {
   backendConfig: (asset: string, strategy: string) =>
     [...queryKeys.backend(), "config", asset, strategy] as const,
   backendConfigs: () => [...queryKeys.backend(), "configs"] as const,
+  // Quantum API keys
+  quantumDashboard: () => [...queryKeys.backend(), "quantum", "dashboard"] as const,
+  // HMM Regime Detection keys
+  hmmRegime: (assetId: string) => [...queryKeys.backend(), "hmm", "regime", assetId] as const,
+  hmmRegimeAll: () => [...queryKeys.backend(), "hmm", "regimes"] as const,
+  // Ensemble component keys
+  ensembleConfidence: (assetId: string) => [...queryKeys.backend(), "ensemble", "confidence", assetId] as const,
+  pairwiseVoting: (assetId: string) => [...queryKeys.backend(), "ensemble", "pairwise", assetId] as const,
+  confidenceInterval: (assetId: string, horizon: number) => [...queryKeys.backend(), "ensemble", "interval", assetId, horizon] as const,
+  ensembleDashboard: (assetId: string) => [...queryKeys.backend(), "ensemble", "dashboard", assetId] as const,
+  tierComparison: (assetId: string) => [...queryKeys.backend(), "ensemble", "tiers", assetId] as const,
+  // Individual tier ensemble keys
+  tier1Ensemble: (assetId: string, method: string) => [...queryKeys.backend(), "ensemble", "tier1", assetId, method] as const,
+  tier2Ensemble: (assetId: string, method: string) => [...queryKeys.backend(), "ensemble", "tier2", assetId, method] as const,
+  tier3Ensemble: (assetId: string, method: string) => [...queryKeys.backend(), "ensemble", "tier3", assetId, method] as const,
+  allTiers: (assetId: string) => [...queryKeys.backend(), "ensemble", "allTiers", assetId] as const,
 };
 
 // ============================================================================
@@ -263,6 +306,21 @@ export function useBackendConfigs(
   return useQuery({
     queryKey: queryKeys.backendConfigs(),
     queryFn: () => backendApi.listConfigs(),
+    ...options,
+  });
+}
+
+/**
+ * Fetch quantum dashboard with regime status and contagion analysis
+ */
+export function useQuantumDashboard(
+  options?: Omit<UseQueryOptions<QuantumDashboard, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.quantumDashboard(),
+    queryFn: () => backendApi.getQuantumDashboard(),
+    refetchInterval: 60000, // Refresh every minute
+    retry: 2,
     ...options,
   });
 }
@@ -474,4 +532,339 @@ export function useFeatureImportance(
     enabled: !!symbol,
     ...options,
   });
+}
+
+// ============================================================================
+// HMM Regime Detection Hooks
+// ============================================================================
+
+/**
+ * Fetch HMM-detected market regime for an asset
+ * @param assetId - Asset identifier (e.g., "crude-oil", "gold", "bitcoin", "sp500")
+ */
+export function useHMMRegime(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<RegimeData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.hmmRegime(assetId),
+    queryFn: () => getHMMRegime(assetId),
+    enabled: !!assetId,
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    refetchInterval: 60000, // Refresh every minute
+    ...options,
+  });
+}
+
+/**
+ * Fetch HMM regime data for all configured assets
+ */
+export function useAllHMMRegimes(
+  options?: Omit<UseQueryOptions<Partial<Record<AssetId, RegimeData>>, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.hmmRegimeAll(),
+    queryFn: () => getAllHMMRegimes(),
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+// ============================================================================
+// Ensemble Component Hooks
+// ============================================================================
+
+/**
+ * Fetch ensemble confidence data for an asset
+ */
+export function useEnsembleConfidence(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<EnsembleConfidenceData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.ensembleConfidence(assetId),
+    queryFn: () => getEnsembleConfidence(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch pairwise voting data for an asset
+ */
+export function usePairwiseVoting(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<PairwiseVotingData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.pairwiseVoting(assetId),
+    queryFn: () => getPairwiseVoting(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch confidence interval data for an asset
+ */
+export function useConfidenceInterval(
+  assetId: AssetId,
+  horizon: number = 5,
+  options?: Omit<UseQueryOptions<ConfidenceInterval, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.confidenceInterval(assetId, horizon),
+    queryFn: () => getConfidenceInterval(assetId, horizon),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch all ensemble data for an asset in a single call
+ */
+export function useEnsembleDashboard(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<EnsembleDashboardData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.ensembleDashboard(assetId),
+    queryFn: () => getEnsembleDashboard(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch tier comparison data for all three ensemble tiers
+ */
+export function useTierComparison(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<TierComparisonData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.tierComparison(assetId),
+    queryFn: () => getTierComparison(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+// ============================================================================
+// Individual Tier Ensemble Hooks
+// ============================================================================
+
+/**
+ * Fetch Tier 1 ensemble prediction for an asset
+ * Tier 1 methods: accuracy-weighted, magnitude-weighted, error correlation
+ * @param assetId - Asset identifier
+ * @param method - Ensemble method (default: "combined")
+ */
+export function useTier1Ensemble(
+  assetId: AssetId,
+  method: Tier1Method = "combined",
+  options?: Omit<UseQueryOptions<Tier1Result, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.tier1Ensemble(assetId, method),
+    queryFn: () => getTier1Ensemble(assetId, method),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch Tier 2 ensemble prediction for an asset
+ * Tier 2 methods: Bayesian model averaging, regime-adaptive, conformal prediction
+ * @param assetId - Asset identifier
+ * @param method - Ensemble method (default: "combined")
+ */
+export function useTier2Ensemble(
+  assetId: AssetId,
+  method: Tier2Method = "combined",
+  options?: Omit<UseQueryOptions<Tier2Result, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.tier2Ensemble(assetId, method),
+    queryFn: () => getTier2Ensemble(assetId, method),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch Tier 3 ensemble prediction for an asset
+ * Tier 3 methods: Thompson sampling, attention-based, quantile regression forest
+ * @param assetId - Asset identifier
+ * @param method - Ensemble method (default: "combined")
+ */
+export function useTier3Ensemble(
+  assetId: AssetId,
+  method: Tier3Method = "combined",
+  options?: Omit<UseQueryOptions<Tier3Result, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.tier3Ensemble(assetId, method),
+    queryFn: () => getTier3Ensemble(assetId, method),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch all tier predictions for an asset (convenience alias)
+ * @param assetId - Asset identifier
+ */
+export function useAllTiers(
+  assetId: AssetId,
+  options?: Omit<UseQueryOptions<TierComparisonData, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: queryKeys.allTiers(assetId),
+    queryFn: () => getAllTiers(assetId),
+    enabled: !!assetId,
+    staleTime: 30000,
+    refetchInterval: 60000,
+    ...options,
+  });
+}
+
+// ============================================================================
+// Walk-Forward Validation Hooks
+// ============================================================================
+
+import {
+  getWalkForwardResults,
+  getEquityCurve,
+  getRegimePerformance,
+  getBacktestMethods,
+  getCostComparison,
+} from "@/lib/api";
+import type {
+  WalkForwardMethod,
+  WalkForwardResponse,
+  CostComparison,
+  EquityPoint,
+} from "@/types/backtest";
+import type { RegimePerformanceApiResponse, BacktestMethodsApiResponse } from "@/lib/api-client";
+
+// Add walk-forward keys to queryKeys
+export const walkForwardKeys = {
+  all: [...queryKeys.all, "walkForward"] as const,
+  results: (assetId: string, methods: string[], nFolds: number) =>
+    [...walkForwardKeys.all, "results", assetId, methods.join(","), nFolds] as const,
+  equityCurve: (assetId: string, method: string, days: number) =>
+    [...walkForwardKeys.all, "equity", assetId, method, days] as const,
+  regimePerformance: (assetId: string, methods: string[]) =>
+    [...walkForwardKeys.all, "regime", assetId, methods.join(",")] as const,
+  methods: () => [...walkForwardKeys.all, "methods"] as const,
+};
+
+/**
+ * Fetch walk-forward validation results
+ * @param assetId - Asset to backtest
+ * @param methods - Ensemble methods to compare
+ * @param nFolds - Number of walk-forward folds
+ */
+export function useWalkForwardResults(
+  assetId: AssetId,
+  methods: WalkForwardMethod[],
+  nFolds: number = 5,
+  options?: Omit<UseQueryOptions<WalkForwardResponse, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: walkForwardKeys.results(assetId, methods, nFolds),
+    queryFn: () => getWalkForwardResults(assetId, methods, nFolds),
+    enabled: !!assetId && methods.length > 0,
+    staleTime: 60000, // Results don't change often
+    retry: 2,
+    retryDelay: 1000,
+    ...options,
+  });
+}
+
+/**
+ * Fetch equity curve for a specific method
+ * @param assetId - Asset ID
+ * @param method - Ensemble method
+ * @param days - Number of days
+ */
+export function useEquityCurve(
+  assetId: AssetId,
+  method: WalkForwardMethod,
+  days: number = 250,
+  options?: Omit<UseQueryOptions<EquityPoint[], Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: walkForwardKeys.equityCurve(assetId, method, days),
+    queryFn: () => getEquityCurve(assetId, method, days),
+    enabled: !!assetId && !!method,
+    staleTime: 60000,
+    retry: 2,
+    ...options,
+  });
+}
+
+/**
+ * Fetch regime-conditional performance
+ * @param assetId - Asset ID
+ * @param methods - Ensemble methods to compare
+ */
+export function useRegimePerformance(
+  assetId: AssetId,
+  methods: WalkForwardMethod[],
+  options?: Omit<UseQueryOptions<RegimePerformanceApiResponse, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: walkForwardKeys.regimePerformance(assetId, methods),
+    queryFn: () => getRegimePerformance(assetId, methods),
+    enabled: !!assetId && methods.length > 0,
+    staleTime: 60000,
+    retry: 2,
+    ...options,
+  });
+}
+
+/**
+ * Fetch available backtest methods
+ */
+export function useBacktestMethods(
+  options?: Omit<UseQueryOptions<BacktestMethodsApiResponse, Error>, "queryKey" | "queryFn">
+) {
+  return useQuery({
+    queryKey: walkForwardKeys.methods(),
+    queryFn: () => getBacktestMethods(),
+    staleTime: 300000, // Methods don't change often
+    retry: 1,
+    ...options,
+  });
+}
+
+/**
+ * Get cost comparison data derived from walk-forward results
+ */
+export function useCostComparison(
+  walkForwardData: WalkForwardResponse | undefined
+): CostComparison[] {
+  if (!walkForwardData?.data?.summary_metrics) {
+    return [];
+  }
+  return getCostComparison(walkForwardData.data.summary_metrics);
 }

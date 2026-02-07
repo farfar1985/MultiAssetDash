@@ -1,0 +1,18 @@
+{
+  "viable_horizons": [1, 4, 5, 7],
+  "threshold": 0.1,
+  "avg_accuracy": 52.8,
+  "health_score": 65,
+  "optimized_total_return": 28.2,
+  "optimized_sharpe": 1.45,
+  "optimized_win_rate": 52.1,
+  "optimized_profit_factor": 1.58,
+  "optimized_max_drawdown": -28.6,
+  "optimized_total_trades": 78,
+  "raw_total_return": 15.4,
+  "raw_sharpe": 0.95,
+  "raw_win_rate": 48.5,
+  "raw_profit_factor": 1.25,
+  "raw_max_drawdown": -38.2,
+  "raw_total_trades": 102
+}

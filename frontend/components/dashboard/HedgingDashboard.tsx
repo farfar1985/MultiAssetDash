@@ -13,6 +13,9 @@ import { CorrelationMatrix } from "@/components/dashboard/CorrelationMatrix";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { MarketStatusBar } from "@/components/dashboard/MarketStatusBar";
 import { VolatilitySurface } from "@/components/dashboard/VolatilitySurface";
+import { QuantumStatusWidget } from "@/components/dashboard/QuantumStatusWidget";
+import { GreeksPanel } from "@/components/dashboard/GreeksPanel";
+import { FactorAttributionPanel } from "@/components/dashboard/FactorAttributionPanel";
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
@@ -321,15 +324,18 @@ function HedgingHeader() {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge className="bg-green-500/10 border-green-500/30 text-green-400 px-3 py-1.5">
-            <Activity className="w-3.5 h-3.5 mr-1.5 animate-pulse" />
-            Live
-          </Badge>
-          <Badge className="bg-emerald-500/10 border-emerald-500/30 text-emerald-300 px-3 py-1.5">
-            <Briefcase className="w-3.5 h-3.5 mr-1.5" />
-            5 Active Hedges
-          </Badge>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-3">
+            <Badge className="bg-green-500/10 border-green-500/30 text-green-400 px-3 py-1.5">
+              <Activity className="w-3.5 h-3.5 mr-1.5 animate-pulse" />
+              Live
+            </Badge>
+            <Badge className="bg-emerald-500/10 border-emerald-500/30 text-emerald-300 px-3 py-1.5">
+              <Briefcase className="w-3.5 h-3.5 mr-1.5" />
+              5 Active Hedges
+            </Badge>
+          </div>
+          <QuantumStatusWidget compact />
         </div>
       </div>
     </div>
@@ -918,6 +924,9 @@ export function HedgingDashboard() {
             {/* Active Positions */}
             <ActivePositionsTracker positions={positions} />
 
+            {/* Greeks Panel - Portfolio Risk Exposure */}
+            <GreeksPanel compact />
+
             {/* Two Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Basis Risk Monitor */}
@@ -1046,6 +1055,9 @@ export function HedgingDashboard() {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
+            {/* Factor Attribution - Full Width */}
+            <FactorAttributionPanel />
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Correlation Matrix */}
               <CorrelationMatrix

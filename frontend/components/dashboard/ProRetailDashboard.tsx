@@ -7,6 +7,13 @@ import { cn } from "@/lib/utils";
 import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon, type SignalData } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import {
+  HMMRegimeIndicator,
+  APIEnsembleConfidenceCard,
+  type RegimeData,
+} from "@/components/ensemble";
+import { useEnsembleConfidence } from "@/hooks/useApi";
+import { useHMMRegime } from "@/hooks";
+import {
   GraduationCap,
   TrendingUp,
   TrendingDown,
@@ -197,6 +204,18 @@ function getEnhancedSignals(): EnhancedSignal[] {
 
   return signals.sort((a, b) => b.confidence - a.confidence);
 }
+
+
+// Default fallback regime data for loading/error states
+const DEFAULT_REGIME: RegimeData = {
+  regime: "sideways",
+  confidence: 0.5,
+  probabilities: { bull: 0.33, bear: 0.33, sideways: 0.34 },
+  daysInRegime: 1,
+  historicalAccuracy: 50,
+  volatility: 20.0,
+  trendStrength: 0.0,
+};
 
 // ============================================================================
 // Components
@@ -634,6 +653,11 @@ export function ProRetailDashboard() {
   const [horizon, setHorizon] = useState("all");
   const [minConfidence, setMinConfidence] = useState(0);
 
+  // Fetch HMM regime data from API
+  const { data: regimeData = DEFAULT_REGIME } = useHMMRegime("crude-oil");
+  // Fetch ensemble confidence for display explanation
+  const { data: ensembleConfidence } = useEnsembleConfidence("crude-oil");
+
   const filteredSignals = useMemo(() => {
     return allSignals.filter((signal) => {
       if (direction !== "all" && signal.direction !== direction) return false;
@@ -708,6 +732,67 @@ export function ProRetailDashboard() {
 
         {/* Sidebar */}
         <div className="space-y-4">
+          {/* Simplified Ensemble Confidence - Educational - API Connected */}
+          <Card className="bg-gradient-to-br from-purple-500/5 to-cyan-500/5 border-purple-500/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Brain className="w-5 h-5 text-purple-400" />
+                AI Confidence
+                <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[9px] ml-auto">
+                  Live
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <APIEnsembleConfidenceCard
+                assetId="crude-oil"
+                showBreakdown={false}
+                compact={true}
+              />
+              <div className="mt-3 p-2 bg-neutral-800/30 rounded-lg">
+                <p className="text-xs text-neutral-400">
+                  <strong className="text-purple-400">What this means:</strong> Our AI models are{" "}
+                  {ensembleConfidence?.confidence ?? "--"}% confident in a{" "}
+                  <span className={ensembleConfidence?.direction === "bullish" ? "text-green-400" : ensembleConfidence?.direction === "bearish" ? "text-red-400" : "text-amber-400"}>
+                    {ensembleConfidence?.direction ?? "calculating"}
+                  </span>{" "}
+                  market direction.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Simplified Market Regime */}
+          <Card className="bg-gradient-to-br from-cyan-500/5 to-blue-500/5 border-cyan-500/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Activity className="w-5 h-5 text-cyan-400" />
+                Market Mood
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <HMMRegimeIndicator
+                assetId="crude-oil"
+                showProbabilities={false}
+                compact={true}
+                size="sm"
+              />
+              <div className="mt-3 p-2 bg-neutral-800/30 rounded-lg">
+                <p className="text-xs text-neutral-400">
+                  <strong className="text-cyan-400">Current market:</strong> We&apos;re in a{" "}
+                  <span className={
+                    regimeData.regime === "bull" ? "text-green-400" :
+                    regimeData.regime === "bear" ? "text-red-400" : "text-amber-400"
+                  }>
+                    {regimeData.regime === "bull" ? "bullish" :
+                     regimeData.regime === "bear" ? "bearish" : "sideways"}
+                  </span>{" "}
+                  market for the past {regimeData.daysInRegime} days.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           <LearningProgress />
           <QuickTips />
 

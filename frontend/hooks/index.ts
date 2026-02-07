@@ -22,6 +22,14 @@ export {
   useBackendOHLCV,
   useBackendEquity,
   useBackendEnsembleConfig,
+  // HMM Regime Detection hooks
+  useHMMRegime,
+  useAllHMMRegimes,
+  // Ensemble Component hooks
+  useEnsembleConfidence,
+  usePairwiseVoting,
+  useConfidenceInterval,
+  useEnsembleDashboard,
   // Query keys
   queryKeys,
 } from "./useApi";
