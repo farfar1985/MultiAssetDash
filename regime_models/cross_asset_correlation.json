@@ -1,0 +1,250 @@
+{
+  "timestamp": "2026-02-06T22:13:42.238007",
+  "total_assets": 13,
+  "leadership": {
+    "rankings": [
+      {
+        "asset": "256_USD_INR",
+        "leads": 6,
+        "follows": 2,
+        "total_pairs": 12,
+        "leadership_ratio": 0.5,
+        "role": "NEUTRAL"
+      },
+      {
+        "asset": "269_NASDAQ",
+        "leads": 6,
+        "follows": 2,
+        "total_pairs": 12,
+        "leadership_ratio": 0.5,
+        "role": "NEUTRAL"
+      },
+      {
+        "asset": "1387_Nifty_Bank",
+        "leads": 5,
+        "follows": 2,
+        "total_pairs": 12,
+        "leadership_ratio": 0.42,
+        "role": "NEUTRAL"
+      },
+      {
+        "asset": "291_SPDR_China_ETF",
+        "leads": 5,
+        "follows": 2,
+        "total_pairs": 12,
+        "leadership_ratio": 0.42,
+        "role": "NEUTRAL"
+      },
+      {
+        "asset": "1398_Nifty_50",
+        "leads": 4,
+        "follows": 3,
+        "total_pairs": 12,
+        "leadership_ratio": 0.33,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "1518_RUSSEL",
+        "leads": 4,
+        "follows": 3,
+        "total_pairs": 12,
+        "leadership_ratio": 0.33,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "1859_Brent_Oil",
+        "leads": 2,
+        "follows": 0,
+        "total_pairs": 11,
+        "leadership_ratio": 0.18,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "1435_MCX_Copper",
+        "leads": 2,
+        "follows": 3,
+        "total_pairs": 12,
+        "leadership_ratio": 0.17,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "336_DOW_JONES_Mini",
+        "leads": 2,
+        "follows": 7,
+        "total_pairs": 12,
+        "leadership_ratio": 0.17,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "1625_SP500",
+        "leads": 1,
+        "follows": 6,
+        "total_pairs": 10,
+        "leadership_ratio": 0.1,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "655_US_DOLLAR_Index",
+        "leads": 1,
+        "follows": 3,
+        "total_pairs": 11,
+        "leadership_ratio": 0.09,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "358_Nikkei_225",
+        "leads": 1,
+        "follows": 2,
+        "total_pairs": 12,
+        "leadership_ratio": 0.08,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "477_GOLD",
+        "leads": 1,
+        "follows": 5,
+        "total_pairs": 12,
+        "leadership_ratio": 0.08,
+        "role": "FOLLOWER"
+      }
+    ],
+    "leaders": [],
+    "followers": [
+      {
+        "asset": "1398_Nifty_50",
+        "leads": 4,
+        "follows": 3,
+        "total_pairs": 12,
+        "leadership_ratio": 0.33,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "1518_RUSSEL",
+        "leads": 4,
+        "follows": 3,
+        "total_pairs": 12,
+        "leadership_ratio": 0.33,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "1859_Brent_Oil",
+        "leads": 2,
+        "follows": 0,
+        "total_pairs": 11,
+        "leadership_ratio": 0.18,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "1435_MCX_Copper",
+        "leads": 2,
+        "follows": 3,
+        "total_pairs": 12,
+        "leadership_ratio": 0.17,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "336_DOW_JONES_Mini",
+        "leads": 2,
+        "follows": 7,
+        "total_pairs": 12,
+        "leadership_ratio": 0.17,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "1625_SP500",
+        "leads": 1,
+        "follows": 6,
+        "total_pairs": 10,
+        "leadership_ratio": 0.1,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "655_US_DOLLAR_Index",
+        "leads": 1,
+        "follows": 3,
+        "total_pairs": 11,
+        "leadership_ratio": 0.09,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "358_Nikkei_225",
+        "leads": 1,
+        "follows": 2,
+        "total_pairs": 12,
+        "leadership_ratio": 0.08,
+        "role": "FOLLOWER"
+      },
+      {
+        "asset": "477_GOLD",
+        "leads": 1,
+        "follows": 5,
+        "total_pairs": 12,
+        "leadership_ratio": 0.08,
+        "role": "FOLLOWER"
+      }
+    ]
+  },
+  "clusters": [
+    [
+      "1387_Nifty_Bank",
+      "1435_MCX_Copper",
+      "1518_RUSSEL",
+      "1859_Brent_Oil",
+      "256_USD_INR",
+      "291_SPDR_China_ETF",
+      "358_Nikkei_225",
+      "477_GOLD",
+      "655_US_DOLLAR_Index"
+    ],
+    [
+      "1398_Nifty_50",
+      "269_NASDAQ",
+      "336_DOW_JONES_Mini"
+    ],
+    [
+      "1625_SP500"
+    ]
+  ],
+  "strongest_correlations": [
+    {
+      "pair": "358_Nikkei_225 <-> 655_US_DOLLAR_Index",
+      "correlation": 0.72
+    },
+    {
+      "pair": "1518_RUSSEL <-> 291_SPDR_China_ETF",
+      "correlation": 0.7
+    },
+    {
+      "pair": "1859_Brent_Oil <-> 256_USD_INR",
+      "correlation": 0.7
+    },
+    {
+      "pair": "1387_Nifty_Bank <-> 477_GOLD",
+      "correlation": 0.67
+    },
+    {
+      "pair": "1859_Brent_Oil <-> 291_SPDR_China_ETF",
+      "correlation": 0.65
+    },
+    {
+      "pair": "291_SPDR_China_ETF <-> 477_GOLD",
+      "correlation": 0.65
+    },
+    {
+      "pair": "358_Nikkei_225 <-> 477_GOLD",
+      "correlation": 0.62
+    },
+    {
+      "pair": "1518_RUSSEL <-> 256_USD_INR",
+      "correlation": 0.61
+    },
+    {
+      "pair": "1518_RUSSEL <-> 1859_Brent_Oil",
+      "correlation": 0.6
+    },
+    {
+      "pair": "1859_Brent_Oil <-> 477_GOLD",
+      "correlation": 0.6
+    }
+  ]
+}
