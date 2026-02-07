@@ -4,9 +4,8 @@ import { TierComparisonCard, type TierComparisonData } from "./TierComparisonCar
 import { useTierComparison } from "@/hooks/useApi";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { AssetId } from "@/types";
-import { Layers, RefreshCw, AlertCircle } from "lucide-react";
+import { RefreshCw, AlertCircle } from "lucide-react";
 
 // ============================================================================
 // Types

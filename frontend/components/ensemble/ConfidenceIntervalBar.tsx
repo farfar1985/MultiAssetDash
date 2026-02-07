@@ -74,7 +74,7 @@ export function ConfidenceIntervalBar({
   horizon = "D+5",
   showDetails = true,
   compact = false,
-  orientation = "horizontal",
+  orientation: _orientation = "horizontal",
   className,
 }: ConfidenceIntervalBarProps) {
   const direction = useMemo(() => getDirectionFromInterval(data), [data]);

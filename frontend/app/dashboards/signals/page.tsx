@@ -22,7 +22,6 @@ import {
   Globe,
   LayoutGrid,
   Radio,
-  RefreshCw,
   Sparkles,
   Table,
   TrendingDown,
@@ -64,7 +63,7 @@ interface EarlyWarning {
 }
 
 function detectWarningsFromRegimes(
-  regimes: Record<string, any>
+  regimes: Record<string, { probabilities?: Record<string, number>; regime?: string; volatility?: number; confidence?: number }>
 ): EarlyWarning[] {
   const warnings: EarlyWarning[] = [];
 
@@ -317,9 +316,9 @@ function QuickRegimeGrid() {
   );
 }
 
-function MarketSummaryStats({ regimeData }: { regimeData: any }) {
+function MarketSummaryStats({ regimeData }: { regimeData: { regime_distribution?: Record<string, number>; total_assets?: number } }) {
   const distribution = regimeData?.regime_distribution || {};
-  const total = regimeData?.total_assets || 0;
+  const _total = regimeData?.total_assets || 0;
 
   const stats = [
     {

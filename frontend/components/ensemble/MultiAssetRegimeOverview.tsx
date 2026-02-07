@@ -17,7 +17,6 @@ import {
   RefreshCw,
   BarChart3,
   Clock,
-  Gauge,
   ChevronRight,
 } from "lucide-react";
 import type { MarketRegime, RegimeData } from "./RegimeIndicator";
@@ -147,7 +146,7 @@ function getRegimeConfig(regime: MarketRegime) {
   return configs[regime] || configs.sideways;
 }
 
-function getCategoryIcon(category: string) {
+function _getCategoryIcon(category: string) {
   switch (category) {
     case "Commodities":
       return "barrel";
@@ -417,7 +416,7 @@ export function MultiAssetRegimeOverview({
   viewMode = "grid",
   category,
   regimeFilter,
-  compact = false,
+  compact: _compact = false,
   className,
   onAssetClick,
 }: MultiAssetRegimeOverviewProps) {

@@ -595,7 +595,7 @@ export function BacktestDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
 
   // Fetch backtest methods (for validation)
-  const { data: methodsData, isLoading: methodsLoading } = useBacktestMethods();
+  const { data: _methodsData, isLoading: _methodsLoading } = useBacktestMethods();
 
   // Fetch walk-forward results
   const {

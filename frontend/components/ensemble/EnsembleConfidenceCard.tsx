@@ -10,9 +10,6 @@ import {
   TrendingDown,
   Minus,
   Brain,
-  Scale,
-  BarChart3,
-  CheckCircle2,
   Activity,
 } from "lucide-react";
 

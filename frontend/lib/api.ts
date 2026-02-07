@@ -1332,7 +1332,6 @@ export default apiClient;
 import {
   backendApi,
   type WalkForwardApiResponse,
-  type EquityCurveApiResponse,
   type RegimePerformanceApiResponse,
   type BacktestMethodsApiResponse,
 } from "./api-client";
@@ -1347,18 +1346,10 @@ import type {
 } from "@/types/backtest";
 
 // Asset ID mapping from frontend names to backend numeric IDs
-const ASSET_ID_MAP: Record<AssetId, number> = {
-  "crude-oil": 1866,
-  "bitcoin": 1860,
-  "gold": 1861,
-  "silver": 1863,
-  "natural-gas": 1862,
-  "copper": 1864,
-  "wheat": 1865,
-  "corn": 1867,
-  "soybean": 1868,
-  "platinum": 1869,
-};
+// NOTE: Main ASSET_ID_MAP is defined above at line ~580. Use that one.
+// This legacy mapping preserved for reference only:
+// crude-oil:1866, bitcoin:1860, gold:1861, silver:1863, natural-gas:1862,
+// copper:1864, wheat:1865, corn:1867, soybean:1868, platinum:1869
 
 /**
  * Get walk-forward validation results from the backend API

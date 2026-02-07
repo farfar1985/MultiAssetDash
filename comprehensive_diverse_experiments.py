@@ -448,6 +448,7 @@ def calculate_metrics(trades, prices):
     avg_loss_dollars = np.mean([abs(t['pnl_dollars']) for t in losses]) if losses else 0
     avg_win_pct = np.mean([t['pnl_pct'] for t in wins]) if wins else 0
     avg_loss_pct = np.mean([abs(t['pnl_pct']) for t in losses]) if losses else 0
+    avg_hold_days = np.mean(holding_days) if holding_days else 0
 
     # Sharpe ratio - use standardized calculation
     sharpe = calculate_sharpe_ratio(

@@ -6,7 +6,6 @@ import type { AssetId } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, RefreshCw } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 // ============================================================================
 // Types
@@ -27,7 +26,7 @@ export interface HMMRegimeIndicatorProps extends Omit<RegimeIndicatorProps, "dat
 // Loading Skeleton
 // ============================================================================
 
-function RegimeLoadingSkeleton({ compact, size }: { compact?: boolean; size?: "sm" | "md" | "lg" }) {
+function RegimeLoadingSkeleton({ compact, size: _size }: { compact?: boolean; size?: "sm" | "md" | "lg" }) {
   if (compact) {
     return (
       <div className="flex items-center gap-3 p-3 rounded-xl border border-neutral-800 bg-neutral-900/50">

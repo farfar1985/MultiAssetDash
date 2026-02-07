@@ -11,7 +11,6 @@ import {
   Minus,
   Zap,
   Wind,
-  Cloud,
   Sun,
   AlertTriangle,
   Gauge,

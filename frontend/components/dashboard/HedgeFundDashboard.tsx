@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { MOCK_ASSETS, MOCK_SIGNALS, type Horizon } from "@/lib/mock-data";
+import { MOCK_ASSETS, MOCK_SIGNALS } from "@/lib/mock-data";
 import type { AssetId } from "@/types";
 import { CorrelationMatrix } from "@/components/dashboard/CorrelationMatrix";
 import {
@@ -20,9 +20,7 @@ import {
   TrendingDown,
   Minus,
   Target,
-  Zap,
   PieChart,
-  Shield,
   Layers,
   Brain,
   Gauge,
@@ -33,12 +31,9 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   DollarSign,
-  Percent,
   Scale,
-  LineChart,
   AlertTriangle,
   CheckCircle2,
-  Info,
   TrendingUp as ChartUp,
   Globe,
 } from "lucide-react";
@@ -414,7 +409,7 @@ function AssetAllocationChart({ positions }: { positions: AssetPosition[] }) {
           {/* SVG Donut Chart */}
           <div className="relative w-32 h-32">
             <svg viewBox="0 0 100 100" className="transform -rotate-90">
-              {segments.map((seg, idx) => {
+              {segments.map((seg, _idx) => {
                 const circumference = 2 * Math.PI * 40;
                 const strokeDasharray = `${seg.percent * circumference} ${circumference}`;
                 const strokeDashoffset = -seg.startPercent * circumference;
@@ -887,9 +882,9 @@ export function HedgeFundDashboard() {
   const factors = useMemo(() => generateFactorExposures(), []);
 
   // Ensemble data
-  const ensembleConfidence = useMemo(() => generateEnsembleConfidence(), []);
-  const pairwiseVoting = useMemo(() => generatePairwiseVoting(), []);
-  const confidenceInterval = useMemo(() => generateConfidenceInterval(), []);
+  const _ensembleConfidence = useMemo(() => generateEnsembleConfidence(), []);
+  const _pairwiseVoting = useMemo(() => generatePairwiseVoting(), []);
+  const _confidenceInterval = useMemo(() => generateConfidenceInterval(), []);
 
   return (
     <div className="space-y-4 pb-8 -m-6 p-6 bg-neutral-950 min-h-screen">

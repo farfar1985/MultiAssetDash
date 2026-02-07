@@ -16,7 +16,6 @@ import {
   GitBranch,
   Grid3X3,
   LineChart,
-  Table,
   TrendingDown,
   TrendingUp,
   Minus,
@@ -94,7 +93,7 @@ function generateMockRegimeHistory(): AssetRegimeHistory[] {
 
   return ALL_ASSETS.map((asset) => {
     const history: AssetRegimeHistory["history"] = [];
-    let currentDate = new Date(now);
+    const currentDate = new Date(now);
     currentDate.setDate(currentDate.getDate() - 180); // 6 months of history
 
     // Seed based on asset name for consistent mock data
@@ -508,7 +507,7 @@ function PerformanceByRegimeTable({ performances }: { performances: RegimePerfor
   );
 }
 
-function CurrentRegimeSummary({ regimeData }: { regimeData: any }) {
+function CurrentRegimeSummary({ regimeData }: { regimeData: { regimes?: unknown; regime_distribution?: Record<string, number>; total_assets?: number } }) {
   if (!regimeData?.regimes) return null;
 
   const distribution = regimeData.regime_distribution || {};
