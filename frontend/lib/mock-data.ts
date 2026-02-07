@@ -121,7 +121,7 @@ export const MOCK_ASSETS: Partial<Record<AssetId, AssetData>> = {
 };
 
 // Mock signals by asset and horizon
-export const MOCK_SIGNALS: Partial<Record<AssetId, Record<Horizon, SignalData>> = {
+export const MOCK_SIGNALS: Partial<Record<AssetId, Record<Horizon, SignalData>>> = {
   "crude-oil": {
     "D+1": {
       assetId: "crude-oil",
