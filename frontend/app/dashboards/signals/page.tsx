@@ -63,7 +63,7 @@ interface EarlyWarning {
 }
 
 function detectWarningsFromRegimes(
-  regimes: Record<string, { probabilities?: Record<string, number>; regime?: string; volatility?: number; confidence?: number }>
+  regimes: Record<string, { probabilities?: Record<string, number>; regime?: string; volatility?: number; confidence?: number; display_name?: string }>
 ): EarlyWarning[] {
   const warnings: EarlyWarning[] = [];
 
@@ -80,7 +80,7 @@ function detectWarningsFromRegimes(
       sideways: "sideways",
     };
 
-    const currentProbKey = regimeToProb[currentRegime] || "sideways";
+    const currentProbKey = (currentRegime && regimeToProb[currentRegime]) || "sideways";
     const currentProb = probs[currentProbKey] || 0;
 
     // Find competing regime
@@ -113,7 +113,7 @@ function detectWarningsFromRegimes(
       warnings.push({
         assetId: asset?.id || (key as AssetId),
         assetName: data.display_name || key,
-        currentRegime,
+        currentRegime: currentRegime || "unknown",
         targetRegime: topCompetitorKey,
         probability: topCompetitorProb,
         urgency,
@@ -316,7 +316,7 @@ function QuickRegimeGrid() {
   );
 }
 
-function MarketSummaryStats({ regimeData }: { regimeData: { regime_distribution?: Record<string, number>; total_assets?: number } }) {
+function MarketSummaryStats({ regimeData }: { regimeData?: { regime_distribution?: Record<string, number>; total_assets?: number } }) {
   const distribution = regimeData?.regime_distribution || {};
   const _total = regimeData?.total_assets || 0;
 

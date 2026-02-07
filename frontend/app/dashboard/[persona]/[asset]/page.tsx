@@ -58,7 +58,7 @@ export default function AssetDetailPage() {
   }
 
   const priceChangeColor =
-    mockAsset?.changePercent24h >= 0 ? "text-green-500" : "text-red-500";
+    (mockAsset?.changePercent24h ?? 0) >= 0 ? "text-green-500" : "text-red-500";
 
   // Determine signal direction badge
   const currentSignal = signals?.["D+1"];
@@ -169,7 +169,7 @@ export default function AssetDetailPage() {
             <CardContent className="p-4 pt-0">
               <div className="h-80">
                 <PriceChart
-                  data={chartData.ohlc}
+                  data={chartData.ohlc ?? []}
                   timeframe="1D"
                   assetName={asset.name}
                   showVolume={true}
@@ -196,7 +196,7 @@ export default function AssetDetailPage() {
             </CardHeader>
             <CardContent className="p-4 pt-0">
               <div className="h-56">
-                <SignalChart data={chartData.signalHistory} showConfidenceBand={true} />
+                <SignalChart data={chartData.signalHistory ?? []} showConfidenceBand={true} />
               </div>
             </CardContent>
           </Card>
@@ -225,44 +225,52 @@ export default function AssetDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <div className="h-48">
-                <ModelAgreementChart
-                  bullishCount={chartData.modelAgreement.bullishCount}
-                  bearishCount={chartData.modelAgreement.bearishCount}
-                  neutralCount={chartData.modelAgreement.neutralCount}
-                  totalModels={chartData.modelAgreement.totalModels}
-                  overallDirection={chartData.modelAgreement.overallDirection}
-                />
-              </div>
-              <div className="mt-3 space-y-2 text-xs">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                    <span className="text-neutral-400">Bullish</span>
+              {chartData.modelAgreement ? (
+                <>
+                  <div className="h-48">
+                    <ModelAgreementChart
+                      bullishCount={chartData.modelAgreement.bullishCount}
+                      bearishCount={chartData.modelAgreement.bearishCount}
+                      neutralCount={chartData.modelAgreement.neutralCount}
+                      totalModels={chartData.modelAgreement.totalModels}
+                      overallDirection={chartData.modelAgreement.overallDirection}
+                    />
                   </div>
-                  <span className="font-mono text-neutral-200">
-                    {chartData.modelAgreement.bullishCount.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                    <span className="text-neutral-400">Bearish</span>
+                  <div className="mt-3 space-y-2 text-xs">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span className="text-neutral-400">Bullish</span>
+                      </div>
+                      <span className="font-mono text-neutral-200">
+                        {chartData.modelAgreement.bullishCount.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                        <span className="text-neutral-400">Bearish</span>
+                      </div>
+                      <span className="font-mono text-neutral-200">
+                        {chartData.modelAgreement.bearishCount.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
+                        <span className="text-neutral-400">Neutral</span>
+                      </div>
+                      <span className="font-mono text-neutral-200">
+                        {chartData.modelAgreement.neutralCount.toLocaleString()}
+                      </span>
+                    </div>
                   </div>
-                  <span className="font-mono text-neutral-200">
-                    {chartData.modelAgreement.bearishCount.toLocaleString()}
-                  </span>
+                </>
+              ) : (
+                <div className="h-48 flex items-center justify-center text-neutral-500">
+                  No model agreement data available
                 </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
-                    <span className="text-neutral-400">Neutral</span>
-                  </div>
-                  <span className="font-mono text-neutral-200">
-                    {chartData.modelAgreement.neutralCount.toLocaleString()}
-                  </span>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 

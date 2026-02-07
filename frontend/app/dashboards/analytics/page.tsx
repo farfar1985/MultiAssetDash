@@ -507,7 +507,7 @@ function PerformanceByRegimeTable({ performances }: { performances: RegimePerfor
   );
 }
 
-function CurrentRegimeSummary({ regimeData }: { regimeData: { regimes?: unknown; regime_distribution?: Record<string, number>; total_assets?: number } }) {
+function CurrentRegimeSummary({ regimeData }: { regimeData?: { regimes?: unknown; regime_distribution?: Record<string, number>; total_assets?: number } }) {
   if (!regimeData?.regimes) return null;
 
   const distribution = regimeData.regime_distribution || {};
