@@ -78,13 +78,16 @@ export type AssetId =
   | "wheat"
   | "corn"
   | "soybean"
-  | "platinum";
+  | "platinum"
+  | "sp500"
+  | "nasdaq"
+  | "ethereum";
 
 export interface Asset {
   id: AssetId;
   name: string;
   symbol: string;
-  category: "energy" | "metals" | "crypto" | "agriculture";
+  category: "energy" | "metals" | "crypto" | "agriculture" | "indices";
 }
 
 export const ASSETS: Record<AssetId, Asset> = {
@@ -147,6 +150,24 @@ export const ASSETS: Record<AssetId, Asset> = {
     name: "Platinum",
     symbol: "PL",
     category: "metals",
+  },
+  sp500: {
+    id: "sp500",
+    name: "S&P 500",
+    symbol: "ES",
+    category: "indices",
+  },
+  nasdaq: {
+    id: "nasdaq",
+    name: "NASDAQ",
+    symbol: "NQ",
+    category: "indices",
+  },
+  ethereum: {
+    id: "ethereum",
+    name: "Ethereum",
+    symbol: "ETH",
+    category: "crypto",
   },
 };
 
