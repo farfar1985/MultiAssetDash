@@ -14,7 +14,7 @@ Usage:
     # Import and register with main app
     from api_v2 import register_v2_routes
     register_v2_routes(app)
-    
+
     # Or run standalone on port 5002
     python api_v2.py
 """
@@ -24,7 +24,7 @@ from flask_cors import CORS
 from dataclasses import asdict
 import logging
 
-from qdl_data_service import get_service, AssetData, SignalData
+from qdl_data_service import get_service
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ def get_assets():
     try:
         service = get_service()
         assets = service.get_all_assets()
-        
+
         return jsonify({
             "success": True,
             "count": len(assets),
@@ -69,13 +69,13 @@ def get_asset(asset_id: str):
     try:
         service = get_service()
         asset = service.get_asset_data(asset_id)
-        
+
         if not asset:
             return jsonify({
                 "success": False,
                 "error": f"Asset not found: {asset_id}"
             }), 404
-        
+
         return jsonify({
             "success": True,
             "asset": asdict(asset)
@@ -91,13 +91,13 @@ def get_signals(asset_id: str):
     try:
         service = get_service()
         signals = service.get_signals(asset_id)
-        
+
         if not signals:
             return jsonify({
                 "success": False,
                 "error": f"No signals available for: {asset_id}"
             }), 404
-        
+
         return jsonify({
             "success": True,
             "assetId": asset_id,
@@ -114,16 +114,16 @@ def get_chart(asset_id: str):
     try:
         days = request.args.get('days', 365, type=int)
         days = min(days, 1825)  # Max 5 years
-        
+
         service = get_service()
         chart_data = service.get_chart_data(asset_id, days=days)
-        
+
         if not chart_data:
             return jsonify({
                 "success": False,
                 "error": f"No chart data for: {asset_id}"
             }), 404
-        
+
         return jsonify({
             "success": True,
             "assetId": asset_id,
@@ -140,10 +140,10 @@ def refresh_asset(asset_id: str):
     """Refresh asset data from QDL API."""
     try:
         days = request.args.get('days', 30, type=int)
-        
+
         service = get_service()
         success = service.refresh_from_qdl(asset_id, days=days)
-        
+
         if success:
             return jsonify({
                 "success": True,
@@ -165,7 +165,7 @@ def get_summary():
     try:
         service = get_service()
         assets = service.get_all_assets()
-        
+
         # Get signals for each asset
         all_signals = []
         for asset in assets:
@@ -181,10 +181,10 @@ def get_summary():
                     "confidence": sig.confidence,
                     "sharpe": sig.sharpeRatio
                 })
-        
+
         # Sort by confidence
         all_signals.sort(key=lambda x: x['confidence'], reverse=True)
-        
+
         return jsonify({
             "success": True,
             "assetCount": len(assets),
@@ -212,15 +212,15 @@ def register_v2_routes(app):
 
 if __name__ == '__main__':
     import os
-    
+
     logging.basicConfig(level=logging.INFO)
-    
+
     app = Flask(__name__)
     CORS(app)
     register_v2_routes(app)
-    
+
     port = int(os.environ.get('PORT', 5002))
-    
+
     print("=" * 60)
     print("  QDTNexus API v2 - Real Data Server")
     print("=" * 60)
@@ -235,5 +235,5 @@ if __name__ == '__main__':
     print("    GET /api/v2/summary - Market summary")
     print("    POST /api/v2/refresh/<id>?days=30 - Refresh from QDL")
     print("=" * 60)
-    
+
     app.run(host='0.0.0.0', port=port, debug=True)
