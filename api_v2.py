@@ -244,6 +244,26 @@ def get_regime_accurate():
 # COT / SMART MONEY SIGNALS
 # ============================================================================
 
+@v2_bp.route('/crypto', methods=['GET'])
+def get_crypto_signals():
+    """Get Bitcoin on-chain signals (MVRV, NVT, etc.)."""
+    try:
+        from crypto_onchain_signals import get_crypto_signals_for_api
+        result = get_crypto_signals_for_api()
+        return jsonify(result)
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Crypto signals module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Crypto signals error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
 @v2_bp.route('/vix', methods=['GET'])
 def get_vix_analysis():
     """Get comprehensive VIX intelligence analysis."""
