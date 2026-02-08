@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Market Intelligence Report - February 08, 2026</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+            color: #333;
+            background: #fff;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #1a365d;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #1a365d;
+            margin: 0;
+            font-size: 28px;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            color: #1a365d;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            font-size: 20px;
+        }
+        .summary-box {
+            background: linear-gradient(135deg, #1a365d 0%, #2d4a7c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .summary-box h3 {
+            margin-top: 0;
+            font-size: 22px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #1a365d;
+        }
+        .metric-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a365d;
+        }
+        .metric-card .label {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .asset-table th, .asset-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .asset-table th {
+            background: #1a365d;
+            color: white;
+            font-weight: 500;
+        }
+        .asset-table tr:hover {
+            background: #f5f5f5;
+        }
+        .signal-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .signal-buy { background: #22c55e; color: white; }
+        .signal-sell { background: #ef4444; color: white; }
+        .signal-neutral { background: #f59e0b; color: white; }
+        .action-list {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+        .risk-list {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 12px;
+        }
+        @media print {
+            body { padding: 20px; }
+            .summary-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Market Intelligence Report</h1>
+        <div class="subtitle">
+            Prepared for Valued Client | February 08, 2026
+        </div>
+    </div>
+
+    <div class="summary-box">
+        <h3>➡️ Markets in Transition — Selectivity Key</h3>
+        <p>Gold and commodities showing strength</p>
+        <div class="metrics-grid" style="margin-top: 20px;">
+            <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;">NEUTRAL</div>
+                <div style="font-size: 12px; opacity: 0.8;">MARKET SENTIMENT</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;">MODERATE</div>
+                <div style="font-size: 12px; opacity: 0.8;">RISK LEVEL</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;">63%</div>
+                <div style="font-size: 12px; opacity: 0.8;">CONFIDENCE</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Asset Overview</h2>
+        <table class="asset-table">
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Conviction</th>
+                    <th>Signal</th>
+                    <th>Key Driver</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td><strong>SP500</strong></td>
+                    <td>+14</td>
+                    <td><span class="signal-badge signal-neutral">NEUTRAL</span></td>
+                    <td>Sideways consolidation — low conviction</td>
+                </tr>
+
+                <tr>
+                    <td><strong>GOLD</strong></td>
+                    <td>+45</td>
+                    <td><span class="signal-badge signal-buy">BUY</span></td>
+                    <td>HHT: BULL (TRANSITION), entropy 0.77</td>
+                </tr>
+
+                <tr>
+                    <td><strong>CRUDE</strong></td>
+                    <td>+23</td>
+                    <td><span class="signal-badge signal-neutral">NEUTRAL</span></td>
+                    <td>High volatility regime — 38% annualized</td>
+                </tr>
+
+                <tr>
+                    <td><strong>BITCOIN</strong></td>
+                    <td>-31</td>
+                    <td><span class="signal-badge signal-sell">SELL</span></td>
+                    <td>HHT: CRISIS (MIDDLE), entropy 0.25</td>
+                </tr>
+
+                <tr>
+                    <td><strong>NASDAQ</strong></td>
+                    <td>+15</td>
+                    <td><span class="signal-badge signal-neutral">NEUTRAL</span></td>
+                    <td>Sideways consolidation — low conviction</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Macro Environment</h2>
+        <div class="metrics-grid">
+
+            <div class="metric-card">
+                <div class="value">0bps</div>
+                <div class="label">Yield Curve (2Y-10Y)</div>
+            </div>
+            <div class="metric-card">
+                <div class="value">20%</div>
+                <div class="label">Recession Probability</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="value">75/100</div>
+                <div class="label">Diversification Score</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Recommended Actions</h2>
+
+        <div class="action-list">
+            <strong>✅ Opportunities</strong>
+            <ul>
+                <li>GOLD: Strong bullish conviction (+45)</li>
+
+            </ul>
+        </div>
+
+        <h3>Investor Actions</h3>
+        <ul>
+            <li>Stay diversified</li>
+            <li>Be selective — favor high-conviction ideas</li>
+            <li>Build watchlists for both scenarios</li>
+
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Generated by QDT Intelligence Engine | 2026-02-08 00:24</p>
+        <p>This report is for informational purposes only and does not constitute investment advice.</p>
+    </div>
+</body>
+</html>

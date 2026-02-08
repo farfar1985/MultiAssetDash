@@ -626,6 +626,217 @@ def get_regime_summary():
 
 
 # ============================================================================
+# CREDIT SPREAD ENDPOINTS
+# ============================================================================
+
+@v2_bp.route('/credit-spreads', methods=['GET'])
+def get_credit_spreads():
+    """Get credit spread analysis for risk sentiment."""
+    try:
+        from credit_spread_signals import get_credit_for_api
+        return jsonify({
+            "success": True,
+            **get_credit_for_api()
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Credit spread module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Credit spread error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
+# AI SUMMARY ENDPOINT
+# ============================================================================
+
+@v2_bp.route('/ai-summary', methods=['GET'])
+def get_ai_summary():
+    """Get AI-generated market summary."""
+    try:
+        from ai_market_summary import get_summary_for_api
+        return jsonify({
+            "success": True,
+            **get_summary_for_api()
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "AI summary module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"AI summary error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
+# HEDGE CALCULATOR ENDPOINTS
+# ============================================================================
+
+@v2_bp.route('/hedge/<asset>', methods=['GET'])
+def get_hedge_recommendation(asset: str):
+    """Get optimal hedge recommendation for an asset."""
+    try:
+        from hedge_calculator import get_hedge_for_api
+        
+        position = request.args.get('position', 'LONG').upper()
+        notional = request.args.get('notional', 1000000, type=float)
+        
+        return jsonify({
+            "success": True,
+            **get_hedge_for_api(asset, position, notional)
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Hedge calculator module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Hedge calculation error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/hedge-effectiveness/<asset>', methods=['GET'])
+def get_hedge_effectiveness(asset: str):
+    """Get hedge effectiveness report for an asset."""
+    try:
+        from hedge_calculator import get_effectiveness_for_api
+        
+        days = request.args.get('days', 30, type=int)
+        
+        return jsonify({
+            "success": True,
+            **get_effectiveness_for_api(asset, days)
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Hedge calculator module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Hedge effectiveness error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
+# FACTOR ATTRIBUTION ENDPOINTS
+# ============================================================================
+
+@v2_bp.route('/factor-attribution/<asset>', methods=['GET'])
+def get_factor_attribution(asset: str):
+    """Get factor attribution analysis for an asset."""
+    try:
+        from factor_attribution import get_attribution_for_api
+        
+        days = request.args.get('days', 252, type=int)
+        
+        return jsonify({
+            "success": True,
+            **get_attribution_for_api(asset, days)
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Factor attribution module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Factor attribution error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
+# CROWDED TRADE DETECTION ENDPOINTS
+# ============================================================================
+
+@v2_bp.route('/crowding/<asset>', methods=['GET'])
+def get_crowding(asset: str):
+    """Get crowded trade analysis for an asset."""
+    try:
+        from crowded_trade_detector import get_crowding_for_api
+        return jsonify({
+            "success": True,
+            **get_crowding_for_api(asset)
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Crowded trade module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Crowding error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/crowding', methods=['GET'])
+def get_all_crowding():
+    """Get crowded trade analysis for all assets."""
+    try:
+        from crowded_trade_detector import get_all_crowding_for_api
+        return jsonify({
+            "success": True,
+            **get_all_crowding_for_api()
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Crowded trade module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"All crowding error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
+# REPORT GENERATION ENDPOINT
+# ============================================================================
+
+@v2_bp.route('/report', methods=['POST'])
+def generate_report():
+    """Generate a market intelligence report."""
+    try:
+        from pdf_report_generator import get_report_for_api
+        
+        data = request.get_json() or {}
+        client_name = data.get('clientName', 'Valued Client')
+        
+        return jsonify(get_report_for_api(client_name))
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Report generator module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Report generation error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
 # REGISTRATION HELPER
 # ============================================================================
 
