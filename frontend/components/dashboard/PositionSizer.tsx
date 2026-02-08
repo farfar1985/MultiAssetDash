@@ -183,7 +183,7 @@ export function PositionSizer() {
               <Input
                 type="number"
                 value={confidence}
-                onChange={(e) => setConfidence(Number(e.target.value))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfidence(Number(e.target.value))}
                 min={0}
                 max={100}
               />
@@ -195,7 +195,7 @@ export function PositionSizer() {
               <Input
                 type="number"
                 value={winRate}
-                onChange={(e) => setWinRate(Number(e.target.value))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWinRate(Number(e.target.value))}
                 min={0}
                 max={100}
               />
@@ -207,7 +207,7 @@ export function PositionSizer() {
               <Input
                 type="number"
                 value={expectedMove}
-                onChange={(e) => setExpectedMove(Number(e.target.value))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExpectedMove(Number(e.target.value))}
                 step={0.1}
               />
             </div>
@@ -218,7 +218,7 @@ export function PositionSizer() {
               <Input
                 type="number"
                 value={portfolioValue}
-                onChange={(e) => setPortfolioValue(Number(e.target.value))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPortfolioValue(Number(e.target.value))}
               />
             </div>
 
