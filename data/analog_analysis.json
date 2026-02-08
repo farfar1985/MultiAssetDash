@@ -1,0 +1,1497 @@
+{
+  "SP500": {
+    "asset": "SP500",
+    "analysis_date": "2026-02-07",
+    "current_conditions": {
+      "price": 6952.75,
+      "volatility": 13.3,
+      "trend_20d": -0.13,
+      "rsi": 48.3,
+      "regime": "SIDEWAYS"
+    },
+    "analogs": [
+      {
+        "period": {
+          "start": "2023-05-11",
+          "end": "2023-06-26"
+        },
+        "similarity": 98.5,
+        "conditions_at_match": {
+          "price": 4143.75,
+          "volatility": 13.2,
+          "trend_20d": -0.69,
+          "rsi": 48.5
+        },
+        "forward_returns": {
+          "7d": 1.48,
+          "14d": 2.03,
+          "30d": 5.47,
+          "60d": 9.04
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.26,
+          "max_gain_30d": 8.45
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-05-05",
+          "end": "2023-06-20"
+        },
+        "similarity": 98.3,
+        "conditions_at_match": {
+          "price": 4150.25,
+          "volatility": 13.9,
+          "trend_20d": 0.21,
+          "rsi": 46.9
+        },
+        "forward_returns": {
+          "7d": -0.66,
+          "14d": 0.23,
+          "30d": 6.86,
+          "60d": 9.32
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.04,
+          "max_gain_30d": 8.45
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-05-12",
+          "end": "2023-06-27"
+        },
+        "similarity": 98.2,
+        "conditions_at_match": {
+          "price": 4138.0,
+          "volatility": 13.2,
+          "trend_20d": -0.62,
+          "rsi": 47.5
+        },
+        "forward_returns": {
+          "7d": 0.5,
+          "14d": 3.62,
+          "30d": 6.78,
+          "60d": 8.4
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.26,
+          "max_gain_30d": 8.45
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-05-08",
+          "end": "2023-06-21"
+        },
+        "similarity": 98.1,
+        "conditions_at_match": {
+          "price": 4152.75,
+          "volatility": 13.8,
+          "trend_20d": 0.4,
+          "rsi": 46.8
+        },
+        "forward_returns": {
+          "7d": 0.45,
+          "14d": 1.46,
+          "30d": 6.18,
+          "60d": 8.89
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.04,
+          "max_gain_30d": 8.45
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-05-17",
+          "end": "2023-06-30"
+        },
+        "similarity": 97.5,
+        "conditions_at_match": {
+          "price": 4171.5,
+          "volatility": 14.0,
+          "trend_20d": -0.17,
+          "rsi": 52.4
+        },
+        "forward_returns": {
+          "7d": 1.0,
+          "14d": 2.46,
+          "30d": 7.59,
+          "60d": 8.02
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.26,
+          "max_gain_30d": 8.78
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-05-25",
+          "end": "2023-07-11"
+        },
+        "similarity": 97.4,
+        "conditions_at_match": {
+          "price": 4159.75,
+          "volatility": 12.4,
+          "trend_20d": 0.14,
+          "rsi": 51.6
+        },
+        "forward_returns": {
+          "7d": 3.13,
+          "14d": 7.49,
+          "30d": 7.54,
+          "60d": 5.76
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.26,
+          "max_gain_30d": 7.99
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-05-10",
+          "end": "2023-06-23"
+        },
+        "similarity": 97.4,
+        "conditions_at_match": {
+          "price": 4152.0,
+          "volatility": 13.9,
+          "trend_20d": 0.8,
+          "rsi": 49.9
+        },
+        "forward_returns": {
+          "7d": 1.27,
+          "14d": 0.93,
+          "30d": 5.71,
+          "60d": 9.29
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.04,
+          "max_gain_30d": 8.45
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-10-16",
+          "end": "2025-11-28"
+        },
+        "similarity": 97.2,
+        "conditions_at_match": {
+          "price": 6668.75,
+          "volatility": 12.7,
+          "trend_20d": -0.37,
+          "rsi": 47.5
+        },
+        "forward_returns": {
+          "7d": 3.59,
+          "14d": 2.35,
+          "30d": 2.86,
+          "60d": 4.99
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -5.32,
+          "max_gain_30d": 4.61
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-05-09",
+          "end": "2023-06-22"
+        },
+        "similarity": 97.1,
+        "conditions_at_match": {
+          "price": 4134.0,
+          "volatility": 13.9,
+          "trend_20d": -0.06,
+          "rsi": 44.9
+        },
+        "forward_returns": {
+          "7d": 1.89,
+          "14d": 1.96,
+          "30d": 7.01,
+          "60d": 8.81
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.04,
+          "max_gain_30d": 8.45
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-10-17",
+          "end": "2025-12-01"
+        },
+        "similarity": 97.0,
+        "conditions_at_match": {
+          "price": 6702.5,
+          "volatility": 12.8,
+          "trend_20d": -0.3,
+          "rsi": 49.0
+        },
+        "forward_returns": {
+          "7d": 3.33,
+          "14d": 0.67,
+          "30d": 1.85,
+          "60d": 3.94
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -5.32,
+          "max_gain_30d": 4.61
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      }
+    ],
+    "statistics": {
+      "count": 10,
+      "avg_return_7d": 1.6,
+      "avg_return_14d": 2.32,
+      "avg_return_30d": 5.78,
+      "avg_return_60d": 7.65,
+      "win_rate_30d": 100.0,
+      "median_return_30d": 6.48,
+      "best_case_30d": 7.59,
+      "worst_case_30d": 1.85
+    },
+    "forecast": {
+      "direction": "BULLISH",
+      "confidence": 95,
+      "narrative": "Based on 10 similar historical setups, the next 30 days have shown an average return of +5.8% with a 100% win rate. Range: +1.9% to +7.6%. Historical bias is bullish."
+    }
+  },
+  "GOLD": {
+    "asset": "GOLD",
+    "analysis_date": "2026-02-07",
+    "current_conditions": {
+      "price": 4979.8,
+      "volatility": 54.4,
+      "trend_20d": 11.64,
+      "rsi": 60.1,
+      "regime": "BULL"
+    },
+    "analogs": [
+      {
+        "period": {
+          "start": "2025-10-23",
+          "end": "2025-12-05"
+        },
+        "similarity": 78.1,
+        "conditions_at_match": {
+          "price": 4145.6,
+          "volatility": 33.1,
+          "trend_20d": 9.93,
+          "rsi": 59.8
+        },
+        "forward_returns": {
+          "7d": -3.17,
+          "14d": 1.64,
+          "30d": 2.35,
+          "60d": 16.69
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -4.46,
+          "max_gain_30d": 7.94
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-10-24",
+          "end": "2025-12-08"
+        },
+        "similarity": 75.8,
+        "conditions_at_match": {
+          "price": 4137.8,
+          "volatility": 33.1,
+          "trend_20d": 8.63,
+          "rsi": 57.1
+        },
+        "forward_returns": {
+          "7d": -4.28,
+          "14d": 1.37,
+          "30d": 1.93,
+          "60d": 18.74
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -4.28,
+          "max_gain_30d": 7.94
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-10-21",
+          "end": "2025-12-03"
+        },
+        "similarity": 75.1,
+        "conditions_at_match": {
+          "price": 4109.1,
+          "volatility": 32.8,
+          "trend_20d": 7.69,
+          "rsi": 59.2
+        },
+        "forward_returns": {
+          "7d": -2.27,
+          "14d": 0.31,
+          "30d": 3.0,
+          "60d": 11.83
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -4.46,
+          "max_gain_30d": 7.94
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-10-22",
+          "end": "2025-12-04"
+        },
+        "similarity": 74.9,
+        "conditions_at_match": {
+          "price": 4065.4,
+          "volatility": 32.6,
+          "trend_20d": 7.89,
+          "rsi": 58.5
+        },
+        "forward_returns": {
+          "7d": -1.69,
+          "14d": 1.25,
+          "30d": 4.37,
+          "60d": 17.23
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -4.46,
+          "max_gain_30d": 7.94
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-05-05",
+          "end": "2025-06-17"
+        },
+        "similarity": 74.8,
+        "conditions_at_match": {
+          "price": 3322.3,
+          "volatility": 31.6,
+          "trend_20d": 9.45,
+          "rsi": 56.4
+        },
+        "forward_returns": {
+          "7d": -4.03,
+          "14d": 1.31,
+          "30d": 2.55,
+          "60d": 0.79
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -6.88,
+          "max_gain_30d": 8.33
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-04-24",
+          "end": "2025-06-06"
+        },
+        "similarity": 73.7,
+        "conditions_at_match": {
+          "price": 3348.6,
+          "volatility": 30.6,
+          "trend_20d": 10.79,
+          "rsi": 63.2
+        },
+        "forward_returns": {
+          "7d": -0.79,
+          "14d": -4.79,
+          "30d": -0.06,
+          "60d": 2.84
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -6.88,
+          "max_gain_30d": 6.65
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-05-07",
+          "end": "2025-06-20"
+        },
+        "similarity": 73.2,
+        "conditions_at_match": {
+          "price": 3391.9,
+          "volatility": 31.8,
+          "trend_20d": 13.43,
+          "rsi": 53.0
+        },
+        "forward_returns": {
+          "7d": -6.03,
+          "14d": -2.86,
+          "30d": -0.18,
+          "60d": 1.02
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -6.03,
+          "max_gain_30d": 8.33
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-04-23",
+          "end": "2025-06-05"
+        },
+        "similarity": 72.4,
+        "conditions_at_match": {
+          "price": 3294.1,
+          "volatility": 30.4,
+          "trend_20d": 8.86,
+          "rsi": 57.5
+        },
+        "forward_returns": {
+          "7d": -1.54,
+          "14d": -1.41,
+          "30d": 2.46,
+          "60d": 3.41
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -6.88,
+          "max_gain_30d": 6.65
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-05-06",
+          "end": "2025-06-18"
+        },
+        "similarity": 72.4,
+        "conditions_at_match": {
+          "price": 3422.8,
+          "volatility": 31.4,
+          "trend_20d": 15.11,
+          "rsi": 61.0
+        },
+        "forward_returns": {
+          "7d": -5.73,
+          "14d": -3.58,
+          "30d": -0.43,
+          "60d": -0.67
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -6.88,
+          "max_gain_30d": 8.33
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-04-25",
+          "end": "2025-06-09"
+        },
+        "similarity": 70.9,
+        "conditions_at_match": {
+          "price": 3298.4,
+          "volatility": 31.3,
+          "trend_20d": 7.76,
+          "rsi": 66.0
+        },
+        "forward_returns": {
+          "7d": 3.77,
+          "14d": -2.18,
+          "30d": 1.71,
+          "60d": 3.01
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -6.88,
+          "max_gain_30d": 6.65
+        },
+        "context": {
+          "event": "",
+          "regime": "BULL"
+        }
+      }
+    ],
+    "statistics": {
+      "count": 10,
+      "avg_return_7d": -2.58,
+      "avg_return_14d": -0.89,
+      "avg_return_30d": 1.77,
+      "avg_return_60d": 7.49,
+      "win_rate_30d": 70.0,
+      "median_return_30d": 2.14,
+      "best_case_30d": 4.37,
+      "worst_case_30d": -0.43
+    },
+    "forecast": {
+      "direction": "NEUTRAL",
+      "confidence": 50,
+      "narrative": "Based on 10 similar historical setups, the next 30 days have shown an average return of +1.8% with a 70% win rate. Range: -0.4% to +4.4%. Mixed signals suggest caution."
+    }
+  },
+  "CRUDE": {
+    "asset": "CRUDE",
+    "analysis_date": "2026-02-07",
+    "current_conditions": {
+      "price": 63.55,
+      "volatility": 38.2,
+      "trend_20d": 10.02,
+      "rsi": 61.8,
+      "regime": "BULL"
+    },
+    "analogs": [
+      {
+        "period": {
+          "start": "2024-10-10",
+          "end": "2024-11-21"
+        },
+        "similarity": 95.3,
+        "conditions_at_match": {
+          "price": 75.85,
+          "volatility": 37.1,
+          "trend_20d": 9.98,
+          "rsi": 61.2
+        },
+        "forward_returns": {
+          "7d": -7.66,
+          "14d": -9.55,
+          "30d": -7.58,
+          "60d": -2.11
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -11.64,
+          "max_gain_30d": 7.66
+        },
+        "context": {
+          "event": "",
+          "regime": "BEAR"
+        }
+      },
+      {
+        "period": {
+          "start": "2024-10-11",
+          "end": "2024-11-22"
+        },
+        "similarity": 95.1,
+        "conditions_at_match": {
+          "price": 75.56,
+          "volatility": 37.1,
+          "trend_20d": 10.07,
+          "rsi": 62.1
+        },
+        "forward_returns": {
+          "7d": -5.06,
+          "14d": -8.34,
+          "30d": -5.72,
+          "60d": -2.96
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -11.3,
+          "max_gain_30d": 7.66
+        },
+        "context": {
+          "event": "",
+          "regime": "BEAR"
+        }
+      },
+      {
+        "period": {
+          "start": "2024-10-07",
+          "end": "2024-11-18"
+        },
+        "similarity": 91.4,
+        "conditions_at_match": {
+          "price": 77.14,
+          "volatility": 36.0,
+          "trend_20d": 12.27,
+          "rsi": 66.6
+        },
+        "forward_returns": {
+          "7d": -8.75,
+          "14d": -6.95,
+          "30d": -10.33,
+          "60d": -5.2
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -13.12,
+          "max_gain_30d": 7.66
+        },
+        "context": {
+          "event": "",
+          "regime": "BEAR"
+        }
+      },
+      {
+        "period": {
+          "start": "2024-10-04",
+          "end": "2024-11-15"
+        },
+        "similarity": 91.0,
+        "conditions_at_match": {
+          "price": 74.38,
+          "volatility": 34.5,
+          "trend_20d": 9.92,
+          "rsi": 63.2
+        },
+        "forward_returns": {
+          "7d": -5.11,
+          "14d": -5.63,
+          "30d": -9.9,
+          "60d": -3.58
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -13.12,
+          "max_gain_30d": 7.66
+        },
+        "context": {
+          "event": "",
+          "regime": "BEAR"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-07-11",
+          "end": "2023-08-22"
+        },
+        "similarity": 90.6,
+        "conditions_at_match": {
+          "price": 74.83,
+          "volatility": 37.3,
+          "trend_20d": 6.64,
+          "rsi": 60.6
+        },
+        "forward_returns": {
+          "7d": 1.1,
+          "14d": 9.31,
+          "30d": 6.43,
+          "60d": 12.55
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -5.95,
+          "max_gain_30d": 13.82
+        },
+        "context": {
+          "event": "",
+          "regime": "BEAR"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-06-23",
+          "end": "2025-08-05"
+        },
+        "similarity": 89.9,
+        "conditions_at_match": {
+          "price": 68.51,
+          "volatility": 43.7,
+          "trend_20d": 11.94,
+          "rsi": 64.2
+        },
+        "forward_returns": {
+          "7d": -1.55,
+          "14d": -2.23,
+          "30d": -4.89,
+          "60d": -6.51
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -6.91,
+          "max_gain_30d": 8.75
+        },
+        "context": {
+          "event": "",
+          "regime": "HIGH_VOL"
+        }
+      },
+      {
+        "period": {
+          "start": "2024-10-08",
+          "end": "2024-11-19"
+        },
+        "similarity": 89.4,
+        "conditions_at_match": {
+          "price": 73.57,
+          "volatility": 36.6,
+          "trend_20d": 11.89,
+          "rsi": 59.1
+        },
+        "forward_returns": {
+          "7d": -3.94,
+          "14d": -8.41,
+          "30d": -5.89,
+          "60d": 0.53
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -11.64,
+          "max_gain_30d": 7.66
+        },
+        "context": {
+          "event": "",
+          "regime": "BEAR"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-08-29",
+          "end": "2022-10-11"
+        },
+        "similarity": 89.4,
+        "conditions_at_match": {
+          "price": 97.01,
+          "volatility": 36.9,
+          "trend_20d": 3.32,
+          "rsi": 62.0
+        },
+        "forward_returns": {
+          "7d": -13.89,
+          "14d": -12.01,
+          "30d": -7.9,
+          "60d": -16.55
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -20.93,
+          "max_gain_30d": 20.77
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-04-20",
+          "end": "2023-06-02"
+        },
+        "similarity": 89.0,
+        "conditions_at_match": {
+          "price": 77.37,
+          "volatility": 34.6,
+          "trend_20d": 9.13,
+          "rsi": 58.4
+        },
+        "forward_returns": {
+          "7d": -2.21,
+          "14d": -6.22,
+          "30d": -7.28,
+          "60d": -2.21
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -13.55,
+          "max_gain_30d": 8.43
+        },
+        "context": {
+          "event": "",
+          "regime": "HIGH_VOL"
+        }
+      },
+      {
+        "period": {
+          "start": "2024-10-09",
+          "end": "2024-11-20"
+        },
+        "similarity": 87.9,
+        "conditions_at_match": {
+          "price": 73.24,
+          "volatility": 36.2,
+          "trend_20d": 8.81,
+          "rsi": 55.4
+        },
+        "forward_returns": {
+          "7d": -6.21,
+          "14d": -8.23,
+          "30d": -6.13,
+          "60d": 0.44
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -11.64,
+          "max_gain_30d": 7.66
+        },
+        "context": {
+          "event": "",
+          "regime": "BEAR"
+        }
+      }
+    ],
+    "statistics": {
+      "count": 10,
+      "avg_return_7d": -5.33,
+      "avg_return_14d": -5.83,
+      "avg_return_30d": -5.92,
+      "avg_return_60d": -2.56,
+      "win_rate_30d": 10.0,
+      "median_return_30d": -6.7,
+      "best_case_30d": 6.43,
+      "worst_case_30d": -10.33
+    },
+    "forecast": {
+      "direction": "BEARISH",
+      "confidence": 95,
+      "narrative": "Based on 10 similar historical setups, the next 30 days have shown an average return of -5.9% with a 10% win rate. Range: -10.3% to +6.4%. Historical bias is bearish."
+    }
+  },
+  "BITCOIN": {
+    "asset": "BITCOIN",
+    "analysis_date": "2026-02-07",
+    "current_conditions": {
+      "price": 70260.0,
+      "volatility": 75.8,
+      "trend_20d": -22.88,
+      "rsi": 21.0,
+      "regime": "CRISIS"
+    },
+    "analogs": [
+      {
+        "period": {
+          "start": "2022-05-24",
+          "end": "2022-07-08"
+        },
+        "similarity": 94.3,
+        "conditions_at_match": {
+          "price": 29305.0,
+          "volatility": 75.8,
+          "trend_20d": -23.33,
+          "rsi": 19.4
+        },
+        "forward_returns": {
+          "7d": 0.78,
+          "14d": -24.5,
+          "30d": -25.73,
+          "60d": -27.56
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -40.73,
+          "max_gain_30d": 16.5
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-10",
+          "end": "2022-06-23"
+        },
+        "similarity": 91.7,
+        "conditions_at_match": {
+          "price": 31280.0,
+          "volatility": 75.3,
+          "trend_20d": -21.71,
+          "rsi": 26.1
+        },
+        "forward_returns": {
+          "7d": -4.27,
+          "14d": 1.18,
+          "30d": -33.18,
+          "60d": -26.6
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -36.48,
+          "max_gain_30d": 10.72
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-25",
+          "end": "2022-07-11"
+        },
+        "similarity": 91.3,
+        "conditions_at_match": {
+          "price": 29535.0,
+          "volatility": 75.3,
+          "trend_20d": -24.28,
+          "rsi": 25.7
+        },
+        "forward_returns": {
+          "7d": 6.62,
+          "14d": -26.78,
+          "30d": -30.74,
+          "60d": -29.02
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -40.73,
+          "max_gain_30d": 16.5
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-11",
+          "end": "2022-06-24"
+        },
+        "similarity": 90.5,
+        "conditions_at_match": {
+          "price": 29195.0,
+          "volatility": 77.8,
+          "trend_20d": -25.69,
+          "rsi": 23.7
+        },
+        "forward_returns": {
+          "7d": 0.22,
+          "14d": 2.88,
+          "30d": -27.2,
+          "60d": -17.85
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -36.48,
+          "max_gain_30d": 10.72
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-13",
+          "end": "2022-06-28"
+        },
+        "similarity": 89.4,
+        "conditions_at_match": {
+          "price": 30035.0,
+          "volatility": 78.0,
+          "trend_20d": -24.58,
+          "rsi": 27.3
+        },
+        "forward_returns": {
+          "7d": -2.43,
+          "14d": -1.66,
+          "30d": -32.83,
+          "60d": -21.24
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -36.48,
+          "max_gain_30d": 9.84
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-20",
+          "end": "2022-07-06"
+        },
+        "similarity": 88.6,
+        "conditions_at_match": {
+          "price": 29260.0,
+          "volatility": 77.3,
+          "trend_20d": -25.84,
+          "rsi": 26.7
+        },
+        "forward_returns": {
+          "7d": 2.65,
+          "14d": -1.16,
+          "30d": -30.71,
+          "60d": -20.61
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -40.73,
+          "max_gain_30d": 9.84
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-09",
+          "end": "2022-06-22"
+        },
+        "similarity": 87.7,
+        "conditions_at_match": {
+          "price": 30930.0,
+          "volatility": 77.1,
+          "trend_20d": -27.59,
+          "rsi": 24.5
+        },
+        "forward_returns": {
+          "7d": -5.64,
+          "14d": -6.84,
+          "30d": -35.0,
+          "60d": -27.4
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -36.48,
+          "max_gain_30d": 10.72
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-26",
+          "end": "2022-07-12"
+        },
+        "similarity": 87.1,
+        "conditions_at_match": {
+          "price": 29365.0,
+          "volatility": 73.9,
+          "trend_20d": -26.63,
+          "rsi": 26.1
+        },
+        "forward_returns": {
+          "7d": 5.72,
+          "14d": -29.2,
+          "30d": -34.22,
+          "60d": -26.82
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -40.73,
+          "max_gain_30d": 16.5
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-23",
+          "end": "2022-07-07"
+        },
+        "similarity": 86.7,
+        "conditions_at_match": {
+          "price": 29015.0,
+          "volatility": 76.4,
+          "trend_20d": -27.84,
+          "rsi": 27.6
+        },
+        "forward_returns": {
+          "7d": 4.39,
+          "14d": -20.35,
+          "30d": -24.68,
+          "60d": -19.58
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -40.73,
+          "max_gain_30d": 16.5
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      },
+      {
+        "period": {
+          "start": "2022-05-18",
+          "end": "2022-07-01"
+        },
+        "similarity": 86.7,
+        "conditions_at_match": {
+          "price": 29185.0,
+          "volatility": 76.7,
+          "trend_20d": -29.22,
+          "rsi": 23.5
+        },
+        "forward_returns": {
+          "7d": -1.27,
+          "14d": 3.07,
+          "30d": -33.82,
+          "60d": -17.77
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -40.73,
+          "max_gain_30d": 9.84
+        },
+        "context": {
+          "event": "",
+          "regime": "CRISIS"
+        }
+      }
+    ],
+    "statistics": {
+      "count": 10,
+      "avg_return_7d": 0.68,
+      "avg_return_14d": -10.34,
+      "avg_return_30d": -30.81,
+      "avg_return_60d": -23.44,
+      "win_rate_30d": 0.0,
+      "median_return_30d": -31.79,
+      "best_case_30d": -24.68,
+      "worst_case_30d": -35.0
+    },
+    "forecast": {
+      "direction": "BEARISH",
+      "confidence": 95,
+      "narrative": "Based on 10 similar historical setups, the next 30 days have shown an average return of -30.8% with a 0% win rate. Range: -35.0% to -24.7%. Historical bias is bearish."
+    }
+  },
+  "NASDAQ": {
+    "asset": "NASDAQ",
+    "analysis_date": "2026-02-07",
+    "current_conditions": {
+      "price": 25163.25,
+      "volatility": 17.6,
+      "trend_20d": -2.04,
+      "rsi": 43.4,
+      "regime": "SIDEWAYS"
+    },
+    "analogs": [
+      {
+        "period": {
+          "start": "2023-10-06",
+          "end": "2023-11-17"
+        },
+        "similarity": 97.8,
+        "conditions_at_match": {
+          "price": 15112.0,
+          "volatility": 17.5,
+          "trend_20d": -2.46,
+          "rsi": 42.1
+        },
+        "forward_returns": {
+          "7d": 0.85,
+          "14d": -6.07,
+          "30d": 5.19,
+          "60d": 9.44
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -7.71,
+          "max_gain_30d": 12.0
+        },
+        "context": {
+          "event": "Israel-Gaza Conflict",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-10-20",
+          "end": "2023-12-04"
+        },
+        "similarity": 96.7,
+        "conditions_at_match": {
+          "price": 14664.0,
+          "volatility": 16.4,
+          "trend_20d": -1.38,
+          "rsi": 42.4
+        },
+        "forward_returns": {
+          "7d": -1.18,
+          "14d": 4.04,
+          "30d": 8.22,
+          "60d": 16.68
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -4.39,
+          "max_gain_30d": 13.33
+        },
+        "context": {
+          "event": "Israel-Gaza Conflict",
+          "regime": "BEAR"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-10-25",
+          "end": "2023-12-07"
+        },
+        "similarity": 96.5,
+        "conditions_at_match": {
+          "price": 14478.25,
+          "volatility": 18.1,
+          "trend_20d": -1.77,
+          "rsi": 41.0
+        },
+        "forward_returns": {
+          "7d": 4.84,
+          "14d": 9.68,
+          "30d": 10.78,
+          "60d": 21.09
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -1.96,
+          "max_gain_30d": 13.33
+        },
+        "context": {
+          "event": "Israel-Gaza Conflict",
+          "regime": "BEAR"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-03-06",
+          "end": "2023-04-17"
+        },
+        "similarity": 96.2,
+        "conditions_at_match": {
+          "price": 12323.5,
+          "volatility": 20.5,
+          "trend_20d": -2.38,
+          "rsi": 43.7
+        },
+        "forward_returns": {
+          "7d": 0.44,
+          "14d": 4.6,
+          "30d": 7.0,
+          "60d": 16.82
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -3.92,
+          "max_gain_30d": 12.34
+        },
+        "context": {
+          "event": "SVB Bank Crisis",
+          "regime": "BULL"
+        }
+      },
+      {
+        "period": {
+          "start": "2023-10-09",
+          "end": "2023-11-20"
+        },
+        "similarity": 96.2,
+        "conditions_at_match": {
+          "price": 15187.0,
+          "volatility": 17.0,
+          "trend_20d": -3.11,
+          "rsi": 45.2
+        },
+        "forward_returns": {
+          "7d": -1.07,
+          "14d": -6.07,
+          "30d": 5.92,
+          "60d": 8.28
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -7.71,
+          "max_gain_30d": 13.33
+        },
+        "context": {
+          "event": "Israel-Gaza Conflict",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2024-05-02",
+          "end": "2024-06-14"
+        },
+        "similarity": 96.1,
+        "conditions_at_match": {
+          "price": 17649.75,
+          "volatility": 18.9,
+          "trend_20d": -2.36,
+          "rsi": 39.8
+        },
+        "forward_returns": {
+          "7d": 3.66,
+          "14d": 6.44,
+          "30d": 13.01,
+          "60d": 7.29
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -1.85,
+          "max_gain_30d": 13.01
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2024-04-26",
+          "end": "2024-06-10"
+        },
+        "similarity": 95.4,
+        "conditions_at_match": {
+          "price": 17845.75,
+          "volatility": 18.1,
+          "trend_20d": -3.41,
+          "rsi": 41.6
+        },
+        "forward_returns": {
+          "7d": 1.98,
+          "14d": 4.51,
+          "30d": 7.08,
+          "60d": 7.61
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.6,
+          "max_gain_30d": 9.59
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2024-04-29",
+          "end": "2024-06-11"
+        },
+        "similarity": 95.3,
+        "conditions_at_match": {
+          "price": 17904.25,
+          "volatility": 18.1,
+          "trend_20d": -3.21,
+          "rsi": 41.5
+        },
+        "forward_returns": {
+          "7d": 1.58,
+          "14d": 4.08,
+          "30d": 7.47,
+          "60d": 6.08
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -2.6,
+          "max_gain_30d": 10.35
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-02-28",
+          "end": "2025-04-11"
+        },
+        "similarity": 95.3,
+        "conditions_at_match": {
+          "price": 20919.5,
+          "volatility": 17.8,
+          "trend_20d": -3.26,
+          "rsi": 38.1
+        },
+        "forward_returns": {
+          "7d": -7.27,
+          "14d": -4.97,
+          "30d": -10.1,
+          "60d": 2.59
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -17.57,
+          "max_gain_30d": 11.86
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      },
+      {
+        "period": {
+          "start": "2025-02-24",
+          "end": "2025-04-07"
+        },
+        "similarity": 95.2,
+        "conditions_at_match": {
+          "price": 21420.25,
+          "volatility": 18.0,
+          "trend_20d": -2.24,
+          "rsi": 50.3
+        },
+        "forward_returns": {
+          "7d": -3.53,
+          "14d": -7.01,
+          "30d": -18.01,
+          "60d": 0.13
+        },
+        "risk_profile": {
+          "max_drawdown_30d": -18.12,
+          "max_gain_30d": 6.44
+        },
+        "context": {
+          "event": "",
+          "regime": "SIDEWAYS"
+        }
+      }
+    ],
+    "statistics": {
+      "count": 10,
+      "avg_return_7d": 0.03,
+      "avg_return_14d": 0.92,
+      "avg_return_30d": 3.66,
+      "avg_return_60d": 9.6,
+      "win_rate_30d": 80.0,
+      "median_return_30d": 7.04,
+      "best_case_30d": 13.01,
+      "worst_case_30d": -18.01
+    },
+    "forecast": {
+      "direction": "BULLISH",
+      "confidence": 87.3,
+      "narrative": "Based on 10 similar historical setups, the next 30 days have shown an average return of +3.7% with a 80% win rate. Range: -18.0% to +13.0%. Historical bias is bullish. Notable analogs include: SVB Bank Crisis, Israel-Gaza Conflict."
+    }
+  }
+}

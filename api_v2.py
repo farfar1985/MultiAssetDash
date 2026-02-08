@@ -22,6 +22,7 @@ Usage:
 from flask import Flask, jsonify, request, Blueprint
 from flask_cors import CORS
 from dataclasses import asdict
+from datetime import datetime
 import logging
 
 from qdl_data_service import get_service
@@ -402,6 +403,118 @@ def get_cot_signal_for_asset(asset: str):
         }), 500
     except Exception as e:
         log.error(f"COT signal error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
+# CONFLUENCE & ANALOG ENDPOINTS
+# ============================================================================
+
+@v2_bp.route('/confluence/<asset>', methods=['GET'])
+def get_confluence(asset: str):
+    """Get signal confluence analysis for an asset."""
+    try:
+        from signal_confluence import SignalConfluenceEngine
+        
+        engine = SignalConfluenceEngine()
+        result = engine.analyze(asset)
+        
+        return jsonify({
+            "success": True,
+            **result.to_dict()
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Signal confluence module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Confluence error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/analogs/<asset>', methods=['GET'])
+def get_analogs(asset: str):
+    """Get historical analog analysis for an asset."""
+    try:
+        from historical_analogs import HistoricalAnalogFinder
+        
+        lookback = request.args.get('years', 5, type=int)
+        n_analogs = request.args.get('n', 10, type=int)
+        min_similarity = request.args.get('min_sim', 70.0, type=float)
+        
+        finder = HistoricalAnalogFinder()
+        result = finder.find_analogs(
+            asset=asset,
+            lookback_years=lookback,
+            n_analogs=n_analogs,
+            min_similarity=min_similarity
+        )
+        
+        return jsonify({
+            "success": True,
+            **result.to_dict()
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Historical analogs module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Analog error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/market-pulse', methods=['GET'])
+def get_market_pulse():
+    """Get quick market pulse overview for all assets."""
+    try:
+        from signal_confluence import SignalConfluenceEngine
+        
+        engine = SignalConfluenceEngine()
+        assets = ["SP500", "NASDAQ", "GOLD", "CRUDE", "BITCOIN"]
+        
+        pulse = []
+        for asset in assets:
+            try:
+                result = engine.analyze(asset)
+                pulse.append({
+                    "asset": asset,
+                    "conviction_score": result.conviction_score,
+                    "conviction_label": result.conviction_label,
+                    "confidence": result.confidence,
+                    "bullish": result.bullish_count,
+                    "bearish": result.bearish_count,
+                    "headline": result.headline,
+                    "top_driver": result.key_drivers[0] if result.key_drivers else None
+                })
+            except Exception as e:
+                pulse.append({
+                    "asset": asset,
+                    "error": str(e)
+                })
+        
+        return jsonify({
+            "success": True,
+            "timestamp": datetime.now().isoformat(),
+            "assets": pulse
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Signal confluence module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Market pulse error: {e}")
         return jsonify({
             "success": False,
             "error": str(e)

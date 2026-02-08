@@ -1,0 +1,476 @@
+{
+  "SP500": {
+    "asset": "SP500",
+    "timestamp": "2026-02-07T22:15:12.394333",
+    "conviction_score": 12.0,
+    "conviction_label": "NEUTRAL",
+    "confidence": 80.0,
+    "signals": [
+      {
+        "name": "COT Positioning",
+        "source": "cot",
+        "value": -0.29603786378497754,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 11.8415145513991,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.5,
+        "last_updated": "2026-02-07T22:15:12.399839",
+        "description": "COT positioning neutral (z=-0.30)"
+      },
+      {
+        "name": "Trend (MA)",
+        "source": "technical",
+        "value": 6.943152779201098,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 65,
+        "timeframe": "daily",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.413934",
+        "description": "Price above rising MAs \u2014 uptrend confirmed"
+      },
+      {
+        "name": "RSI",
+        "source": "technical",
+        "value": 48.33217512161223,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 55,
+        "timeframe": "daily",
+        "historical_win_rate": 0.58,
+        "last_updated": "2026-02-07T22:15:12.414935",
+        "description": "RSI 48 \u2014 neutral"
+      },
+      {
+        "name": "Momentum (20d)",
+        "source": "technical",
+        "value": -0.1328641195058891,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 50,
+        "timeframe": "daily",
+        "historical_win_rate": 0.55,
+        "last_updated": "2026-02-07T22:15:12.414935",
+        "description": "Moderate momentum -0.1% in 20 days"
+      },
+      {
+        "name": "Market Regime",
+        "source": "regime",
+        "value": 1.182420141162774,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 70,
+        "timeframe": "monthly",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.417935",
+        "description": "Sideways consolidation \u2014 low conviction"
+      }
+    ],
+    "signal_counts": {
+      "bullish": 1,
+      "bearish": 0,
+      "neutral": 4,
+      "total": 5
+    },
+    "timeframe_analysis": {
+      "daily_bias": 16.7,
+      "weekly_bias": 0.0,
+      "monthly_bias": 0.0,
+      "alignment": 50
+    },
+    "historical_context": {
+      "similar_setups": 0,
+      "avg_return": 0.0,
+      "win_rate": 0.0
+    },
+    "risk": {
+      "score": 30,
+      "suggested_position_pct": 3.39
+    },
+    "narrative": {
+      "headline": "WEAK BULLISH on SP500 \u2014 1 bullish vs 0 bearish signals",
+      "key_drivers": [
+        "Sideways consolidation \u2014 low conviction",
+        "Price above rising MAs \u2014 uptrend confirmed",
+        "RSI 48 \u2014 neutral"
+      ],
+      "risks": []
+    }
+  },
+  "GOLD": {
+    "asset": "GOLD",
+    "timestamp": "2026-02-07T22:15:12.417935",
+    "conviction_score": 42.2,
+    "conviction_label": "BUY",
+    "confidence": 80.0,
+    "signals": [
+      {
+        "name": "COT Positioning",
+        "source": "cot",
+        "value": -1.6722184694914244,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 66.88873877965698,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.65,
+        "last_updated": "2026-02-07T22:15:12.419184",
+        "description": "Commercials moderately short \u2014 leaning bullish"
+      },
+      {
+        "name": "Trend (MA)",
+        "source": "technical",
+        "value": 29.9979089858007,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 65,
+        "timeframe": "daily",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.422183",
+        "description": "Price above rising MAs \u2014 uptrend confirmed"
+      },
+      {
+        "name": "RSI",
+        "source": "technical",
+        "value": 60.05545673328451,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 55,
+        "timeframe": "daily",
+        "historical_win_rate": 0.58,
+        "last_updated": "2026-02-07T22:15:12.422183",
+        "description": "RSI 60 \u2014 neutral"
+      },
+      {
+        "name": "Momentum (20d)",
+        "source": "technical",
+        "value": 11.637186988589242,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 50,
+        "timeframe": "daily",
+        "historical_win_rate": 0.55,
+        "last_updated": "2026-02-07T22:15:12.422183",
+        "description": "Strong momentum +11.6% in 20 days"
+      },
+      {
+        "name": "Market Regime",
+        "source": "regime",
+        "value": 20.9775769501737,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 70,
+        "timeframe": "monthly",
+        "historical_win_rate": 0.7,
+        "last_updated": "2026-02-07T22:15:12.425185",
+        "description": "Bull market \u2014 trend +21.0%"
+      }
+    ],
+    "signal_counts": {
+      "bullish": 4,
+      "bearish": 0,
+      "neutral": 1,
+      "total": 5
+    },
+    "timeframe_analysis": {
+      "daily_bias": 33.3,
+      "weekly_bias": 50.0,
+      "monthly_bias": 50.0,
+      "alignment": 66.7
+    },
+    "historical_context": {
+      "similar_setups": 0,
+      "avg_return": 0.0,
+      "win_rate": 0.0
+    },
+    "risk": {
+      "score": 62.9,
+      "suggested_position_pct": 2.81
+    },
+    "narrative": {
+      "headline": "MODERATE BULLISH on GOLD \u2014 4 bullish vs 0 bearish signals",
+      "key_drivers": [
+        "Bull market \u2014 trend +21.0%",
+        "Commercials moderately short \u2014 leaning bullish",
+        "Price above rising MAs \u2014 uptrend confirmed"
+      ],
+      "risks": []
+    }
+  },
+  "CRUDE": {
+    "asset": "CRUDE",
+    "timestamp": "2026-02-07T22:15:12.425185",
+    "conviction_score": 22.2,
+    "conviction_label": "NEUTRAL",
+    "confidence": 60.0,
+    "signals": [
+      {
+        "name": "COT Positioning",
+        "source": "cot",
+        "value": -0.07439058373786665,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 2.9756233495146662,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.5,
+        "last_updated": "2026-02-07T22:15:12.426184",
+        "description": "COT positioning neutral (z=-0.07)"
+      },
+      {
+        "name": "Trend (MA)",
+        "source": "technical",
+        "value": 2.124445587195468,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 65,
+        "timeframe": "daily",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.428183",
+        "description": "Price above 200MA \u2014 long-term bullish"
+      },
+      {
+        "name": "RSI",
+        "source": "technical",
+        "value": 61.77951874650251,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 55,
+        "timeframe": "daily",
+        "historical_win_rate": 0.58,
+        "last_updated": "2026-02-07T22:15:12.428183",
+        "description": "RSI 62 \u2014 neutral"
+      },
+      {
+        "name": "Momentum (20d)",
+        "source": "technical",
+        "value": 10.024238227146814,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 50,
+        "timeframe": "daily",
+        "historical_win_rate": 0.55,
+        "last_updated": "2026-02-07T22:15:12.428183",
+        "description": "Strong momentum +10.0% in 20 days"
+      },
+      {
+        "name": "Market Regime",
+        "source": "regime",
+        "value": 4.112057667103535,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 70,
+        "timeframe": "monthly",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.431548",
+        "description": "High volatility regime \u2014 38% annualized"
+      }
+    ],
+    "signal_counts": {
+      "bullish": 2,
+      "bearish": 0,
+      "neutral": 3,
+      "total": 5
+    },
+    "timeframe_analysis": {
+      "daily_bias": 33.3,
+      "weekly_bias": 0.0,
+      "monthly_bias": 0.0,
+      "alignment": 50
+    },
+    "historical_context": {
+      "similar_setups": 0,
+      "avg_return": 0.0,
+      "win_rate": 0.0
+    },
+    "risk": {
+      "score": 30,
+      "suggested_position_pct": 2.67
+    },
+    "narrative": {
+      "headline": "WEAK BULLISH on CRUDE \u2014 2 bullish vs 0 bearish signals",
+      "key_drivers": [
+        "High volatility regime \u2014 38% annualized",
+        "Price above 200MA \u2014 long-term bullish",
+        "RSI 62 \u2014 neutral"
+      ],
+      "risks": []
+    }
+  },
+  "BITCOIN": {
+    "asset": "BITCOIN",
+    "timestamp": "2026-02-07T22:15:12.431548",
+    "conviction_score": -44.9,
+    "conviction_label": "SELL",
+    "confidence": 75.0,
+    "signals": [
+      {
+        "name": "Trend (MA)",
+        "source": "technical",
+        "value": -32.56929138732493,
+        "direction": "BEARISH",
+        "direction_value": -1,
+        "confidence": 65,
+        "timeframe": "daily",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.444166",
+        "description": "Price below falling MAs \u2014 downtrend confirmed"
+      },
+      {
+        "name": "RSI",
+        "source": "technical",
+        "value": 21.04843304843304,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 55,
+        "timeframe": "daily",
+        "historical_win_rate": 0.58,
+        "last_updated": "2026-02-07T22:15:12.444166",
+        "description": "RSI 21 \u2014 oversold, potential bounce"
+      },
+      {
+        "name": "Momentum (20d)",
+        "source": "technical",
+        "value": -22.880193183689148,
+        "direction": "BEARISH",
+        "direction_value": -1,
+        "confidence": 50,
+        "timeframe": "daily",
+        "historical_win_rate": 0.55,
+        "last_updated": "2026-02-07T22:15:12.444166",
+        "description": "Weak momentum -22.9% in 20 days"
+      },
+      {
+        "name": "Market Regime",
+        "source": "regime",
+        "value": -31.756592686125007,
+        "direction": "STRONG_BEARISH",
+        "direction_value": -2,
+        "confidence": 70,
+        "timeframe": "monthly",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.447170",
+        "description": "Crisis mode \u2014 trend -31.8%, high vol 76%"
+      }
+    ],
+    "signal_counts": {
+      "bullish": 1,
+      "bearish": 3,
+      "neutral": 0,
+      "total": 4
+    },
+    "timeframe_analysis": {
+      "daily_bias": -16.7,
+      "weekly_bias": 0,
+      "monthly_bias": -100.0,
+      "alignment": 33.3
+    },
+    "historical_context": {
+      "similar_setups": 0,
+      "avg_return": 0.0,
+      "win_rate": 0.0
+    },
+    "risk": {
+      "score": 95.3,
+      "suggested_position_pct": 1.68
+    },
+    "narrative": {
+      "headline": "MODERATE BEARISH on BITCOIN \u2014 1 bullish vs 3 bearish signals",
+      "key_drivers": [
+        "Crisis mode \u2014 trend -31.8%, high vol 76%",
+        "Price below falling MAs \u2014 downtrend confirmed",
+        "RSI 21 \u2014 oversold, potential bounce"
+      ],
+      "risks": [
+        "Timeframes conflicting \u2014 increased uncertainty",
+        "1 contrary signal(s): RSI"
+      ]
+    }
+  },
+  "NASDAQ": {
+    "asset": "NASDAQ",
+    "timestamp": "2026-02-07T22:15:12.447170",
+    "conviction_score": 12.8,
+    "conviction_label": "NEUTRAL",
+    "confidence": 75.0,
+    "signals": [
+      {
+        "name": "Trend (MA)",
+        "source": "technical",
+        "value": 5.387678458740938,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 65,
+        "timeframe": "daily",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.461377",
+        "description": "Price above 200MA \u2014 long-term bullish"
+      },
+      {
+        "name": "RSI",
+        "source": "technical",
+        "value": 43.36885917891152,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 55,
+        "timeframe": "daily",
+        "historical_win_rate": 0.58,
+        "last_updated": "2026-02-07T22:15:12.461377",
+        "description": "RSI 43 \u2014 neutral"
+      },
+      {
+        "name": "Momentum (20d)",
+        "source": "technical",
+        "value": -2.0408759124087594,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 50,
+        "timeframe": "daily",
+        "historical_win_rate": 0.55,
+        "last_updated": "2026-02-07T22:15:12.461377",
+        "description": "Moderate momentum -2.0% in 20 days"
+      },
+      {
+        "name": "Market Regime",
+        "source": "regime",
+        "value": -1.8622700194027084,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 70,
+        "timeframe": "monthly",
+        "historical_win_rate": 0.6,
+        "last_updated": "2026-02-07T22:15:12.464375",
+        "description": "Sideways consolidation \u2014 low conviction"
+      }
+    ],
+    "signal_counts": {
+      "bullish": 1,
+      "bearish": 0,
+      "neutral": 3,
+      "total": 4
+    },
+    "timeframe_analysis": {
+      "daily_bias": 16.7,
+      "weekly_bias": 0,
+      "monthly_bias": 0.0,
+      "alignment": 50
+    },
+    "historical_context": {
+      "similar_setups": 0,
+      "avg_return": 0.0,
+      "win_rate": 0.0
+    },
+    "risk": {
+      "score": 30,
+      "suggested_position_pct": 3.19
+    },
+    "narrative": {
+      "headline": "WEAK BULLISH on NASDAQ \u2014 1 bullish vs 0 bearish signals",
+      "key_drivers": [
+        "Sideways consolidation \u2014 low conviction",
+        "Price above 200MA \u2014 long-term bullish",
+        "RSI 43 \u2014 neutral"
+      ],
+      "risks": []
+    }
+  }
+}
