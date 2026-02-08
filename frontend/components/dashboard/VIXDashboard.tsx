@@ -106,7 +106,7 @@ export function VIXDashboard() {
           setError(json.error || "Failed to load VIX data");
         }
         setLoading(false);
-      } catch (_e) {
+      } catch {
         setError("Failed to fetch VIX data");
         setLoading(false);
       }

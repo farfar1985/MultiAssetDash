@@ -153,7 +153,7 @@ export function SmartMoneyDashboard() {
         }
 
         setLoading(false);
-      } catch (_e) {
+      } catch {
         setError("Failed to load smart money data");
         setLoading(false);
       }

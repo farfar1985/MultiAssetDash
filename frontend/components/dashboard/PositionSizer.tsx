@@ -118,7 +118,7 @@ export function PositionSizer() {
       } else {
         setError(data.error || "Calculation failed");
       }
-    } catch (_e) {
+    } catch {
       setError("Failed to calculate position size");
     }
     
