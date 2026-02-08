@@ -522,6 +522,110 @@ def get_market_pulse():
 
 
 # ============================================================================
+# YIELD CURVE, CORRELATION, HHT ENDPOINTS
+# ============================================================================
+
+@v2_bp.route('/yield-curve', methods=['GET'])
+def get_yield_curve():
+    """Get yield curve analysis and recession probability."""
+    try:
+        from yield_curve_signals import get_yield_curve_for_api
+        return jsonify({
+            "success": True,
+            **get_yield_curve_for_api()
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Yield curve module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Yield curve error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/correlations', methods=['GET'])
+def get_correlations():
+    """Get cross-asset correlation regime analysis."""
+    try:
+        from correlation_regime import get_correlation_for_api
+        return jsonify({
+            "success": True,
+            **get_correlation_for_api()
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Correlation module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Correlation error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/hht/<asset>', methods=['GET'])
+def get_hht_regime(asset: str):
+    """Get HHT-based regime analysis for an asset."""
+    try:
+        from hht_regime_detector import get_hht_for_api
+        return jsonify({
+            "success": True,
+            **get_hht_for_api(asset)
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "HHT regime module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"HHT error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/regime-summary', methods=['GET'])
+def get_regime_summary():
+    """Get comprehensive regime summary across all assets."""
+    try:
+        from hht_regime_detector import analyze_all_assets as hht_all
+        from yield_curve_signals import generate_signal as yc_signal
+        from correlation_regime import analyze_correlations as corr_analysis
+        
+        # HHT regimes
+        hht_results = hht_all()
+        
+        # Yield curve
+        yc = yc_signal()
+        yc_data = yc.to_dict() if yc else None
+        
+        # Correlations
+        corr = corr_analysis()
+        corr_data = corr.to_dict() if corr else None
+        
+        return jsonify({
+            "success": True,
+            "timestamp": datetime.now().isoformat(),
+            "hht_regimes": hht_results,
+            "yield_curve": yc_data,
+            "correlations": corr_data
+        })
+    except Exception as e:
+        log.error(f"Regime summary error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
 # REGISTRATION HELPER
 # ============================================================================
 
