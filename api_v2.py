@@ -244,6 +244,26 @@ def get_regime_accurate():
 # COT / SMART MONEY SIGNALS
 # ============================================================================
 
+@v2_bp.route('/energy', methods=['GET'])
+def get_energy_signals():
+    """Get crude oil energy market signals."""
+    try:
+        from energy_signals import get_energy_signals_for_api
+        result = get_energy_signals_for_api()
+        return jsonify(result)
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Energy signals module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Energy signals error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
 @v2_bp.route('/crypto', methods=['GET'])
 def get_crypto_signals():
     """Get Bitcoin on-chain signals (MVRV, NVT, etc.)."""
