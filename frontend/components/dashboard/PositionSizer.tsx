@@ -13,17 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Calculator,
   TrendingUp,
   TrendingDown,
   AlertTriangle,
   CheckCircle,
-  DollarSign,
   Target,
-  Shield,
-  Clock,
 } from "lucide-react";
 
 interface PositionResult {
@@ -122,7 +118,7 @@ export function PositionSizer() {
       } else {
         setError(data.error || "Calculation failed");
       }
-    } catch (e) {
+    } catch (_e) {
       setError("Failed to calculate position size");
     }
     

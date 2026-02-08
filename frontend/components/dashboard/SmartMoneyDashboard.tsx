@@ -52,7 +52,7 @@ interface RegimeData {
   };
 }
 
-interface PositionSizing {
+interface _PositionSizing {
   position_size_pct: number;
   position_value: number;
   risk_management: {
@@ -153,7 +153,7 @@ export function SmartMoneyDashboard() {
         }
 
         setLoading(false);
-      } catch (e) {
+      } catch (_e) {
         setError("Failed to load smart money data");
         setLoading(false);
       }
