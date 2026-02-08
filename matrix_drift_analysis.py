@@ -35,7 +35,7 @@ def calculate_matrix_drift():
     print(f"[INFO] Discovered {len(available_horizons)} horizons: {available_horizons}")
     
     df = pd.DataFrame(horizons)
-    df = df.ffill().bfill()  # Updated to avoid deprecation warning
+    df = df.ffill().fillna(0)  # Forward-fill only, no bfill (leaks future data)
     
     # Load Actuals for Charting (from sandbox price cache)
     prices = None

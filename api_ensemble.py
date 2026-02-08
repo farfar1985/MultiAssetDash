@@ -15,6 +15,8 @@ import json
 # Add project root to path
 sys.path.insert(0, os.path.dirname(__file__))
 
+from safe_loader import safe_joblib_load
+
 app = Flask(__name__)
 CORS(app)
 
@@ -154,7 +156,7 @@ def load_horizon_data(asset_id: int, horizon: int):
     if not os.path.exists(path):
         return None, None
     
-    data = joblib.load(path)
+    data = safe_joblib_load(path)
     return data['X'], data['y']
 
 
@@ -580,7 +582,7 @@ def get_hmm_detector(asset_id: int):
                 joblib_path = os.path.join(REGIME_MODELS_DIR, asset_config.get('model_file', ''))
                 if os.path.exists(joblib_path):
                     try:
-                        model_data = joblib.load(joblib_path)
+                        model_data = safe_joblib_load(joblib_path)
                         # Restore HMM model from joblib
                         detector.n_regimes = model_data.get('n_regimes', 3)
                         detector.lookback = model_data.get('lookback', 20)

@@ -431,7 +431,7 @@ def process_asset(name, config):
     prices_aligned = prices.loc[common_dates]
     signals_raw_aligned = signals_raw.loc[common_dates]
     signals_filtered_aligned = signals_filtered.loc[common_dates]
-    rsi_aligned = rsi.reindex(common_dates).ffill().bfill()
+    rsi_aligned = rsi.reindex(common_dates).ffill().fillna(50)  # RSI neutral=50, no bfill (leaks future)
     
     # Combine extended history + signal period
     all_dates = extended_price_dates.append(common_dates).sort_values()
@@ -448,7 +448,7 @@ def process_asset(name, config):
     all_signals_filtered = pd.concat([extended_signals_raw, signals_filtered_aligned]).sort_index()
     
     # Extend RSI to cover all dates
-    all_rsi = rsi.reindex(all_dates).ffill().bfill()
+    all_rsi = rsi.reindex(all_dates).ffill().fillna(50)  # RSI neutral=50, no bfill (leaks future)
     
     # Prepare chart data - store BOTH raw and filtered signals
     chart_data = {
