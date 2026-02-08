@@ -4,13 +4,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   ReferenceLine,
   Area,
@@ -23,7 +21,6 @@ import {
   Target,
   BarChart3,
   Calendar,
-  Percent,
 } from "lucide-react";
 
 interface Analog {
@@ -105,7 +102,6 @@ export function HistoricalAnalogChart({ data, assetId }: Props) {
   const chartData = useMemo(() => {
     if (!analogData) return [];
 
-    const currentPrice = analogData.current_conditions.price;
     const days = [0, 7, 14, 30, 60];
     
     // Build data points for each day

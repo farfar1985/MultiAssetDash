@@ -93,7 +93,6 @@ export function ConfluenceDashboard({ data, assetId }: Props) {
   }
 
   const score = confluenceData.conviction_score;
-  const isPositive = score > 0;
   const scoreColor = score > 30 ? "text-green-500" : score < -30 ? "text-red-500" : "text-yellow-500";
   const scoreBg = score > 30 ? "bg-green-500/10" : score < -30 ? "bg-red-500/10" : "bg-yellow-500/10";
 

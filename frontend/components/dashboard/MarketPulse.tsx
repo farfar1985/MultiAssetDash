@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Activity,
   TrendingUp,
   TrendingDown,
-  Minus,
-  Zap,
   RefreshCw,
   ArrowRight,
   Sparkles,
@@ -70,14 +68,6 @@ export function MarketPulse({ onAssetSelect }: Props) {
     const interval = setInterval(fetchData, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
-
-  const getConvictionColor = (score: number) => {
-    if (score >= 60) return "bg-green-500";
-    if (score >= 30) return "bg-green-400";
-    if (score <= -60) return "bg-red-500";
-    if (score <= -30) return "bg-red-400";
-    return "bg-yellow-500";
-  };
 
   const getConvictionGlow = (score: number) => {
     if (score >= 60) return "shadow-green-500/50";

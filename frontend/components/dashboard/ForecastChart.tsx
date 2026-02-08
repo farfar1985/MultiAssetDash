@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -15,7 +14,6 @@ import {
   Area,
   ComposedChart,
   ReferenceLine,
-  ReferenceArea,
 } from "recharts";
 import {
   TrendingUp,
@@ -138,7 +136,6 @@ export function ForecastChart({ assetId, data }: Props) {
     });
 
     // Add forecast points
-    const currentPrice = forecastData.currentPrice;
     const today = new Date();
     
     forecastData.forecast.forEach((f) => {
