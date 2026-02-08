@@ -244,6 +244,26 @@ def get_regime_accurate():
 # COT / SMART MONEY SIGNALS
 # ============================================================================
 
+@v2_bp.route('/vix', methods=['GET'])
+def get_vix_analysis():
+    """Get comprehensive VIX intelligence analysis."""
+    try:
+        from vix_intelligence import get_vix_for_api
+        result = get_vix_for_api()
+        return jsonify(result)
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "VIX intelligence module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"VIX analysis error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
 @v2_bp.route('/cot', methods=['GET'])
 def get_cot_signals():
     """Get Commitment of Traders (COT) positioning signals."""
