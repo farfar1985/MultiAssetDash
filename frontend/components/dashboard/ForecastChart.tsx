@@ -243,7 +243,7 @@ export function ForecastChart({ assetId, data }: Props) {
               <XAxis 
                 dataKey="date" 
                 tick={{ fontSize: 10 }}
-                tickFormatter={(d) => {
+                tickFormatter={(d: string) => {
                   const date = new Date(d);
                   return `${date.getMonth() + 1}/${date.getDate()}`;
                 }}
@@ -259,12 +259,14 @@ export function ForecastChart({ assetId, data }: Props) {
                   border: "1px solid hsl(var(--border))",
                   borderRadius: "8px",
                 }}
-                formatter={(value: number, name: string) => {
-                  const label = name === "price" ? "Actual" : 
-                               name === "forecast" ? "Forecast" :
-                               name === "forecastHigh" ? "High Target" :
-                               name === "forecastLow" ? "Low Target" : name;
-                  return [formatPrice(value), label];
+                formatter={(value, name) => {
+                  const v = typeof value === 'number' ? value : 0;
+                  const n = String(name ?? '');
+                  const label = n === "price" ? "Actual" : 
+                               n === "forecast" ? "Forecast" :
+                               n === "forecastHigh" ? "High Target" :
+                               n === "forecastLow" ? "Low Target" : n;
+                  return [formatPrice(v), label];
                 }}
               />
 

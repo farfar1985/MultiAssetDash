@@ -196,19 +196,21 @@ export function HistoricalAnalogChart({ data, assetId }: Props) {
                 />
                 <YAxis 
                   domain={["dataMin - 5", "dataMax + 5"]}
-                  tickFormatter={(v) => `${v.toFixed(0)}%`}
+                  tickFormatter={(v: number) => `${v.toFixed(0)}%`}
                   tick={{ fontSize: 12 }}
                 />
                 <Tooltip 
-                  formatter={(value: number, name: string) => {
-                    if (name === "average") return [`${value.toFixed(1)}%`, "Average"];
-                    if (name === "current") return [`${value.toFixed(1)}%`, "Current"];
-                    if (name.startsWith("analog")) {
-                      const idx = parseInt(name.replace("analog", ""));
+                  formatter={(value, name) => {
+                    const v = typeof value === 'number' ? value : 0;
+                    const n = String(name ?? '');
+                    if (n === "average") return [`${v.toFixed(1)}%`, "Average"];
+                    if (n === "current") return [`${v.toFixed(1)}%`, "Current"];
+                    if (n.startsWith("analog")) {
+                      const idx = parseInt(n.replace("analog", ""));
                       const analog = analogData.analogs[idx];
-                      return [`${value.toFixed(1)}%`, analog?.period.start || name];
+                      return [`${v.toFixed(1)}%`, analog?.period.start || n];
                     }
-                    return [`${value.toFixed(1)}%`, name];
+                    return [`${v.toFixed(1)}%`, n];
                   }}
                   contentStyle={{
                     backgroundColor: "hsl(var(--background))",
