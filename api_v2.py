@@ -241,6 +241,114 @@ def get_regime_accurate():
 
 
 # ============================================================================
+# COT / SMART MONEY SIGNALS
+# ============================================================================
+
+@v2_bp.route('/cot', methods=['GET'])
+def get_cot_signals():
+    """Get Commitment of Traders (COT) positioning signals."""
+    try:
+        from smart_money_signals import get_cot_signals_for_api
+        result = get_cot_signals_for_api()
+        return jsonify({
+            "success": True,
+            **result
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Smart money signals module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"COT signals error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/position', methods=['POST'])
+def get_position_sizing():
+    """Compute optimal position size for a trade."""
+    try:
+        from position_sizing import get_position_for_api
+        
+        data = request.get_json() or {}
+        
+        # Required fields
+        asset = data.get('asset', 'crude-oil')
+        direction = data.get('direction', 'long')
+        confidence = float(data.get('confidence', 70))
+        win_rate = float(data.get('winRate', 65))
+        expected_move = float(data.get('expectedMove', 2.0))
+        portfolio_value = float(data.get('portfolioValue', 100000))
+        persona = data.get('persona', 'retail')
+        
+        result = get_position_for_api(
+            asset=asset,
+            direction=direction,
+            confidence=confidence,
+            win_rate=win_rate,
+            expected_move=expected_move,
+            portfolio_value=portfolio_value,
+            persona=persona,
+        )
+        
+        return jsonify({
+            "success": True,
+            **result
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Position sizing module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"Position sizing error: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+@v2_bp.route('/cot/<asset>', methods=['GET'])
+def get_cot_signal_for_asset(asset: str):
+    """Get COT signal for a specific asset (GC, CL, ES, etc.)."""
+    try:
+        from smart_money_signals import generate_cot_signal
+        signal = generate_cot_signal(asset)
+        
+        if not signal:
+            return jsonify({
+                "success": False,
+                "error": f"No COT data available for: {asset}"
+            }), 404
+        
+        return jsonify({
+            "success": True,
+            "asset": asset,
+            "signal": signal.signal.value,
+            "confidence": signal.confidence,
+            "z_score": signal.z_score,
+            "percentile": signal.percentile,
+            "current_net": signal.current_net,
+            "message": signal.message,
+            "reasoning": signal.reasoning,
+        })
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "Smart money signals module not available"
+        }), 500
+    except Exception as e:
+        log.error(f"COT signal error for {asset}: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# ============================================================================
 # REGISTRATION HELPER
 # ============================================================================
 
