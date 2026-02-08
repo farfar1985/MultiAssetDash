@@ -1,10 +1,10 @@
 {
   "SP500": {
     "asset": "SP500",
-    "timestamp": "2026-02-07T22:15:12.394333",
-    "conviction_score": 12.0,
+    "timestamp": "2026-02-07T22:55:46.921970",
+    "conviction_score": 14.1,
     "conviction_label": "NEUTRAL",
-    "confidence": 80.0,
+    "confidence": 75.0,
     "signals": [
       {
         "name": "COT Positioning",
@@ -15,7 +15,7 @@
         "confidence": 11.8415145513991,
         "timeframe": "weekly",
         "historical_win_rate": 0.5,
-        "last_updated": "2026-02-07T22:15:12.399839",
+        "last_updated": "2026-02-07T22:55:46.925976",
         "description": "COT positioning neutral (z=-0.30)"
       },
       {
@@ -27,7 +27,7 @@
         "confidence": 65,
         "timeframe": "daily",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.413934",
+        "last_updated": "2026-02-07T22:55:46.939955",
         "description": "Price above rising MAs \u2014 uptrend confirmed"
       },
       {
@@ -39,7 +39,7 @@
         "confidence": 55,
         "timeframe": "daily",
         "historical_win_rate": 0.58,
-        "last_updated": "2026-02-07T22:15:12.414935",
+        "last_updated": "2026-02-07T22:55:46.939955",
         "description": "RSI 48 \u2014 neutral"
       },
       {
@@ -51,7 +51,7 @@
         "confidence": 50,
         "timeframe": "daily",
         "historical_win_rate": 0.55,
-        "last_updated": "2026-02-07T22:15:12.414935",
+        "last_updated": "2026-02-07T22:55:46.939955",
         "description": "Moderate momentum -0.1% in 20 days"
       },
       {
@@ -63,21 +63,57 @@
         "confidence": 70,
         "timeframe": "monthly",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.417935",
+        "last_updated": "2026-02-07T22:55:46.943125",
         "description": "Sideways consolidation \u2014 low conviction"
+      },
+      {
+        "name": "Yield Curve",
+        "source": "yield_curve",
+        "value": 0.0,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 50,
+        "timeframe": "monthly",
+        "historical_win_rate": 0.55,
+        "last_updated": "2026-02-07T22:55:46.945126",
+        "description": "2Y-10Y spread 0bps \u2014 FLAT, recession prob 20%"
+      },
+      {
+        "name": "HHT Regime",
+        "source": "hht",
+        "value": 3.5472604234882965,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 50,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.7,
+        "last_updated": "2026-02-07T22:55:46.977338",
+        "description": "HHT: TRANSITION (TRANSITION), entropy 0.91"
+      },
+      {
+        "name": "Correlation Regime",
+        "source": "correlation",
+        "value": 0.24956687636052025,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 55,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.62,
+        "last_updated": "2026-02-07T22:55:47.286717",
+        "description": "Low correlations \u2014 healthy diversification (avg 0.25)"
       }
     ],
     "signal_counts": {
-      "bullish": 1,
+      "bullish": 2,
       "bearish": 0,
-      "neutral": 4,
-      "total": 5
+      "neutral": 6,
+      "total": 8
     },
     "timeframe_analysis": {
       "daily_bias": 16.7,
-      "weekly_bias": 0.0,
+      "weekly_bias": 16.7,
       "monthly_bias": 0.0,
-      "alignment": 50
+      "alignment": 33.3
     },
     "historical_context": {
       "similar_setups": 0,
@@ -86,24 +122,26 @@
     },
     "risk": {
       "score": 30,
-      "suggested_position_pct": 3.39
+      "suggested_position_pct": 3.21
     },
     "narrative": {
-      "headline": "WEAK BULLISH on SP500 \u2014 1 bullish vs 0 bearish signals",
+      "headline": "WEAK BULLISH on SP500 \u2014 2 bullish vs 0 bearish signals",
       "key_drivers": [
         "Sideways consolidation \u2014 low conviction",
         "Price above rising MAs \u2014 uptrend confirmed",
         "RSI 48 \u2014 neutral"
       ],
-      "risks": []
+      "risks": [
+        "Timeframes conflicting \u2014 increased uncertainty"
+      ]
     }
   },
   "GOLD": {
     "asset": "GOLD",
-    "timestamp": "2026-02-07T22:15:12.417935",
-    "conviction_score": 42.2,
+    "timestamp": "2026-02-07T22:55:47.286717",
+    "conviction_score": 44.8,
     "conviction_label": "BUY",
-    "confidence": 80.0,
+    "confidence": 100.0,
     "signals": [
       {
         "name": "COT Positioning",
@@ -114,7 +152,7 @@
         "confidence": 66.88873877965698,
         "timeframe": "weekly",
         "historical_win_rate": 0.65,
-        "last_updated": "2026-02-07T22:15:12.419184",
+        "last_updated": "2026-02-07T22:55:47.288838",
         "description": "Commercials moderately short \u2014 leaning bullish"
       },
       {
@@ -126,7 +164,7 @@
         "confidence": 65,
         "timeframe": "daily",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.422183",
+        "last_updated": "2026-02-07T22:55:47.291840",
         "description": "Price above rising MAs \u2014 uptrend confirmed"
       },
       {
@@ -138,7 +176,7 @@
         "confidence": 55,
         "timeframe": "daily",
         "historical_win_rate": 0.58,
-        "last_updated": "2026-02-07T22:15:12.422183",
+        "last_updated": "2026-02-07T22:55:47.291840",
         "description": "RSI 60 \u2014 neutral"
       },
       {
@@ -150,7 +188,7 @@
         "confidence": 50,
         "timeframe": "daily",
         "historical_win_rate": 0.55,
-        "last_updated": "2026-02-07T22:15:12.422183",
+        "last_updated": "2026-02-07T22:55:47.291840",
         "description": "Strong momentum +11.6% in 20 days"
       },
       {
@@ -162,15 +200,39 @@
         "confidence": 70,
         "timeframe": "monthly",
         "historical_win_rate": 0.7,
-        "last_updated": "2026-02-07T22:15:12.425185",
+        "last_updated": "2026-02-07T22:55:47.294839",
         "description": "Bull market \u2014 trend +21.0%"
+      },
+      {
+        "name": "HHT Regime",
+        "source": "hht",
+        "value": 62.93273085052112,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 75.48878847508685,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.7,
+        "last_updated": "2026-02-07T22:55:47.329539",
+        "description": "HHT: BULL (TRANSITION), entropy 0.77"
+      },
+      {
+        "name": "Correlation Regime",
+        "source": "correlation",
+        "value": 0.24956687636052025,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 55,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.62,
+        "last_updated": "2026-02-07T22:55:47.601816",
+        "description": "Low correlations \u2014 healthy diversification (avg 0.25)"
       }
     ],
     "signal_counts": {
-      "bullish": 4,
+      "bullish": 6,
       "bearish": 0,
       "neutral": 1,
-      "total": 5
+      "total": 7
     },
     "timeframe_analysis": {
       "daily_bias": 33.3,
@@ -185,24 +247,24 @@
     },
     "risk": {
       "score": 62.9,
-      "suggested_position_pct": 2.81
+      "suggested_position_pct": 3.55
     },
     "narrative": {
-      "headline": "MODERATE BULLISH on GOLD \u2014 4 bullish vs 0 bearish signals",
+      "headline": "MODERATE BULLISH on GOLD \u2014 6 bullish vs 0 bearish signals",
       "key_drivers": [
+        "HHT: BULL (TRANSITION), entropy 0.77",
         "Bull market \u2014 trend +21.0%",
-        "Commercials moderately short \u2014 leaning bullish",
-        "Price above rising MAs \u2014 uptrend confirmed"
+        "Commercials moderately short \u2014 leaning bullish"
       ],
       "risks": []
     }
   },
   "CRUDE": {
     "asset": "CRUDE",
-    "timestamp": "2026-02-07T22:15:12.425185",
-    "conviction_score": 22.2,
+    "timestamp": "2026-02-07T22:55:47.601816",
+    "conviction_score": 23.3,
     "conviction_label": "NEUTRAL",
-    "confidence": 60.0,
+    "confidence": 57.1,
     "signals": [
       {
         "name": "COT Positioning",
@@ -213,7 +275,7 @@
         "confidence": 2.9756233495146662,
         "timeframe": "weekly",
         "historical_win_rate": 0.5,
-        "last_updated": "2026-02-07T22:15:12.426184",
+        "last_updated": "2026-02-07T22:55:47.603817",
         "description": "COT positioning neutral (z=-0.07)"
       },
       {
@@ -225,7 +287,7 @@
         "confidence": 65,
         "timeframe": "daily",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.428183",
+        "last_updated": "2026-02-07T22:55:47.605816",
         "description": "Price above 200MA \u2014 long-term bullish"
       },
       {
@@ -237,7 +299,7 @@
         "confidence": 55,
         "timeframe": "daily",
         "historical_win_rate": 0.58,
-        "last_updated": "2026-02-07T22:15:12.428183",
+        "last_updated": "2026-02-07T22:55:47.605816",
         "description": "RSI 62 \u2014 neutral"
       },
       {
@@ -249,7 +311,7 @@
         "confidence": 50,
         "timeframe": "daily",
         "historical_win_rate": 0.55,
-        "last_updated": "2026-02-07T22:15:12.428183",
+        "last_updated": "2026-02-07T22:55:47.605816",
         "description": "Strong momentum +10.0% in 20 days"
       },
       {
@@ -261,21 +323,45 @@
         "confidence": 70,
         "timeframe": "monthly",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.431548",
+        "last_updated": "2026-02-07T22:55:47.607984",
         "description": "High volatility regime \u2014 38% annualized"
+      },
+      {
+        "name": "HHT Regime",
+        "source": "hht",
+        "value": 12.336173001310623,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 50,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.7,
+        "last_updated": "2026-02-07T22:55:47.636850",
+        "description": "HHT: TRANSITION (TRANSITION), entropy 0.87"
+      },
+      {
+        "name": "Correlation Regime",
+        "source": "correlation",
+        "value": 0.24956687636052025,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 55,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.62,
+        "last_updated": "2026-02-07T22:55:47.908447",
+        "description": "Low correlations \u2014 healthy diversification (avg 0.25)"
       }
     ],
     "signal_counts": {
-      "bullish": 2,
+      "bullish": 3,
       "bearish": 0,
-      "neutral": 3,
-      "total": 5
+      "neutral": 4,
+      "total": 7
     },
     "timeframe_analysis": {
       "daily_bias": 33.3,
-      "weekly_bias": 0.0,
+      "weekly_bias": 16.7,
       "monthly_bias": 0.0,
-      "alignment": 50
+      "alignment": 33.3
     },
     "historical_context": {
       "similar_setups": 0,
@@ -284,24 +370,26 @@
     },
     "risk": {
       "score": 30,
-      "suggested_position_pct": 2.67
+      "suggested_position_pct": 2.55
     },
     "narrative": {
-      "headline": "WEAK BULLISH on CRUDE \u2014 2 bullish vs 0 bearish signals",
+      "headline": "WEAK BULLISH on CRUDE \u2014 3 bullish vs 0 bearish signals",
       "key_drivers": [
         "High volatility regime \u2014 38% annualized",
         "Price above 200MA \u2014 long-term bullish",
         "RSI 62 \u2014 neutral"
       ],
-      "risks": []
+      "risks": [
+        "Timeframes conflicting \u2014 increased uncertainty"
+      ]
     }
   },
   "BITCOIN": {
     "asset": "BITCOIN",
-    "timestamp": "2026-02-07T22:15:12.431548",
-    "conviction_score": -44.9,
+    "timestamp": "2026-02-07T22:55:47.908447",
+    "conviction_score": -31.2,
     "conviction_label": "SELL",
-    "confidence": 75.0,
+    "confidence": 57.1,
     "signals": [
       {
         "name": "Trend (MA)",
@@ -312,7 +400,7 @@
         "confidence": 65,
         "timeframe": "daily",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.444166",
+        "last_updated": "2026-02-07T22:55:47.923745",
         "description": "Price below falling MAs \u2014 downtrend confirmed"
       },
       {
@@ -324,7 +412,7 @@
         "confidence": 55,
         "timeframe": "daily",
         "historical_win_rate": 0.58,
-        "last_updated": "2026-02-07T22:15:12.444166",
+        "last_updated": "2026-02-07T22:55:47.923745",
         "description": "RSI 21 \u2014 oversold, potential bounce"
       },
       {
@@ -336,7 +424,7 @@
         "confidence": 50,
         "timeframe": "daily",
         "historical_win_rate": 0.55,
-        "last_updated": "2026-02-07T22:15:12.444166",
+        "last_updated": "2026-02-07T22:55:47.923745",
         "description": "Weak momentum -22.9% in 20 days"
       },
       {
@@ -348,21 +436,57 @@
         "confidence": 70,
         "timeframe": "monthly",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.447170",
+        "last_updated": "2026-02-07T22:55:47.927250",
         "description": "Crisis mode \u2014 trend -31.8%, high vol 76%"
+      },
+      {
+        "name": "HHT Regime",
+        "source": "hht",
+        "value": -95.26977805837502,
+        "direction": "STRONG_BEARISH",
+        "direction_value": -2,
+        "confidence": 95,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.7,
+        "last_updated": "2026-02-07T22:55:47.981589",
+        "description": "HHT: CRISIS (MIDDLE), entropy 0.25"
+      },
+      {
+        "name": "Mean Reversion",
+        "source": "hht",
+        "value": 1.0,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 60.0,
+        "timeframe": "daily",
+        "historical_win_rate": 0.58,
+        "last_updated": "2026-02-07T22:55:47.981589",
+        "description": "Mean reversion signal: +1.00"
+      },
+      {
+        "name": "Correlation Regime",
+        "source": "correlation",
+        "value": 0.24956687636052025,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 55,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.62,
+        "last_updated": "2026-02-07T22:55:48.251533",
+        "description": "Low correlations \u2014 healthy diversification (avg 0.25)"
       }
     ],
     "signal_counts": {
-      "bullish": 1,
-      "bearish": 3,
+      "bullish": 3,
+      "bearish": 4,
       "neutral": 0,
-      "total": 4
+      "total": 7
     },
     "timeframe_analysis": {
-      "daily_bias": -16.7,
-      "weekly_bias": 0,
+      "daily_bias": 0.0,
+      "weekly_bias": -25.0,
       "monthly_bias": -100.0,
-      "alignment": 33.3
+      "alignment": 50.0
     },
     "historical_context": {
       "similar_setups": 0,
@@ -371,27 +495,26 @@
     },
     "risk": {
       "score": 95.3,
-      "suggested_position_pct": 1.68
+      "suggested_position_pct": 1.21
     },
     "narrative": {
-      "headline": "MODERATE BEARISH on BITCOIN \u2014 1 bullish vs 3 bearish signals",
+      "headline": "MODERATE BEARISH on BITCOIN \u2014 3 bullish vs 4 bearish signals",
       "key_drivers": [
+        "HHT: CRISIS (MIDDLE), entropy 0.25",
         "Crisis mode \u2014 trend -31.8%, high vol 76%",
-        "Price below falling MAs \u2014 downtrend confirmed",
-        "RSI 21 \u2014 oversold, potential bounce"
+        "Price below falling MAs \u2014 downtrend confirmed"
       ],
       "risks": [
-        "Timeframes conflicting \u2014 increased uncertainty",
-        "1 contrary signal(s): RSI"
+        "3 contrary signal(s): RSI"
       ]
     }
   },
   "NASDAQ": {
     "asset": "NASDAQ",
-    "timestamp": "2026-02-07T22:15:12.447170",
-    "conviction_score": 12.8,
+    "timestamp": "2026-02-07T22:55:48.251533",
+    "conviction_score": 14.7,
     "conviction_label": "NEUTRAL",
-    "confidence": 75.0,
+    "confidence": 71.4,
     "signals": [
       {
         "name": "Trend (MA)",
@@ -402,7 +525,7 @@
         "confidence": 65,
         "timeframe": "daily",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.461377",
+        "last_updated": "2026-02-07T22:55:48.265047",
         "description": "Price above 200MA \u2014 long-term bullish"
       },
       {
@@ -414,7 +537,7 @@
         "confidence": 55,
         "timeframe": "daily",
         "historical_win_rate": 0.58,
-        "last_updated": "2026-02-07T22:15:12.461377",
+        "last_updated": "2026-02-07T22:55:48.265047",
         "description": "RSI 43 \u2014 neutral"
       },
       {
@@ -426,7 +549,7 @@
         "confidence": 50,
         "timeframe": "daily",
         "historical_win_rate": 0.55,
-        "last_updated": "2026-02-07T22:15:12.461377",
+        "last_updated": "2026-02-07T22:55:48.265047",
         "description": "Moderate momentum -2.0% in 20 days"
       },
       {
@@ -438,21 +561,57 @@
         "confidence": 70,
         "timeframe": "monthly",
         "historical_win_rate": 0.6,
-        "last_updated": "2026-02-07T22:15:12.464375",
+        "last_updated": "2026-02-07T22:55:48.267552",
         "description": "Sideways consolidation \u2014 low conviction"
+      },
+      {
+        "name": "Yield Curve",
+        "source": "yield_curve",
+        "value": 0.0,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 50,
+        "timeframe": "monthly",
+        "historical_win_rate": 0.55,
+        "last_updated": "2026-02-07T22:55:48.269553",
+        "description": "2Y-10Y spread 0bps \u2014 FLAT, recession prob 20%"
+      },
+      {
+        "name": "HHT Regime",
+        "source": "hht",
+        "value": -5.586810058208136,
+        "direction": "NEUTRAL",
+        "direction_value": 0,
+        "confidence": 50,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.7,
+        "last_updated": "2026-02-07T22:55:48.300090",
+        "description": "HHT: TRANSITION (TRANSITION), entropy 0.88"
+      },
+      {
+        "name": "Correlation Regime",
+        "source": "correlation",
+        "value": 0.24956687636052025,
+        "direction": "BULLISH",
+        "direction_value": 1,
+        "confidence": 55,
+        "timeframe": "weekly",
+        "historical_win_rate": 0.62,
+        "last_updated": "2026-02-07T22:55:48.575089",
+        "description": "Low correlations \u2014 healthy diversification (avg 0.25)"
       }
     ],
     "signal_counts": {
-      "bullish": 1,
+      "bullish": 2,
       "bearish": 0,
-      "neutral": 3,
-      "total": 4
+      "neutral": 5,
+      "total": 7
     },
     "timeframe_analysis": {
       "daily_bias": 16.7,
-      "weekly_bias": 0,
+      "weekly_bias": 25.0,
       "monthly_bias": 0.0,
-      "alignment": 50
+      "alignment": 33.3
     },
     "historical_context": {
       "similar_setups": 0,
@@ -461,16 +620,18 @@
     },
     "risk": {
       "score": 30,
-      "suggested_position_pct": 3.19
+      "suggested_position_pct": 3.07
     },
     "narrative": {
-      "headline": "WEAK BULLISH on NASDAQ \u2014 1 bullish vs 0 bearish signals",
+      "headline": "WEAK BULLISH on NASDAQ \u2014 2 bullish vs 0 bearish signals",
       "key_drivers": [
         "Sideways consolidation \u2014 low conviction",
         "Price above 200MA \u2014 long-term bullish",
         "RSI 43 \u2014 neutral"
       ],
-      "risks": []
+      "risks": [
+        "Timeframes conflicting \u2014 increased uncertainty"
+      ]
     }
   }
 }

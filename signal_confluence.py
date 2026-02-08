@@ -43,6 +43,27 @@ except ImportError:
     HAS_CRYPTO = False
     analyze_bitcoin = None
 
+try:
+    from yield_curve_signals import generate_signal as yc_signal
+    HAS_YIELD_CURVE = True
+except ImportError:
+    HAS_YIELD_CURVE = False
+    yc_signal = None
+
+try:
+    from correlation_regime import analyze_correlations
+    HAS_CORRELATION = True
+except ImportError:
+    HAS_CORRELATION = False
+    analyze_correlations = None
+
+try:
+    from hht_regime_detector import analyze_asset as hht_analyze
+    HAS_HHT = True
+except ImportError:
+    HAS_HHT = False
+    hht_analyze = None
+
 
 class SignalStrength(Enum):
     """Signal conviction levels"""
@@ -171,7 +192,10 @@ class SignalConfluenceEngine:
     # Signal weights by source (higher = more important)
     SIGNAL_WEIGHTS = {
         "cot": 1.5,           # COT is highly predictive
+        "yield_curve": 1.4,   # Yield curve predicts recessions
+        "hht": 1.4,           # HHT regime detection (research-backed)
         "vix": 1.3,           # VIX structure matters
+        "correlation": 1.3,   # Correlation regime shifts
         "regime": 1.2,        # Regime context is crucial
         "onchain": 1.2,       # On-chain for crypto
         "energy": 1.1,        # Energy fundamentals
@@ -239,9 +263,22 @@ class SignalConfluenceEngine:
         tech_signals = self._get_technical_signals(asset)
         signals.extend(tech_signals)
         
-        # 5. Regime signals
+        # 5. Regime signals (basic)
         regime_signals = self._get_regime_signals(asset)
         signals.extend(regime_signals)
+        
+        # 6. Yield curve signals (for equities)
+        if asset in ["SP500", "NASDAQ", "DOW", "RUSSELL"]:
+            yc_signals = self._get_yield_curve_signals()
+            signals.extend(yc_signals)
+        
+        # 7. HHT regime signals
+        hht_signals = self._get_hht_signals(asset)
+        signals.extend(hht_signals)
+        
+        # 8. Correlation regime signals
+        corr_signals = self._get_correlation_signals(asset)
+        signals.extend(corr_signals)
         
         result.signals = signals
         
@@ -639,6 +676,144 @@ class SignalConfluenceEngine:
         
         rs = avg_gain / avg_loss
         return 100 - (100 / (1 + rs))
+    
+    def _get_yield_curve_signals(self) -> list[Signal]:
+        """Get yield curve signals"""
+        signals = []
+        
+        if not HAS_YIELD_CURVE:
+            return signals
+        
+        try:
+            yc = yc_signal()
+            if yc:
+                # Map yield curve state to direction
+                if yc.state.value == "INVERTED":
+                    direction = SignalStrength.STRONG_BEARISH
+                    win_rate = 0.80
+                elif yc.state.value == "FLATTENING":
+                    direction = SignalStrength.BEARISH
+                    win_rate = 0.65
+                elif yc.state.value == "STEEPENING":
+                    direction = SignalStrength.BULLISH
+                    win_rate = 0.68
+                elif yc.state.value == "STEEP":
+                    direction = SignalStrength.BULLISH
+                    win_rate = 0.62
+                else:  # FLAT
+                    direction = SignalStrength.NEUTRAL
+                    win_rate = 0.55
+                
+                signals.append(Signal(
+                    name="Yield Curve",
+                    source="yield_curve",
+                    value=yc.spread_2y10y,
+                    direction=direction,
+                    confidence=yc.confidence,
+                    timeframe=Timeframe.MONTHLY,
+                    historical_win_rate=win_rate,
+                    last_updated=datetime.now(),
+                    description=f"2Y-10Y spread {yc.spread_2y10y:.0f}bps — {yc.state.value}, recession prob {yc.recession_probability:.0f}%"
+                ))
+        except Exception:
+            pass
+        
+        return signals
+    
+    def _get_hht_signals(self, asset: str) -> list[Signal]:
+        """Get HHT regime signals"""
+        signals = []
+        
+        if not HAS_HHT:
+            return signals
+        
+        try:
+            result = hht_analyze(asset)
+            if result:
+                # Map HHT regime to direction
+                regime_map = {
+                    "STRONG_BULL": SignalStrength.STRONG_BULLISH,
+                    "BULL": SignalStrength.BULLISH,
+                    "SIDEWAYS": SignalStrength.NEUTRAL,
+                    "TRANSITION": SignalStrength.NEUTRAL,
+                    "BEAR": SignalStrength.BEARISH,
+                    "CRISIS": SignalStrength.STRONG_BEARISH,
+                }
+                direction = regime_map.get(result.regime.value, SignalStrength.NEUTRAL)
+                
+                signals.append(Signal(
+                    name="HHT Regime",
+                    source="hht",
+                    value=result.trend_strength,
+                    direction=direction,
+                    confidence=result.regime_confidence,
+                    timeframe=Timeframe.WEEKLY,
+                    historical_win_rate=0.70,
+                    last_updated=datetime.now(),
+                    description=f"HHT: {result.regime.value} ({result.regime_phase.value}), entropy {result.entropy:.2f}"
+                ))
+                
+                # Add mean reversion signal if strong
+                if abs(result.mean_reversion_signal) > 0.5:
+                    mr_direction = SignalStrength.BULLISH if result.mean_reversion_signal > 0 else SignalStrength.BEARISH
+                    signals.append(Signal(
+                        name="Mean Reversion",
+                        source="hht",
+                        value=result.mean_reversion_signal,
+                        direction=mr_direction,
+                        confidence=abs(result.mean_reversion_signal) * 60,
+                        timeframe=Timeframe.DAILY,
+                        historical_win_rate=0.58,
+                        last_updated=datetime.now(),
+                        description=f"Mean reversion signal: {result.mean_reversion_signal:+.2f}"
+                    ))
+        except Exception:
+            pass
+        
+        return signals
+    
+    def _get_correlation_signals(self, asset: str) -> list[Signal]:
+        """Get correlation regime signals"""
+        signals = []
+        
+        if not HAS_CORRELATION:
+            return signals
+        
+        try:
+            analysis = analyze_correlations()
+            if analysis:
+                # Map correlation regime to direction
+                if analysis.regime.value == "CRISIS":
+                    direction = SignalStrength.STRONG_BEARISH
+                    desc = f"CRISIS correlations — diversification failing"
+                elif analysis.regime.value == "HIGH":
+                    direction = SignalStrength.BEARISH
+                    desc = f"High correlations — reduced diversification"
+                elif analysis.regime.value == "LOW":
+                    direction = SignalStrength.BULLISH
+                    desc = f"Low correlations — healthy diversification"
+                elif analysis.regime.value == "DIVERGENT":
+                    direction = SignalStrength.BULLISH
+                    desc = f"Unusual divergence — opportunity"
+                else:  # NORMAL
+                    direction = SignalStrength.NEUTRAL
+                    desc = f"Normal correlations"
+                
+                signals.append(Signal(
+                    name="Correlation Regime",
+                    source="correlation",
+                    value=analysis.avg_correlation,
+                    direction=direction,
+                    confidence=analysis.confidence,
+                    timeframe=Timeframe.WEEKLY,
+                    historical_win_rate=0.62,
+                    last_updated=datetime.now(),
+                    description=desc + f" (avg {analysis.avg_correlation:.2f})"
+                ))
+        except Exception:
+            pass
+        
+        return signals
     
     def _calculate_conviction(self, result: ConfluenceResult):
         """Calculate unified conviction score from all signals"""
